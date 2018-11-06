@@ -1,0 +1,37 @@
+{
+  "listeners":
+  [
+    {
+      "name": "http",
+      "ip": "",
+      "port": "81",
+      "protocol": "http",
+      "readtimeout": 120,
+      "writetimeout": 120,
+      "headersize": 65536
+    },
+    {
+      "name": "https",
+      "ip": "",
+      "port": "82",
+      "protocol": "https",
+      "readtimeout": 120,
+      "writetimeout": 120,
+      "headersize": 65536
+    }
+  ],
+
+  "hosts":
+  [
+    {
+      "name": "developers",
+      "listeners": ["http", "https"],
+      "hostnames": ["developers.webability.info"],
+      "pagesdir": "./example/application/pages/",
+      "mainpage": "home",
+      "acceptpathparameters": true,
+      "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
+      "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem"
+    }
+  ]
+}
