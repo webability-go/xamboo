@@ -5,7 +5,8 @@ import (
   "flag"
   "os"
   "encoding/json"
-  "github.com/gowebability/xamboo/utils"
+  "github.com/webability-go/xconfig"
+  "github.com/webability-go/xamboo/utils"
 )
 
 type Listener struct {
@@ -24,9 +25,8 @@ type Host struct {
   HostNames []string `json:"hostnames"`
   Cert string `json:"cert"`
   PrivateKey string `json:"key"`
-  PagesDir string `json:"pagesdir"`
-  MainPage string `json:"mainpage"`
-  AcceptPathParameters bool `json:"acceptpathparameters"`
+  ConfigFile []string `json:"config"`
+  Config *xconfig.XConfig
 }
 
 type ConfigDef struct {
@@ -56,8 +56,29 @@ func (c *ConfigDef) Load() error {
     return err
   }
 
+  // Parse the XConfig file
+  if c.Hosts != nil {
+    for i, _ := range c.Hosts {
+      if c.Hosts[i].ConfigFile != nil {
+        for j, _ := range c.Hosts[i].ConfigFile {
+          lc, _ := xconfig.Load(c.Hosts[i].ConfigFile[j])
+          fmt.Printf("%p\n", lc)
+          
+          c.Hosts[i].Config = lc
+          fmt.Println(c.Hosts[i].Config)
+          fmt.Printf("%p\n", c.Hosts[i].Config)
+        }
+      }
+    }
+  }
+  
   // Load the configuration file
   fmt.Println("Config loaded " + c.File)
+
+  fmt.Println("CONFIG DENTRO DE CONFIG.GO:")
+  fmt.Println(c.Hosts[0].Config)
+  fmt.Printf("%p\n", c.Hosts[0].Config)
+
   fmt.Printf("%+v\n", c)
   return nil
 }

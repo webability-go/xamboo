@@ -1,0 +1,4 @@
+# Redirect to the home page example
+type=redirect
+status=published
+redirect=/,301

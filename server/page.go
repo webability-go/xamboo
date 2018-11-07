@@ -2,8 +2,8 @@ package server
 
 import (
   "fmt"
-  "github.com/gowebability/xconfig"
-  "github.com/gowebability/xamboo/utils"
+  "github.com/webability-go/xconfig"
+  "github.com/webability-go/xamboo/utils"
 )
 
 type Page struct {
@@ -11,7 +11,7 @@ type Page struct {
   AcceptPathParameters bool
 }
 
-func (p *Page) GetInstance(P string) *xconfig.XConfig {
+func (p *Page) GetInstance(P string) xconfig.XConfig {
   fmt.Println("Into server.Page " + P)
   
   // build File Path:
@@ -21,11 +21,11 @@ func (p *Page) GetInstance(P string) *xconfig.XConfig {
     // load the page instance
     data, _ := xconfig.Load(filepath)
     
-    if (*data)["AcceptPathParameters"] == nil {
-      (*data)["AcceptPathParameters"] = p.AcceptPathParameters
+    if data.Get("AcceptPathParameters") == nil {
+      data.Set("AcceptPathParameters", p.AcceptPathParameters)
     }
     
-    return data
+    return *data
   }
   
   return nil

@@ -24,11 +24,21 @@ V0.0.1 - 2018-11-06
 > Uses XConfig 0.0.1
 - First commit, still not fully working
 
+TO DO
+=======================
+creates a fake SSH key cert for examples to put in examples dir
+instance server
+simple code server
+language server
+template server
+library server/runner for GO pre-compile page with pipe data interchange
+Caches generator
+page library and snippets PHP-compatible code ? (go call PHP with pipe data interchange)
+page library and snippets JS-compatible code ? (go call NODE with pipe data interchange)
+support for files (images, js, etc)
 
 Manuals
 =======================
 
 If you want to help converting the manual from text into .md file, you are most welcome.
 Translations are also welcome.
-
-

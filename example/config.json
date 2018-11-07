@@ -27,9 +27,7 @@
       "name": "developers",
       "listeners": ["http", "https"],
       "hostnames": ["developers.webability.info"],
-      "pagesdir": "./example/application/pages/",
-      "mainpage": "home",
-      "acceptpathparameters": true,
+      "config": ["./example/application/config/example.conf"],
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem"
     }

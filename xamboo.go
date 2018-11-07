@@ -1,7 +1,7 @@
 package main
 
 import (
-  "github.com/gowebability/xamboo/core"
+  "github.com/webability-go/xamboo/core"
 )
 
 func main() {
