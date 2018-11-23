@@ -1,7 +1,7 @@
 package server
 
 import (
-  "fmt"
+//  "fmt"
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
 )
@@ -11,21 +11,19 @@ type Page struct {
   AcceptPathParameters bool
 }
 
-func (p *Page) GetInstance(P string) xconfig.XConfig {
-  fmt.Println("Into server.Page " + P)
-  
+func (p *Page) GetData(P string) *xconfig.XConfig {
   // build File Path:
   filepath := p.PagesDir + P + "/" + P + ".page"
-  fmt.Println("File to scan: " + filepath)
   if utils.FileExists(filepath) {
     // load the page instance
-    data, _ := xconfig.Load(filepath)
+    data := xconfig.New()
+    data.LoadFile(filepath)
     
     if data.Get("AcceptPathParameters") == nil {
       data.Set("AcceptPathParameters", p.AcceptPathParameters)
     }
     
-    return *data
+    return data
   }
   
   return nil

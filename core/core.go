@@ -10,6 +10,8 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
+const VERSION = "0.0.2"
+
 // certificados desde la config
 func mainHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
@@ -32,7 +34,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
     engine := &Engine {
       Method: r.Method,
       Page: r.URL.Path,
-      Context: 0,
       Listener: listenerdef,
       Host: hostdef,
     }
@@ -40,7 +41,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
     
 
-    engine.Run(w, r)
+    engine.Start(w, r)
   }
   // ERROR: NO LISTENER DEFINED 
   

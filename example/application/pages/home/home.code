@@ -1,0 +1,43 @@
+<h1>Xamboo</h1>
+<h2>This is the index page of the examples</h2>
+This page uses the template page called 'template'<br />
+<br />
+Demo of a page of type library included:<br />
+<div style="border: 1px solid #ccc;">
+[[CALL,blocks/library-demo]]
+</div>
+
+Demo of a page of type simple included (code):<br />
+<div style="border: 1px solid #ccc;">
+[[CALL,blocks/simple-demo]]
+</div>
+
+Demo of a page of type template included:<br />
+<pre>
+<div style="border: 1px solid #ccc;">
+[[CALL,blocks/template-demo]]
+</div>
+</pre>
+
+Demo of a page of type language included:<br />
+<pre>
+<div style="border: 1px solid #ccc;" class="showtags">
+[[CALL,blocks/language-demo]]
+</div>
+</pre>
+
+---
+
+<script>
+window.onload = function()
+{
+    var xmlNodes = document.getElementsByClassName('showtags');
+    if (xmlNodes)
+    {
+      for (var i = 0; i < xmlNodes.length; i++)
+      {
+	    xmlNodes[i].innerHTML = xmlNodes[i].innerHTML.replace(/</gi, "&lt;");
+      }
+    }
+}
+</script>

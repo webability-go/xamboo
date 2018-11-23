@@ -60,14 +60,14 @@ func (c *ConfigDef) Load() error {
   if c.Hosts != nil {
     for i, _ := range c.Hosts {
       if c.Hosts[i].ConfigFile != nil {
+        lc := xconfig.New()
+        // adapt this to multiple config files. They are all replaced by default, consider + on parameters to merge them
         for j, _ := range c.Hosts[i].ConfigFile {
-          lc, _ := xconfig.Load(c.Hosts[i].ConfigFile[j])
-          fmt.Printf("%p\n", lc)
-          
-          c.Hosts[i].Config = lc
-          fmt.Println(c.Hosts[i].Config)
-          fmt.Printf("%p\n", c.Hosts[i].Config)
+          err := lc.LoadFile(c.Hosts[i].ConfigFile[j])
+          fmt.Printf("%v\n", err)
         }
+        c.Hosts[i].Config = lc
+        fmt.Println(c.Hosts[i].Config)
       }
     }
   }

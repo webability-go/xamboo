@@ -1,8 +1,8 @@
 @UTF-8
 
-Xamboo for GO v0.0.1
+Xamboo for GO v0.0.2
 =======================
-This is the build 1
+This is the build 2
 
 Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.8+
 
@@ -18,6 +18,11 @@ Xamboo works on sites currently distributing more than **60 millions web pages m
 
 Version Changes Control
 =======================
+
+V0.0.2 - 2018-11-14
+-----------------------
+> Uses XConfig 0.0.2
+- Added VERSION constant in core/core.go
 
 V0.0.1 - 2018-11-06
 -----------------------

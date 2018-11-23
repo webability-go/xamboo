@@ -31,5 +31,13 @@
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem"
     }
-  ]
+  ],
+  
+  "engines":
+  {
+    "simple": {},
+    "library": {},
+    "template": {},
+    "language": {}
+  }
 }
