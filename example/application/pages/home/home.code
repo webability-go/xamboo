@@ -27,17 +27,3 @@ Demo of a page of type language included:<br />
 </pre>
 
 ---
-
-<script>
-window.onload = function()
-{
-    var xmlNodes = document.getElementsByClassName('showtags');
-    if (xmlNodes)
-    {
-      for (var i = 0; i < xmlNodes.length; i++)
-      {
-	    xmlNodes[i].innerHTML = xmlNodes[i].innerHTML.replace(/</gi, "&lt;");
-      }
-    }
-}
-</script>

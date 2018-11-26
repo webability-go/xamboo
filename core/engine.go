@@ -4,9 +4,11 @@ import (
   "fmt"
   "strings"
   "net/http"
+//  "time"
   
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/server"
+  "github.com/webability-go/xamboo/xcontext"
 )
 
 type Engine struct {
@@ -16,11 +18,20 @@ type Engine struct {
   Page string
   Listener *Listener
   Host *Host
+  Num int
+  QT *int
 }
 
 func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
   e.writer = w
   e.reader = r
+  *(e.QT) += 1
+//  fmt.Println(*(e.QT))
+
+  // No prefix /
+  if e.Page[0] == '/' {
+    e.Page = e.Page[1:]
+  }
 
   // No ending /
   if len(e.Page) > 0 && e.Page[len(e.Page)-1] == '/' {
@@ -31,27 +42,28 @@ func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
     return
   }
   
-  // No prefix /
-  if e.Page[0] == '/' {
-    e.Page = e.Page[1:]
-  }
-
+//  fmt.Println("Page to start: " + e.Page)
+  
   if len(e.Page) == 0 {
     e.Page = e.Host.Config.Get("mainpage").(string)
   }
   
-  e.Run(e.Page, false, nil, "", "", "")
+  code := e.Run(e.Page, false, nil, "", "", "")
+  
+  // WRITE HERE THE WRITER WITH PAGECODE
+  e.writer.Write([]byte(code))
 }
 
 // The main xamboo runner
 // context is false for the default page call
-func (e *Engine) Run(page string, context bool, params *interface{}, version string, language string, method string) {
+func (e *Engine) Run(page string, context bool, params *interface{}, version string, language string, method string) string {
   // string to print to the page
   var data []string
+//  fmt.Println("Engine-Run: " + page)
 
   // e.Page is the original page to scan
   // P is the scanned page
-  P := e.Page
+  P := page
   
   // Search the correct .page 
   pageserver := &server.Page {
@@ -76,24 +88,24 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   }
 
   if pagedata == nil {
-    e.launchError("Error 404: no page found")
-    return
+    e.launchError("Error 404: no page found .page")
+    return ""
   }
 
   var xParams []string
-  if P != e.Page {
+  if P != page {
     if pagedata.Get("AcceptPathParameters") != true {
-      e.launchError("Error 404: no page found")
-      return
+      e.launchError("Error 404: no page found with parameters")
+      return ""
     }
-    xParams = strings.Split(e.Page[len(P)+1:], "/")
+    xParams = strings.Split(page[len(P)+1:], "/")
   }
   
   if !context {
     if pagedata.Get("type") == "redirect" {
       // launch the redirect of the page
-      e.launchRedirect("REDIRECT TO THE PAGE: " + pagedata.Get("Redirect").(string))
-      return
+      e.launchRedirect(pagedata.Get("Redirect").(string))
+      return ""
     }
   }
   
@@ -136,22 +148,23 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
 
   if instancedata == nil {
     e.launchError("Error: the page/block has no instance")
-    return
+    return ""
   }
   
   // verify the possible recursion
   if e.verifyRecursion(P) {
     e.launchError("Error: the page/block is recursive")
-    return
+    return ""
   }
   
-  e.pushContext(context, e.Page, P, instancedata, params, version, language)
+  e.pushContext(context, page, P, instancedata, params, version, language)
 
   // Cache system disabled for now
   // if e.getCache() return cache
   
   // Resolve page code
   // 1. Build-in engines
+  var xdata string
   switch pagedata.Get("type") {
     case "simple":
       var codedata *server.CodeStream
@@ -166,58 +179,70 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
         }
       }
       
-      xdata := codedata.Run()
-      data = append(data, xdata)
-    
+      if codedata == nil {
+        e.launchError("Error: the simple page/block has no code")
+        return ""
+      }
+      
+      ctx := &xcontext.Context{}
+      xdata = codedata.Run(ctx)
+
     case "library":
-    
+      fmt.Println(xParams)
+      fmt.Println(identity)
     case "template":
     
     case "language":
     
   }
   
-  
-  
   // Cache system disabled for now
   // e.setCache()
   
-  
-  
-  
-  fmt.Println("Final working identity:")
-  fmt.Println(identity)
-  
-  data = append(data, "\n\n===\nThe Xamboo CMS Framework\n")
-  data = append(data, fmt.Sprintf("Original P: %s\n", e.Page))
-  data = append(data, fmt.Sprintf("Method: %s\n", e.Method))
+  // check templates and get templates
+  if x := pagedata.Get("template"); x != nil && x != ""  {
+    fathertemplate := e.Run(x.(string), false, params, version, language, method);
+//    if (is_array($text))
+//    {
+//      foreach($text as $k => $block)
+//        $fathertemplate = str_replace("[[CONTENT,{$k}]]", $block, $fathertemplate);
+//      $text = $fathertemplate;
+//    }
+//    else
+    xdata = strings.Replace(fathertemplate, "[[CONTENT]]", xdata, -1);
 
-  data = append(data, fmt.Sprintf("XParams: %v\n", xParams))
-  data = append(data, fmt.Sprintf("identity: %v\n", identity))
-  data = append(data, fmt.Sprintf(".page: %v\n", pagedata))
-  data = append(data, fmt.Sprintf(".instance: %v\n", instancedata))
-
-  
-  data = append(data, fmt.Sprintf("Request Data: %s - %s - %s - %s - %s - %s\n", e.reader.Method, e.reader.Host, e.reader.URL.Path, e.reader.Proto, e.reader.RemoteAddr, e.reader.RequestURI))
-  if (e.reader.TLS != nil) {
-    data = append(data, fmt.Sprintf("TLS: %s - %s - %s - %s - %s - %s\n", e.reader.TLS.Version, e.reader.TLS.NegotiatedProtocol, e.reader.TLS.CipherSuite, "", "", "" ))
   }
 
-  e.writer.Write([]byte(strings.Join(data, "")))
+  data = append(data, xdata)
+  
+  // Cache system disabled for now
+  // e.setFullCache()
+/*
+  data = append(data, "<hr><br>The Xamboo CMS Framework<br>")
+  data = append(data, fmt.Sprintf("Original P: %s<br>", page))
+  data = append(data, fmt.Sprintf("Method: %s<br>", e.Method))
+
+  data = append(data, fmt.Sprintf("XParams: %v<br>", xParams))
+  data = append(data, fmt.Sprintf("identity: %v<br>", identity))
+  data = append(data, fmt.Sprintf(".page: %v<br>", pagedata))
+  data = append(data, fmt.Sprintf(".instance: %v<br>", instancedata))
+
+  data = append(data, fmt.Sprintf("Request Data: %s - %s - %s - %s - %s - %s<br>", e.reader.Method, e.reader.Host, e.reader.URL.Path, e.reader.Proto, e.reader.RemoteAddr, e.reader.RequestURI))
+  if (e.reader.TLS != nil) {
+    data = append(data, fmt.Sprintf("TLS: %s - %s - %s - %s - %s - %s<br>", e.reader.TLS.Version, e.reader.TLS.NegotiatedProtocol, e.reader.TLS.CipherSuite, "", "", "" ))
+  }
+*/
+  return strings.Join(data, "")
 }
 
 func (e *Engine) launchError(message string) {
   // Call the error page
-  var data []string
-  data = append(data, fmt.Sprintf(message))
-  e.writer.Write([]byte(strings.Join(data, "")))
+  http.Error(e.writer, message, http.StatusNotFound)
 }
 
-func (e *Engine) launchRedirect(message string) {
+func (e *Engine) launchRedirect(url string) {
   // Call the redirect mecanism
-  var data []string
-  data = append(data, fmt.Sprintf(message))
-  e.writer.Write([]byte(strings.Join(data, "")))
+  http.Redirect(e.writer, e.reader, url, http.StatusMovedPermanently)
 }
 
 func (e *Engine) isAvailable(context bool, p *xconfig.XConfig) bool {
@@ -232,7 +257,7 @@ func (e *Engine) isAvailable(context bool, p *xconfig.XConfig) bool {
   if p.Get("status") == "published" {
     return true
   }
-    
+
   return false
 }
 

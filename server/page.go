@@ -6,14 +6,28 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
+var PageCache = NewCache()
+
 type Page struct {
   PagesDir string
   AcceptPathParameters bool
 }
 
 func (p *Page) GetData(P string) *xconfig.XConfig {
+
   // build File Path:
-  filepath := p.PagesDir + P + "/" + P + ".page"
+  // separate last part
+  lastpath := utils.LastPath(P)
+  filepath := p.PagesDir + P + "/" + lastpath + ".page"
+  
+  cdata := PageCache.Get(filepath)
+  if cdata != nil {
+    return cdata.(*xconfig.XConfig)
+  }
+
+  // verify against souce CHANGES
+  
+  
   if utils.FileExists(filepath) {
     // load the page instance
     data := xconfig.New()
@@ -23,6 +37,7 @@ func (p *Page) GetData(P string) *xconfig.XConfig {
       data.Set("AcceptPathParameters", p.AcceptPathParameters)
     }
     
+    PageCache.Set(filepath, data)
     return data
   }
   

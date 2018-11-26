@@ -63,23 +63,15 @@ func (c *ConfigDef) Load() error {
         lc := xconfig.New()
         // adapt this to multiple config files. They are all replaced by default, consider + on parameters to merge them
         for j, _ := range c.Hosts[i].ConfigFile {
-          err := lc.LoadFile(c.Hosts[i].ConfigFile[j])
-          fmt.Printf("%v\n", err)
+          lc.LoadFile(c.Hosts[i].ConfigFile[j])
         }
         c.Hosts[i].Config = lc
-        fmt.Println(c.Hosts[i].Config)
       }
     }
   }
   
   // Load the configuration file
   fmt.Println("Config loaded " + c.File)
-
-  fmt.Println("CONFIG DENTRO DE CONFIG.GO:")
-  fmt.Println(c.Hosts[0].Config)
-  fmt.Printf("%p\n", c.Hosts[0].Config)
-
-  fmt.Printf("%+v\n", c)
   return nil
 }
 

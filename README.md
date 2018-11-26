@@ -19,9 +19,13 @@ Xamboo works on sites currently distributing more than **60 millions web pages m
 Version Changes Control
 =======================
 
-V0.0.2 - 2018-11-14
+V0.0.2 - 2018-??-??
 -----------------------
 > Uses XConfig 0.0.2
+- Added support for memory caches in servers (page, instance, code)
+- ".code" compiler implemented for simple pages
+- Creation of Context object to send to every engine instance/page to build
+- Logger implemented (now directed to stdout)
 - Added VERSION constant in core/core.go
 
 V0.0.1 - 2018-11-06
