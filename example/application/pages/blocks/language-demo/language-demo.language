@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="language-demo" lang="en">
+  <entry id="entry1">Welcome to</entry>
+  <entry id="entry2">Xamboo</entry>
+</language>

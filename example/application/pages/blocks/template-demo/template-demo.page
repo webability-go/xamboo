@@ -1,0 +1,3 @@
+type=template
+status=block
+template=templates/green-block

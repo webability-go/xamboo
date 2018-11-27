@@ -1,0 +1,8 @@
+Code of the simple-demo block<br />
+<br />
+<b>Metalanguage from sysparams:</b><br />
+mainid = [[SYSPARAM,mainid]]<br />
+maintitle = [[SYSPARAM,maintitle]]<br />
+mainlanguage = [[SYSPARAM,mainlanguage]]<br />
+<font style="color: [[SYSPARAM,maincolor]];">maincolor = [[SYSPARAM,maincolor]]</font><br />
+

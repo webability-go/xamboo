@@ -1,0 +1,17 @@
+<?php
+
+class library_demo extends  \xamboo\XBLibrary
+{
+  public function __construct($template, $language)
+  {
+    parent::__construct($template, $language);
+  }
+  
+  public function run($engine, $params)
+  {
+    return $this->template->resolve();
+  }
+
+}
+
+?>

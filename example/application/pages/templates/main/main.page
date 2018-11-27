@@ -10,6 +10,6 @@ type=simple
 # template: it's a template, not visible from outside
 # block: it's a building block to use in another page
 # folder: it's a folder (no code, no nothing, just have sub pages)
-status=published
+status=template
 # the template to use, or nothing
 template=

@@ -2,6 +2,15 @@
 <h2>This is the index page of the examples</h2>
 This page uses the template page called 'template'<br />
 <br />
+<b>Metalanguage from sysparams:</b><br />
+mainid = [[SYSPARAM,mainid]]<br />
+maintitle = [[SYSPARAM,maintitle]]<br />
+mainlanguage = [[SYSPARAM,mainlanguage]]<br />
+<font style="color: [[SYSPARAM,maincolor]];">maincolor = [[SYSPARAM,maincolor]]</font><br />
+
+
+
+
 Demo of a page of type library included:<br />
 <div style="border: 1px solid #ccc;">
 [[CALL,blocks/library-demo]]

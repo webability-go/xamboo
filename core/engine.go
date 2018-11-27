@@ -8,7 +8,7 @@ import (
   
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/server"
-  "github.com/webability-go/xamboo/xcontext"
+  "github.com/webability-go/xamboo/enginecontext"
 )
 
 type Engine struct {
@@ -18,6 +18,9 @@ type Engine struct {
   Page string
   Listener *Listener
   Host *Host
+  MainContext *enginecontext.Context
+  Recursivity []string
+
   Num int
   QT *int
 }
@@ -55,8 +58,8 @@ func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
 }
 
 // The main xamboo runner
-// context is false for the default page call
-func (e *Engine) Run(page string, context bool, params *interface{}, version string, language string, method string) string {
+// innerpage is false for the default page call, true when it's a subcall (inner call, with context)
+func (e *Engine) Run(page string, innerpage bool, params *interface{}, version string, language string, method string) string {
   // string to print to the page
   var data []string
 //  fmt.Println("Engine-Run: " + page)
@@ -74,7 +77,7 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   var pagedata *xconfig.XConfig
   for {
     pagedata = pageserver.GetData(P)
-    if pagedata != nil && e.isAvailable(context, pagedata) {
+    if pagedata != nil && e.isAvailable(innerpage, pagedata) {
       break
     }
     // page not valid, we invalid it
@@ -88,20 +91,18 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   }
 
   if pagedata == nil {
-    e.launchError("Error 404: no page found .page")
-    return ""
+    return e.launchError(innerpage, "Error 404: no page found .page for " + page)
   }
 
   var xParams []string
   if P != page {
     if pagedata.Get("AcceptPathParameters") != true {
-      e.launchError("Error 404: no page found with parameters")
-      return ""
+      return e.launchError(innerpage, "Error 404: no page found with parameters")
     }
     xParams = strings.Split(page[len(P)+1:], "/")
   }
   
-  if !context {
+  if !innerpage {
     if pagedata.Get("type") == "redirect" {
       // launch the redirect of the page
       e.launchRedirect(pagedata.Get("Redirect").(string))
@@ -136,28 +137,48 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   }
 
   var instancedata *xconfig.XConfig
-  var identity *server.Identity
-
   for _, n := range identities {
     instancedata = instanceserver.GetData(P, n)
     if instancedata != nil {
-      identity = &n
       break
     }
   }
 
   if instancedata == nil {
-    e.launchError("Error: the page/block has no instance")
-    return ""
+    return e.launchError(innerpage, "Error: the page/block has no instance")
   }
   
   // verify the possible recursion
   if e.verifyRecursion(P) {
-    e.launchError("Error: the page/block is recursive")
-    return ""
+    return e.launchError(innerpage, "Error: the page/block is recursive")
   }
   
-  e.pushContext(context, page, P, instancedata, params, version, language)
+  ctx := &enginecontext.Context{
+    MainPage: e.Page,
+    LocalPage: page,
+    RealLocalPage: P,
+    Sysparams: e.Host.Config,
+    LocalPageparams: pagedata,
+    LocalInstanceparams: instancedata,
+    Engine: wrapper,
+  }
+  if innerpage {
+    ctx.MainPageparams = e.MainContext.MainPageparams
+    ctx.MainInstanceparams = e.MainContext.MainInstanceparams
+  } else {
+    ctx.MainPageparams = pagedata
+    ctx.MainInstanceparams = instancedata
+  }
+//  if innerpage { ctx.Entryparams = params } else { ctx.Entryparams = xParams }
+  ctx.Entryparams = params
+  fmt.Println(xParams)
+  fmt.Println(ctx)
+
+  if !innerpage {
+    e.MainContext = ctx
+  }
+
+  e.pushContext(innerpage, page, P, instancedata, params, version, language)
 
   // Cache system disabled for now
   // if e.getCache() return cache
@@ -180,20 +201,21 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
       }
       
       if codedata == nil {
-        e.launchError("Error: the simple page/block has no code")
+        xdata = e.launchError(innerpage, "Error: the simple page/block has no code")
         return ""
       }
       
-      ctx := &xcontext.Context{}
-      xdata = codedata.Run(ctx)
+      xdata = codedata.Run(ctx, e)
 
     case "library":
-      fmt.Println(xParams)
-      fmt.Println(identity)
+      xdata = "HERE IS A LIBRARY"
     case "template":
     
+      xdata = "HERE IS A TEMPLATE"
     case "language":
-    
+      xdata = "HERE IS A LANGUAGE"
+    default:
+      xdata = "THIS IS SOMETHING UNKNOWN FROM A PARALLEL UNIVERSE THAT SHOULD NOT HAPPEN"
   }
   
   // Cache system disabled for now
@@ -201,7 +223,7 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   
   // check templates and get templates
   if x := pagedata.Get("template"); x != nil && x != ""  {
-    fathertemplate := e.Run(x.(string), false, params, version, language, method);
+    fathertemplate := e.Run(x.(string), true, params, version, language, method);
 //    if (is_array($text))
 //    {
 //      foreach($text as $k => $block)
@@ -235,9 +257,20 @@ func (e *Engine) Run(page string, context bool, params *interface{}, version str
   return strings.Join(data, "")
 }
 
-func (e *Engine) launchError(message string) {
+func wrapper(e interface{}, page string, innerpage bool, params *interface{}, version string, language string, method string) string {
+  return e.(*Engine).Run(page, innerpage, params, version, language, method)
+}
+
+func (e *Engine) launchError(innerpage bool, message string) string {
   // Call the error page
-  http.Error(e.writer, message, http.StatusNotFound)
+  
+  
+  
+  if innerpage {
+    http.Error(e.writer, message, http.StatusNotFound)
+    return ""
+  }
+  return message
 }
 
 func (e *Engine) launchRedirect(url string) {
@@ -245,16 +278,16 @@ func (e *Engine) launchRedirect(url string) {
   http.Redirect(e.writer, e.reader, url, http.StatusMovedPermanently)
 }
 
-func (e *Engine) isAvailable(context bool, p *xconfig.XConfig) bool {
+func (e *Engine) isAvailable(innerpage bool, p *xconfig.XConfig) bool {
   if p.Get("status") == "hidden" {
     return false
   }
-  
-  if context && (p.Get("status") == "template" || p.Get("status") == "published" || p.Get("status") == "block") {
+
+  if p.Get("status") == "published" {
     return true
   }
-    
-  if p.Get("status") == "published" {
+
+  if innerpage && (p.Get("status") == "template" || p.Get("status") == "block") {
     return true
   }
 
