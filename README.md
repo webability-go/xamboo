@@ -38,9 +38,12 @@ V0.0.3 - 2018-??-??
 -----------------------
 > Branch "late-night" added to github
 
+> Uses XConfig 0.0.2
+
 V0.0.2 - 2018-11-27
 -----------------------
 > This version is working, examples are working, but the system is still incomplete
+
 > Uses XConfig 0.0.2
 - Added Context in engine and local context to calculate pages
 - Added engine wrapper to call from a server (engine callback for a sub-page)
