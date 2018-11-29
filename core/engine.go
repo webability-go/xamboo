@@ -1,7 +1,7 @@
 package core
 
 import (
-  "fmt"
+//  "fmt"
   "strings"
   "net/http"
 //  "time"
@@ -26,32 +26,33 @@ type Engine struct {
 }
 
 func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
+  r.ParseForm()
   e.writer = w
   e.reader = r
   *(e.QT) += 1
 //  fmt.Println(*(e.QT))
 
+  page := e.Page
+  // We clean the page, 
   // No prefix /
-  if e.Page[0] == '/' {
-    e.Page = e.Page[1:]
+  if page[0] == '/' {
+    page = page[1:]
   }
 
   // No ending /
-  if len(e.Page) > 0 && e.Page[len(e.Page)-1] == '/' {
-    e.Page = e.Page[:len(e.Page)-1]
+  if len(page) > 0 && page[len(page)-1] == '/' {
+    page = page[:len(page)-1]
     
     // WE DO NOT ACCEPT ENDING / SO MAKE AUTOMATICALLY A REDIRECT TO THE SAME PAGE WITHOUT A / AT THE END
-    e.launchRedirect(e.Page)
+    e.launchRedirect(page)
     return
   }
   
-//  fmt.Println("Page to start: " + e.Page)
-  
-  if len(e.Page) == 0 {
-    e.Page = e.Host.Config.Get("mainpage").(string)
+  if len(page) == 0 {
+    page = e.Host.Config.Get("mainpage").(string)
   }
   
-  code := e.Run(e.Page, false, nil, "", "", "")
+  code := e.Run(page, false, nil, "", "", "")
   
   // WRITE HERE THE WRITER WITH PAGECODE
   e.writer.Write([]byte(code))
@@ -154,31 +155,32 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   }
   
   ctx := &enginecontext.Context{
-    MainPage: e.Page,
+    Request: e.reader,
     LocalPage: page,
-    RealLocalPage: P,
+    LocalPageUsed: P,
+    LocalURLparams: xParams,
     Sysparams: e.Host.Config,
     LocalPageparams: pagedata,
     LocalInstanceparams: instancedata,
+    LocalEntryparams: params,
     Engine: wrapper,
   }
   if innerpage {
+    ctx.MainPage = e.MainContext.MainPage
+    ctx.MainPageUsed = e.MainContext.MainPageUsed
+    ctx.MainURLparams = e.MainContext.MainURLparams
     ctx.MainPageparams = e.MainContext.MainPageparams
     ctx.MainInstanceparams = e.MainContext.MainInstanceparams
   } else {
+    ctx.MainPage = page
+    ctx.MainPageUsed = P
+    ctx.MainURLparams = xParams
     ctx.MainPageparams = pagedata
     ctx.MainInstanceparams = instancedata
-  }
-//  if innerpage { ctx.Entryparams = params } else { ctx.Entryparams = xParams }
-  ctx.Entryparams = params
-  fmt.Println(xParams)
-  fmt.Println(ctx)
-
-  if !innerpage {
     e.MainContext = ctx
   }
 
-  e.pushContext(innerpage, page, P, instancedata, params, version, language)
+//  e.pushContext(innerpage, page, P, instancedata, params, version, language)
 
   // Cache system disabled for now
   // if e.getCache() return cache
@@ -189,7 +191,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   switch pagedata.Get("type") {
     case "simple":
       var codedata *server.CodeStream
-      codeserver := &server.Code {
+      codeserver := &server.CodeServer {
         PagesDir: e.Host.Config.Get("pagesdir").(string),
       }
       
@@ -201,19 +203,20 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
       }
       
       if codedata == nil {
-        xdata = e.launchError(innerpage, "Error: the simple page/block has no code")
-        return ""
+        return e.launchError(innerpage, "Error: the simple page/block has no code")
       }
       
       xdata = codedata.Run(ctx, e)
 
     case "library":
       xdata = "HERE IS A LIBRARY"
+
     case "template":
-    
       xdata = "HERE IS A TEMPLATE"
+
     case "language":
       xdata = "HERE IS A LANGUAGE"
+
     default:
       xdata = "THIS IS SOMETHING UNKNOWN FROM A PARALLEL UNIVERSE THAT SHOULD NOT HAPPEN"
   }
@@ -257,8 +260,8 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   return strings.Join(data, "")
 }
 
-func wrapper(e interface{}, page string, innerpage bool, params *interface{}, version string, language string, method string) string {
-  return e.(*Engine).Run(page, innerpage, params, version, language, method)
+func wrapper(e interface{}, page string, params *interface{}, version string, language string, method string) string {
+  return e.(*Engine).Run(page, true, params, version, language, method)
 }
 
 func (e *Engine) launchError(innerpage bool, message string) string {

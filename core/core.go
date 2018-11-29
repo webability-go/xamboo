@@ -74,13 +74,13 @@ func printQT() {
   }
 }
 
-func Run() error {
+func Run(file string) error {
   QT = 0;
   
   go printQT()
 
   // Load the config
-  err := Config.Load()
+  err := Config.Load(file)
   if err != nil {
       fmt.Println(err.Error())
       return err

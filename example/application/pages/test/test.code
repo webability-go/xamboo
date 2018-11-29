@@ -1,0 +1,26 @@
+[[BOX,/templates/blue-block:
+Content for blue block
+BOX]]
+
+Test for nested things<br />
+
+[[BOX,/templates/blue-block:
+Content for blue block
+BOX]]
+
+something between
+
+[[BOX,/templates/red-block:
+Content for red block
+[[BOX,/templates/blue-block:
+Content for blue block
+BOX]]
+last one
+BOX]]
+
+
+final of template
+
+[[BOX,/templates/blue-block:
+Content for blue block
+BOX]]x

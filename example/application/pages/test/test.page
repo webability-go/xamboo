@@ -12,10 +12,4 @@ type=simple
 # folder: it's a folder (no code, no nothing, just have sub pages)
 status=published
 # the template to use, or nothing
-template=/templates/main
-
-The following parameters are NOT used by the xamboo itself, but is for the code of the example site. You can define as much as parameters you wish.
-mainid=HomePage
-maintitle=Title of the Home Page
-mainlanguage=en
-maincolor=#ff0000
+template=
