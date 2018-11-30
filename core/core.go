@@ -35,6 +35,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   if poscolumn := strings.Index(r.Host, ":"); poscolumn < 0 {
     host = r.Host
     port = ""
+    if r.TLS == nil {
+      port = "80"
+    } else {
+      port = "443"
+    }
   } else {
     // search for the correct config
     host, port, _ = net.SplitHostPort(r.Host)
@@ -55,9 +60,10 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
     
 
     engine.Start(w, r)
+  } else {
+    // ERROR: NO LISTENER DEFINED 
+    http.Error(w, "Error, no site found", http.StatusNotImplemented)
   }
-  // ERROR: NO LISTENER DEFINED 
-  
 }
 
 func printQT() {
