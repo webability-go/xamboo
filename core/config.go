@@ -2,7 +2,7 @@ package core
 
 import (
   "fmt"
-  "flag"
+//  "flag"
   "os"
   "encoding/json"
   "github.com/webability-go/xconfig"
@@ -38,14 +38,10 @@ type ConfigDef struct {
 var Config = &ConfigDef{}
 
 // Then main xamboo runner
-func (c *ConfigDef) Load() error {
-  flag.StringVar(&c.File, "config", "", "configuration file")
-  flag.Parse()
-  
-  if c.File == "" {
-    return nil
-  }
-  configFile, err := os.Open(c.File)
+func (c *ConfigDef) Load(file string) error {
+
+  c.File = file
+  configFile, err := os.Open(file)
   defer configFile.Close()
   if err != nil {
     return err
@@ -75,16 +71,25 @@ func (c *ConfigDef) Load() error {
   return nil
 }
 
-func (c *ConfigDef) GetListener(host string, port string, secure bool) (*Host, *Listener) {
+func (c *ConfigDef) SearchListener(name string) *Listener {
+  for _, l := range c.Listeners {
+    if l.Name == name {
+      return &l
+    }
+  }
+  return nil
+}
 
+func (c *ConfigDef) GetListener(host string, port string, secure bool) (*Host, *Listener) {
   for _, h := range c.Hosts {
     if utils.SearchInArray(host, h.HostNames) {
       // search the actual active listener
-      
-      
-      
-      
-      return &h, &c.Listeners[0]
+      for _, l := range h.Listeners {
+        ldata := c.SearchListener(l)
+        if ldata != nil && ldata.Port == port {
+          return &h, ldata
+        }
+      }
     }
   }
   return nil, nil

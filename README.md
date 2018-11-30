@@ -19,17 +19,17 @@ TO DO
 =======================
 - creates a fake SSH key cert for examples to put in examples dir
 - simple code server injector
+- implement nested [[BOX in simple code metalanguage injector
 - Pass params (from url or from page call) into context, server call and wrapper
-- implement nested [[BOX in simple code metalanguage
-- language server compiler + injector
-- template server compiler + injector
-- library server/runner for GO pre-compile page with pipe data interchange
+- language server injector
+- template server injector
+- library as plugin pre-compile page with pipe data interchange, launch a compiler thread (charged to check and compile new code)
 - Caches generator
 - cache autocheck vs original file on HD
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - support for files (images, js, etc)
-
+- Publish xcore for xtemplate and xlanguage
 
 Version Changes Control
 =======================
@@ -38,7 +38,21 @@ V0.0.3 - 2018-??-??
 -----------------------
 > Branch "late-night" added to github
 
-> Uses XConfig 0.0.2
+> Uses XConfig 0.0.3
+- language page type implemented
+- template page type implemented
+- library page type implemented
+- [[URLPARAMS]] metalanguage parser and injector implemented
+- [[URLPARAM,id]] metalanguage parser and injector implemented
+- [[VAR,id]] metalanguage parser and injector implemented
+- [[PARAM,id]] metalanguage parser and injector implemented
+- [[SYSPARAM,id]] metalanguage parser and injector implemented
+- [[PAGEPARAM,id]] metalanguage parser and injector implemented
+- [[LOCALPAGEPARAM,id]] metalanguage parser and injector implemented
+- [[INSTANCEPARAM,id]] metalanguage parser and injector implemented
+- [[LOCALINSTANCEPARAM,id]] metalanguage parser and injector implemented
+- Nested blocks implemented into compiler, injector pending
+- Constants added for meta language orders
 
 V0.0.2 - 2018-11-27
 -----------------------
@@ -68,3 +82,54 @@ Manual:
 
 - If you want to help converting the manual from text into .md file, you are most welcome.
 - Translations are also welcome
+
+Installation:
+=======================
+
+
+Configuration:
+=======================
+
+
+Running the examples:
+=======================
+
+
+Building your site:
+=======================
+
+
+Types of pages:
+=======================
+
+Simple Page (.code)
+-----------------------
+
+The type of the page in the .page file must be 
+type=simple
+
+The code of the page is your native code (for instance HTML) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
+
+* Meta language for Simple Page:
+
+- [[URLPARAMS]]
+- [[URLPARAM,(.*?)]]
+- [[VAR,(.*?)]]
+- [[PARAM,(.*?)]]
+- [[SYSPARAM,(.*?)]]
+- [[PAGEPARAM,(.*?)]]
+- [[LOCALPAGEPARAM,(.*?)]]
+- [[INSTANCEPARAM,(.*?)]]
+- [[LOCALINSTANCEPARAM,(.*?)]]
+- [[JS,(.*?)]]
+- [[CSS,(.*?)]]
+- [[CALL,(.*?)(:(.*?)){0,1}]]
+- ##   ##
+- %--   --%
+- [[BOX,(.*?):
+- BOX]]
+
+
+
+
+

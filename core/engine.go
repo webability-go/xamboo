@@ -6,6 +6,7 @@ import (
   "net/http"
 //  "time"
   
+  "github.com/webability-go/xcore"
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/server"
   "github.com/webability-go/xamboo/enginecontext"
@@ -26,32 +27,33 @@ type Engine struct {
 }
 
 func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
+  r.ParseForm()
   e.writer = w
   e.reader = r
   *(e.QT) += 1
 //  fmt.Println(*(e.QT))
 
+  page := e.Page
+  // We clean the page, 
   // No prefix /
-  if e.Page[0] == '/' {
-    e.Page = e.Page[1:]
+  if page[0] == '/' {
+    page = page[1:]
   }
 
   // No ending /
-  if len(e.Page) > 0 && e.Page[len(e.Page)-1] == '/' {
-    e.Page = e.Page[:len(e.Page)-1]
+  if len(page) > 0 && page[len(page)-1] == '/' {
+    page = page[:len(page)-1]
     
     // WE DO NOT ACCEPT ENDING / SO MAKE AUTOMATICALLY A REDIRECT TO THE SAME PAGE WITHOUT A / AT THE END
-    e.launchRedirect(e.Page)
+    e.launchRedirect(page)
     return
   }
   
-//  fmt.Println("Page to start: " + e.Page)
-  
-  if len(e.Page) == 0 {
-    e.Page = e.Host.Config.Get("mainpage").(string)
+  if len(page) == 0 {
+    page = e.Host.Config.Get("mainpage").(string)
   }
   
-  code := e.Run(e.Page, false, nil, "", "", "")
+  code := e.Run(page, false, nil, "", "", "")
   
   // WRITE HERE THE WRITER WITH PAGECODE
   e.writer.Write([]byte(code))
@@ -154,31 +156,33 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   }
   
   ctx := &enginecontext.Context{
-    MainPage: e.Page,
+    Request: e.reader,
+    Writer: e.writer,
     LocalPage: page,
-    RealLocalPage: P,
+    LocalPageUsed: P,
+    LocalURLparams: xParams,
     Sysparams: e.Host.Config,
     LocalPageparams: pagedata,
     LocalInstanceparams: instancedata,
+    LocalEntryparams: params,
     Engine: wrapper,
   }
   if innerpage {
+    ctx.MainPage = e.MainContext.MainPage
+    ctx.MainPageUsed = e.MainContext.MainPageUsed
+    ctx.MainURLparams = e.MainContext.MainURLparams
     ctx.MainPageparams = e.MainContext.MainPageparams
     ctx.MainInstanceparams = e.MainContext.MainInstanceparams
   } else {
+    ctx.MainPage = page
+    ctx.MainPageUsed = P
+    ctx.MainURLparams = xParams
     ctx.MainPageparams = pagedata
     ctx.MainInstanceparams = instancedata
-  }
-//  if innerpage { ctx.Entryparams = params } else { ctx.Entryparams = xParams }
-  ctx.Entryparams = params
-  fmt.Println(xParams)
-  fmt.Println(ctx)
-
-  if !innerpage {
     e.MainContext = ctx
   }
 
-  e.pushContext(innerpage, page, P, instancedata, params, version, language)
+//  e.pushContext(innerpage, page, P, instancedata, params, version, language)
 
   // Cache system disabled for now
   // if e.getCache() return cache
@@ -189,7 +193,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   switch pagedata.Get("type") {
     case "simple":
       var codedata *server.CodeStream
-      codeserver := &server.Code {
+      codeserver := &server.CodeServer {
         PagesDir: e.Host.Config.Get("pagesdir").(string),
       }
       
@@ -201,19 +205,46 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
       }
       
       if codedata == nil {
-        xdata = e.launchError(innerpage, "Error: the simple page/block has no code")
-        return ""
+        return e.launchError(innerpage, "Error: the simple page/block has no code")
       }
       
-      xdata = codedata.Run(ctx, e)
+      languagedata := e.loadLanguage(P, identities)
+
+      xdata = codedata.Run(ctx, languagedata, e)
 
     case "library":
-      xdata = "HERE IS A LIBRARY"
+      libraryserver := &server.LibraryServer {
+        PagesDir: e.Host.Config.Get("pagesdir").(string),
+      }
+      
+      librarydata := libraryserver.GetData(P)
+      if librarydata == nil {
+        return e.launchError(innerpage, "Error: the library page/block has no code")
+      }
+      
+      languagedata := e.loadLanguage(P, identities)
+      templatedata := e.loadTemplate(P, identities)
+
+      xdata = librarydata.Run(ctx, templatedata, languagedata, e)
+
     case "template":
-    
-      xdata = "HERE IS A TEMPLATE"
+      templatedata := e.loadTemplate(P, identities)
+      if templatedata == nil {
+        return e.launchError(innerpage, "Error: the template page/block has no code")
+      }
+
+      // SHOULD GET BACK THE OBJECT ITSELF, NOT ITS PRINT
+      xdata = templatedata.Print()
+
     case "language":
-      xdata = "HERE IS A LANGUAGE"
+      languagedata := e.loadLanguage(P, identities)
+      if languagedata == nil {
+        return e.launchError(innerpage, "Error: the language page/block has no code")
+      }
+      
+      // SHOULD GET BACK THE OBJECT ITSELF, NOT ITS PRINT
+      xdata = fmt.Sprint(languagedata)
+
     default:
       xdata = "THIS IS SOMETHING UNKNOWN FROM A PARALLEL UNIVERSE THAT SHOULD NOT HAPPEN"
   }
@@ -257,8 +288,38 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   return strings.Join(data, "")
 }
 
-func wrapper(e interface{}, page string, innerpage bool, params *interface{}, version string, language string, method string) string {
-  return e.(*Engine).Run(page, innerpage, params, version, language, method)
+func (e *Engine) loadTemplate(P string, identities []server.Identity) *xcore.XTemplate {
+  templateserver := &server.TemplateServer {
+    PagesDir: e.Host.Config.Get("pagesdir").(string),
+  }
+  
+  var templatedata *xcore.XTemplate
+  for _, n := range identities {
+    templatedata = templateserver.GetData(P, n)
+    if templatedata != nil {
+      return templatedata
+    }
+  }
+  return nil
+}
+
+func (e *Engine) loadLanguage(P string, identities []server.Identity) *xcore.XLanguage {
+  languageserver := &server.LanguageServer {
+    PagesDir: e.Host.Config.Get("pagesdir").(string),
+  }
+
+  var languagedata *xcore.XLanguage
+  for _, n := range identities {
+    languagedata = languageserver.GetData(P, n)
+    if languagedata != nil {
+      return languagedata
+    }
+  }
+  return nil
+}
+
+func wrapper(e interface{}, page string, params *interface{}, version string, language string, method string) string {
+  return e.(*Engine).Run(page, true, params, version, language, method)
 }
 
 func (e *Engine) launchError(innerpage bool, message string) string {
@@ -266,7 +327,7 @@ func (e *Engine) launchError(innerpage bool, message string) string {
   
   
   
-  if innerpage {
+  if !innerpage {
     http.Error(e.writer, message, http.StatusNotFound)
     return ""
   }
