@@ -30,6 +30,7 @@ TO DO
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - support for files (images, js, etc)
 - Publish xcore for xtemplate and xlanguage
+- Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 
 Version Changes Control
 =======================
