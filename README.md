@@ -21,15 +21,15 @@ TO DO
 - simple code server injector
 - implement nested [[BOX in simple code metalanguage injector
 - Pass params (from url or from page call) into context, server call and wrapper
-- language server compiler + injector
-- template server compiler + injector
-- library server/runner for GO pre-compile page with pipe data interchange
+- language server injector
+- template server injector
+- library as plugin pre-compile page with pipe data interchange, launch a compiler thread (charged to check and compile new code)
 - Caches generator
 - cache autocheck vs original file on HD
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - support for files (images, js, etc)
-
+- Publish xcore for xtemplate and xlanguage
 
 Version Changes Control
 =======================
@@ -39,6 +39,9 @@ V0.0.3 - 2018-??-??
 > Branch "late-night" added to github
 
 > Uses XConfig 0.0.3
+- language page type implemented
+- template page type implemented
+- library page type implemented
 - [[URLPARAMS]] metalanguage parser and injector implemented
 - [[URLPARAM,id]] metalanguage parser and injector implemented
 - [[VAR,id]] metalanguage parser and injector implemented

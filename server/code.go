@@ -6,6 +6,7 @@ import (
   "strings"
   "strconv"
   "fmt"
+  "github.com/webability-go/xcore"
 //  "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/enginecontext"
@@ -207,7 +208,7 @@ func compileCode(data string) []CodeParam {
 
 // context contains all the page context and history
 // params are an array of strings (if page from outside) or a mapped array of data (inner pages)
-func (p *CodeStream) Run(ctx *enginecontext.Context, e interface{}) string {
+func (p *CodeStream) Run(ctx *enginecontext.Context, langauage *xcore.XLanguage, e interface{}) string {
 
   var compiled []CodeParam
   cdata := CodeCache.Get(p.FilePath)

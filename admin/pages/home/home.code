@@ -25,4 +25,77 @@ Pages server:<br />
 - ...<br />
 - ...<br />
 
+WEB SOCKET TEST:<br />
+<table>
+<tr><td valign="top" width="50%">
+<p>Click "Open" to create a connection to the server, 
+"Send" to send a message to the server and "Close" to close the connection. 
+You can change the message and send multiple times.
+<p>
+<form>
+<button id="open">Open</button>
+<button id="close">Close</button>
+<p><input id="input" type="text" value="Hello world!">
+<button id="send">Send</button>
+</form>
+</td><td valign="top" width="50%">
+<div id="output"></div>
+</td></tr></table>
 
+<script>  
+    var output = document.getElementById("output");
+    var input = document.getElementById("input");
+    var ws;
+    var print = function(message) {
+        var d = document.createElement("div");
+        d.innerHTML = message;
+        output.appendChild(d);
+    };
+    
+    console.log("loading Hooks")
+    
+    document.getElementById("open").onclick = function(evt) {
+      console.log("CLICK OPEN")
+    
+    
+        if (ws) {
+            return false;
+        }
+        ws = new WebSocket("wss://developers.webability.info:81/listener");
+        ws.onopen = function(evt) {
+            print("OPEN");
+        }
+        ws.onclose = function(evt) {
+            print("CLOSE");
+            ws = null;
+        }
+        ws.onmessage = function(evt) {
+            print("RESPONSE: " + evt.data);
+        }
+        ws.onerror = function(evt) {
+            print("ERROR: " + evt.data);
+        }
+        return false;
+    };
+    document.getElementById("send").onclick = function(evt) {
+      console.log("CLICK SEND")
+        if (!ws) {
+            return false;
+        }
+        print("SEND: " + input.value);
+        ws.send(input.value);
+        return false;
+    };
+    document.getElementById("close").onclick = function(evt) {
+      console.log("CLICK CLOSE")
+        if (!ws) {
+            return false;
+        }
+        ws.close();
+        return false;
+    };
+</script>
+
+
+</body>
+</html>

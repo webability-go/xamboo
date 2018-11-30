@@ -20,6 +20,7 @@ type EngineWrapper func(interface{}, string, *interface{}, string, string, strin
 */
 type Context struct {
   Request *http.Request                    // The request (and all its data available: headers, variables, form, files, etc)
+  Writer http.ResponseWriter               // The request (and all its data available: headers, variables, form, files, etc)
   MainPage string                          // The original page URL called from outside
   MainPageUsed string                      // The original real page called from outside (valid page found)
   MainURLparams []string                   // The original URL params based on main page

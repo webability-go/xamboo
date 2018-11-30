@@ -1,11 +1,12 @@
 package core
 
 import (
-//  "fmt"
+  "fmt"
   "strings"
   "net/http"
 //  "time"
   
+  "github.com/webability-go/xcore"
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/server"
   "github.com/webability-go/xamboo/enginecontext"
@@ -156,6 +157,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   
   ctx := &enginecontext.Context{
     Request: e.reader,
+    Writer: e.writer,
     LocalPage: page,
     LocalPageUsed: P,
     LocalURLparams: xParams,
@@ -206,16 +208,42 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
         return e.launchError(innerpage, "Error: the simple page/block has no code")
       }
       
-      xdata = codedata.Run(ctx, e)
+      languagedata := e.loadLanguage(P, identities)
+
+      xdata = codedata.Run(ctx, languagedata, e)
 
     case "library":
-      xdata = "HERE IS A LIBRARY"
+      libraryserver := &server.LibraryServer {
+        PagesDir: e.Host.Config.Get("pagesdir").(string),
+      }
+      
+      librarydata := libraryserver.GetData(P)
+      if librarydata == nil {
+        return e.launchError(innerpage, "Error: the library page/block has no code")
+      }
+      
+      languagedata := e.loadLanguage(P, identities)
+      templatedata := e.loadTemplate(P, identities)
+
+      xdata = librarydata.Run(ctx, templatedata, languagedata, e)
 
     case "template":
-      xdata = "HERE IS A TEMPLATE"
+      templatedata := e.loadTemplate(P, identities)
+      if templatedata == nil {
+        return e.launchError(innerpage, "Error: the template page/block has no code")
+      }
+
+      // SHOULD GET BACK THE OBJECT ITSELF, NOT ITS PRINT
+      xdata = templatedata.Print()
 
     case "language":
-      xdata = "HERE IS A LANGUAGE"
+      languagedata := e.loadLanguage(P, identities)
+      if languagedata == nil {
+        return e.launchError(innerpage, "Error: the language page/block has no code")
+      }
+      
+      // SHOULD GET BACK THE OBJECT ITSELF, NOT ITS PRINT
+      xdata = fmt.Sprint(languagedata)
 
     default:
       xdata = "THIS IS SOMETHING UNKNOWN FROM A PARALLEL UNIVERSE THAT SHOULD NOT HAPPEN"
@@ -260,6 +288,36 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   return strings.Join(data, "")
 }
 
+func (e *Engine) loadTemplate(P string, identities []server.Identity) *xcore.XTemplate {
+  templateserver := &server.TemplateServer {
+    PagesDir: e.Host.Config.Get("pagesdir").(string),
+  }
+  
+  var templatedata *xcore.XTemplate
+  for _, n := range identities {
+    templatedata = templateserver.GetData(P, n)
+    if templatedata != nil {
+      return templatedata
+    }
+  }
+  return nil
+}
+
+func (e *Engine) loadLanguage(P string, identities []server.Identity) *xcore.XLanguage {
+  languageserver := &server.LanguageServer {
+    PagesDir: e.Host.Config.Get("pagesdir").(string),
+  }
+
+  var languagedata *xcore.XLanguage
+  for _, n := range identities {
+    languagedata = languageserver.GetData(P, n)
+    if languagedata != nil {
+      return languagedata
+    }
+  }
+  return nil
+}
+
 func wrapper(e interface{}, page string, params *interface{}, version string, language string, method string) string {
   return e.(*Engine).Run(page, true, params, version, language, method)
 }
@@ -269,7 +327,7 @@ func (e *Engine) launchError(innerpage bool, message string) string {
   
   
   
-  if innerpage {
+  if !innerpage {
     http.Error(e.writer, message, http.StatusNotFound)
     return ""
   }

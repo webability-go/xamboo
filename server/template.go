@@ -2,35 +2,36 @@ package server
 
 import (
 //  "fmt"
-//  "github.com/webability-go/xconfig"
+  "github.com/webability-go/xcore"
   "github.com/webability-go/xamboo/utils"
-//  "github.com/webability-go/xamboo/config"
 )
 
-type Template struct {
+var TemplateCache = NewCache()
+
+type TemplateServer struct {
   PagesDir string
 }
 
-type TemplateStream struct {
-  FilePath string
-}
-
-func (p *Template) GetData(P string, i Identity) *TemplateStream {
+func (s *TemplateServer) GetData(P string, i Identity) *xcore.XTemplate {
   // build File Path:
-  filepath := p.PagesDir + P + "/" + P + i.Stringify() + ".template"
+  lastpath := utils.LastPath(P)
+  filepath := s.PagesDir + P + "/" + lastpath + i.Stringify() + ".template"
+
+  cdata := TemplateCache.Get(filepath)
+  if cdata != nil {
+    return cdata.(*xcore.XTemplate)
+  }
+
+  // verify against souce CHANGES
+  
   if utils.FileExists(filepath) {
     // load the page instance
-    data := &TemplateStream{
-      FilePath: filepath,
-    }
+    data := xcore.NewTemplate()
+    data.LoadFile(filepath)
+
+    TemplateCache.Set(filepath, data)
     return data
   }
   
   return nil
-}
-
-func (p *TemplateStream) Run() string {  // e *core.Engine
-  
-  return "ESTAS EJECUTANDO TEMPLATE DE LA PAGINA: " + p.FilePath
-  
 }
