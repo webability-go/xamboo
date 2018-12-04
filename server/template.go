@@ -2,11 +2,12 @@ package server
 
 import (
 //  "fmt"
+  "time"
   "github.com/webability-go/xcore"
   "github.com/webability-go/xamboo/utils"
 )
 
-var TemplateCache = NewCache()
+var TemplateCache = NewCache("template", 0, true, 3600 * time.Second)
 
 type TemplateServer struct {
   PagesDir string
@@ -17,7 +18,7 @@ func (s *TemplateServer) GetData(P string, i Identity) *xcore.XTemplate {
   lastpath := utils.LastPath(P)
   filepath := s.PagesDir + P + "/" + lastpath + i.Stringify() + ".template"
 
-  cdata := TemplateCache.Get(filepath)
+  cdata, _ := TemplateCache.Get(filepath)
   if cdata != nil {
     return cdata.(*xcore.XTemplate)
   }

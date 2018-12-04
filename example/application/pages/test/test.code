@@ -4,14 +4,16 @@ BOX]]
 
 Test for nested things<br />
 
+[[BOX,/templates/blue-block:BOX]]
+
 [[BOX,/templates/blue-block:
 Content for blue block
 BOX]]
 
 something between
 
-[[BOX,/templates/red-block:
-Content for red block
+[[BOX,/templates/green-block:
+Content for green block
 [[BOX,/templates/blue-block:
 Content for blue block
 BOX]]

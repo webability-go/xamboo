@@ -9,6 +9,6 @@ import (
    The enginecontext contains all what you need to link with the system
 */
 func Run(ctx *enginecontext.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) string {
-  return "NEW V2 WITH SOME CHANGES"
+  return "NEW V7 WITH SOME CHANGES"
 }
 

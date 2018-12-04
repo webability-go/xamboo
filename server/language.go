@@ -2,11 +2,12 @@ package server
 
 import (
 //  "fmt"
+  "time"
   "github.com/webability-go/xcore"
   "github.com/webability-go/xamboo/utils"
 )
 
-var LanguageCache = NewCache()
+var LanguageCache = NewCache("language", 0, true, 3600 * time.Second)
 
 type LanguageServer struct {
   PagesDir string
@@ -17,7 +18,7 @@ func (s *LanguageServer) GetData(P string, i Identity) *xcore.XLanguage {
   lastpath := utils.LastPath(P)
   filepath := s.PagesDir + P + "/" + lastpath + i.Stringify() + ".language"
 
-  cdata := LanguageCache.Get(filepath)
+  cdata, _ := LanguageCache.Get(filepath)
   if cdata != nil {
     return cdata.(*xcore.XLanguage)
   }
