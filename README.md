@@ -25,21 +25,23 @@ TO DO
 - template server injector
 - library as plugin pre-compile page with pipe data interchange, launch a compiler thread (charged to check and compile new code)
 - Caches generator
-- cache autocheck vs original file on HD
+- cache autocheck vs original file on HD to invalidate
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - support for files (images, js, etc)
-- Publish xcore for xtemplate and xlanguage
 - Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 
 Version Changes Control
 =======================
 
-V0.0.3 - 2018-??-??
+V0.0.3 - 2018-12-04
 -----------------------
 > Branch "late-night" added to github
 
 > Uses XConfig 0.0.3
+> Uses XCore 0.0.1
+- The servers auto-reload data from pages sources if there is any change into the code and invalid the cache
+- The library server can (re)compile the .go page if needed and can hot-load the plugin library on the fly (beware to the memory use !)
 - language page type implemented
 - template page type implemented
 - library page type implemented
@@ -52,7 +54,7 @@ V0.0.3 - 2018-??-??
 - [[LOCALPAGEPARAM,id]] metalanguage parser and injector implemented
 - [[INSTANCEPARAM,id]] metalanguage parser and injector implemented
 - [[LOCALINSTANCEPARAM,id]] metalanguage parser and injector implemented
-- Nested blocks implemented into compiler, injector pending
+- Nested blocks [[BOX...BOX]] metalanguage parser and injector implemented
 - Constants added for meta language orders
 
 V0.0.2 - 2018-11-27

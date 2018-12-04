@@ -2,11 +2,12 @@ package server
 
 import (
 //  "fmt"
+  "time"
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
 )
 
-var InstanceCache = NewCache()
+var InstanceCache = NewCache("instance", 0, true, 3600 * time.Second)
 
 type Instance struct {
   PagesDir string
@@ -17,7 +18,7 @@ func (p *Instance) GetData(P string, i Identity) *xconfig.XConfig {
   lastpath := utils.LastPath(P)
   filepath := p.PagesDir + P + "/" + lastpath + i.Stringify() + ".instance"
 
-  cdata := InstanceCache.Get(filepath)
+  cdata, _ := InstanceCache.Get(filepath)
   if cdata != nil {
     return cdata.(*xconfig.XConfig)
   }

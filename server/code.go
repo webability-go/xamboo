@@ -6,6 +6,7 @@ import (
   "strings"
   "strconv"
   "fmt"
+  "time"
   "github.com/webability-go/xcore"
 //  "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
@@ -36,7 +37,7 @@ const (
   MetaUnused                 = -1       // a "not used anymore" param to be freed
 )
 
-var CodeCache = NewCache()
+var CodeCache = NewCache("code", 0, true, 3600 * time.Second)
 
 type CodeServer struct {
   PagesDir string
@@ -66,11 +67,13 @@ type CodeParam struct {
   paramtype int
   data1 string
   data2 string
-  children *[]CodeParam
+  children *CodeData
   params *map[string]interface{}
 }
 
-func compileCode(data string) []CodeParam {
+type CodeData []CodeParam
+
+func compileCode(data string) CodeData {
   // build, compile return result
   code :=
       `(?s)`+                                                                             // . is multiline
@@ -101,7 +104,7 @@ func compileCode(data string) []CodeParam {
   indexes := codex.FindAllStringIndex(data, -1)
   matches := codex.FindAllStringSubmatch(data, -1)
 
-  var compiled []CodeParam
+  var compiled CodeData
   pointer := 0
   for i, x := range indexes {
     if pointer != x[0] {
@@ -178,8 +181,8 @@ func compileCode(data string) []CodeParam {
       startpointer := startpointers[last]
       startpointers = startpointers[:last]
       
-      var subset []CodeParam
-      for ptr := startpointer; ptr < i; ptr++ {   // we ignore the BOX]] end param (we dont need it in the hierarchic structure)
+      var subset CodeData
+      for ptr := startpointer+1; ptr < i; ptr++ {   // we ignore the BOX]] end param (we dont need it in the hierarchic structure)
         if compiled[ptr].paramtype != MetaUnused { // we just ignore params marked to be deleted
           subset = append(subset, compiled[ptr])
           compiled[ptr].paramtype = MetaUnused   // marked to be deleted, traslated to a substructure
@@ -206,27 +209,10 @@ func compileCode(data string) []CodeParam {
   return compiled
 }
 
-// context contains all the page context and history
-// params are an array of strings (if page from outside) or a mapped array of data (inner pages)
-func (p *CodeStream) Run(ctx *enginecontext.Context, langauage *xcore.XLanguage, e interface{}) string {
-
-  var compiled []CodeParam
-  cdata := CodeCache.Get(p.FilePath)
-  if cdata != nil {
-    compiled = cdata.([]CodeParam)
-  } else {
-
-    data, err := ioutil.ReadFile(p.FilePath)
-    if err != nil {
-      return "ERROR; .CODE FILE UNAVAILABLE " + p.FilePath
-    }
-    compiled = compileCode(string(data))
-    CodeCache.Set(p.FilePath, compiled)
-  }
-
+func (c *CodeData) Inject (ctx *enginecontext.Context, language *xcore.XLanguage, e interface{}) string {
   // third pass: inject meta language
   var injected []string
-  for _, v := range compiled {
+  for _, v := range *c {
     switch v.paramtype {
       case MetaString: // included string from original code
         injected = append(injected, v.data1)
@@ -286,12 +272,35 @@ func (p *CodeStream) Run(ctx *enginecontext.Context, langauage *xcore.XLanguage,
       case MetaComment:
         // nothing to do: comment ignored
       case MetaBox:
-        injected = append(injected, "NESTED BOX TEMPLATE " + v.data1)
+        innerdata := v.children.Inject(ctx, language, e)
+        outerdata := ctx.Engine(e, v.data1, nil, "", "", "")
+        injected = append(injected, strings.Replace(outerdata, "[[CONTENT]]", innerdata, -1))
       default:
-        injected = append(injected, "METALANGUAGE NOT RECOGNIZED")
+        injected = append(injected, "THE METALANGUAGE FROM OUTERSPACE IS NOT SUPPORTED: " + fmt.Sprint(v.paramtype))
     }
   }
   // return the page string
   return strings.Join(injected, "")
+}
+
+// context contains all the page context and history
+// params are an array of strings (if page from outside) or a mapped array of data (inner pages)
+func (p *CodeStream) Run(ctx *enginecontext.Context, language *xcore.XLanguage, e interface{}) string {
+
+  var compiled CodeData
+  cdata, _ := CodeCache.Get(p.FilePath)
+  if cdata != nil {
+    compiled = cdata.(CodeData)
+  } else {
+
+    data, err := ioutil.ReadFile(p.FilePath)
+    if err != nil {
+      return "ERROR; .CODE FILE UNAVAILABLE " + p.FilePath
+    }
+    compiled = compileCode(string(data))
+    CodeCache.Set(p.FilePath, compiled)
+  }
+
+  return compiled.Inject(ctx, language, e)
 }
 

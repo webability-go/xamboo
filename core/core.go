@@ -11,6 +11,7 @@ import (
   "log"
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/server"
+  "github.com/webability-go/xamboo/compiler"
 )
 
 const VERSION = "0.0.2"
@@ -85,6 +86,8 @@ func Run(file string) error {
   
   go printQT()
 
+  go compiler.Supervisor()
+  
   // Load the config
   err := Config.Load(file)
   if err != nil {
