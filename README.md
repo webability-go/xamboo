@@ -18,21 +18,24 @@ Xamboo works on sites currently distributing more than **60 millions web pages m
 TO DO
 =======================
 - creates a fake SSH key cert for examples to put in examples dir
-- simple code server injector
-- implement nested [[BOX in simple code metalanguage injector
-- Pass params (from url or from page call) into context, server call and wrapper
-- language server injector
-- template server injector
-- library as plugin pre-compile page with pipe data interchange, launch a compiler thread (charged to check and compile new code)
+- simple code server injector, finish all supported code
+- language server injector (beautify output)
+- template server injector (beautify output)
 - Caches generator
-- cache autocheck vs original file on HD to invalidate
-- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
-- page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - support for files (images, js, etc)
 - Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
+- Stats module
+- Make admin site available with login for security
+Extras:
+- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
+- page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 
 Version Changes Control
 =======================
+
+V0.0.4 - 2018-12-05
+-----------------------
+- Added the pre-load for user application plugins, bridge and calls from library pages (.go compiled code)
 
 V0.0.3 - 2018-12-04
 -----------------------

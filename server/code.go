@@ -266,14 +266,14 @@ func (c *CodeData) Inject (ctx *enginecontext.Context, language *xcore.XLanguage
       case MetaCall:
         // build the params
       
-        injected = append(injected, ctx.Engine(e, v.data1, nil, "", "", ""))
+        injected = append(injected, enginecontext.EngineWrapperString(e, v.data1, nil, "", "", ""))
       case MetaLanguage:
         injected = append(injected, "LANGUAGE ENTRY " + v.data1)
       case MetaComment:
         // nothing to do: comment ignored
       case MetaBox:
         innerdata := v.children.Inject(ctx, language, e)
-        outerdata := ctx.Engine(e, v.data1, nil, "", "", "")
+        outerdata := enginecontext.EngineWrapperString(e, v.data1, nil, "", "", "")
         injected = append(injected, strings.Replace(outerdata, "[[CONTENT]]", innerdata, -1))
       default:
         injected = append(injected, "THE METALANGUAGE FROM OUTERSPACE IS NOT SUPPORTED: " + fmt.Sprint(v.paramtype))

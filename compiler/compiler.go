@@ -19,7 +19,7 @@ var CPile Pile
 func (p *Pile)CreateCompiler(path string, plugin string, version int) *Worker {
   
   // we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
-  fmt.Println("Creating the compiler for " + path)
+//  fmt.Println("Creating the compiler for " + path)
 
   w := &Worker{ ready: make(chan bool) }
   p.Workers[path] = *w
@@ -29,7 +29,7 @@ func (p *Pile)CreateCompiler(path string, plugin string, version int) *Worker {
 
 func (w *Worker) Compile(path string, plugin string, version int) {
   
-  fmt.Println("Compiling " + path)
+//  fmt.Println("Compiling " + path)
   // go build -buildmode=plugin
   
   if version > 0 {
@@ -39,8 +39,10 @@ func (w *Worker) Compile(path string, plugin string, version int) {
   cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin, path)
   err := cmd.Run()
   
-  fmt.Println(err)
-  fmt.Println("Finish Compiling " + path)
+  if err != nil {
+    fmt.Println(err)
+  }
+//  fmt.Println("Finish Compiling " + path)
   
   w.ready <- true
   
@@ -50,11 +52,11 @@ func (w *Worker) Compile(path string, plugin string, version int) {
 func PleaseCompile(path string, plugin string, version int) (int, error) {
   
   // 1. Creates a channel, send message to supervisor, wait for response
-  fmt.Println("PleaseCompile: " + path)
+//  fmt.Println("PleaseCompile: " + path)
   newversion := searchNextFreeVersion(plugin, version)
   worker := CPile.CreateCompiler(path, plugin, newversion)
   <-worker.ready
-  fmt.Println("Compiled: " + path)
+//  fmt.Println("Compiled: " + path)
   return newversion, nil
 }
 
