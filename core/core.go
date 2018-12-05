@@ -7,14 +7,16 @@ import (
   "crypto/tls"
   "net"
   "net/http"
+  "plugin"
   "time"
   "log"
+  "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/server"
+  "github.com/webability-go/xamboo/enginecontext"
   "github.com/webability-go/xamboo/compiler"
 )
 
-const VERSION = "0.0.2"
 var QT int
 
 // certificados desde la config
@@ -54,11 +56,27 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
       Page: r.URL.Path,
       Listener: listenerdef,
       Host: hostdef,
+      Plugins: make(map[string]*plugin.Plugin),
       QT: &QT,
     }
-//  data = append(data, fmt.Sprintf("TLS: %s - %s - %s - %s - %s - %s\n", r.TLS.Version, r.TLS.NegotiatedProtocol, r.TLS.CipherSuite, "", "", "" ))
 
+    // creates user plugins
+    plugins := hostdef.Config.Get("plugin").(*xconfig.XConfig)
+    if plugins != nil {
     
+      for app, _ := range plugins.Parameters {
+        plugindata := plugins.Get(app).(*xconfig.XConfig)
+        fmt.Println(plugindata.Get("library"))
+  
+        lib, err := plugin.Open(plugindata.Get("library").(string))
+        if err != nil {
+          fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
+          fmt.Println(err)
+        } else {
+          engine.Plugins[app] = lib
+        }
+      }
+    }
 
     engine.Start(w, r)
   } else {
@@ -88,20 +106,25 @@ func Run(file string) error {
 
   go compiler.Supervisor()
   
+  // Link the engines
+  enginecontext.EngineWrapper = wrapper
+  enginecontext.EngineWrapperString = wrapperstring
+
   // Load the config
   err := Config.Load(file)
   if err != nil {
       fmt.Println(err.Error())
       return err
   }
-    
+  
+  // Setup loggers (put them in CONFIG)
   logger := log.New(os.Stdout, "http: ", log.LstdFlags)
   logger.Println("Server is starting...")
   logger.Println(QT)
 
-  finish := make(chan bool)
-  
   http.HandleFunc("/", mainHandler)
+
+  finish := make(chan bool)
 
   // build the different servers
   for _, l := range Config.Listeners {

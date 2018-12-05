@@ -2,6 +2,7 @@ package enginecontext
 
 import (
   "net/http"
+  "plugin"
   "github.com/webability-go/xconfig"
 )
 
@@ -14,7 +15,8 @@ import (
    - Version
    - Method (GET, POST, PUT, DELETE..)
 */
-type EngineWrapper func(interface{}, string, *interface{}, string, string, string) string
+var EngineWrapperString func(interface{}, string, *interface{}, string, string, string) string
+var EngineWrapper func(interface{}, string, *interface{}, string, string, string) interface{}
 
 /* The context is needed to be transported between every call from the engine to the different pages servers
 */
@@ -33,6 +35,7 @@ type Context struct {
   LocalPageparams *xconfig.XConfig         // Local real page params (.page file)
   LocalInstanceparams *xconfig.XConfig     // Local real page instance (.instance file)
   LocalEntryparams *interface{}            // Params of local page call (NIL if main original page)
-  Engine EngineWrapper                     // Wrapper to call back the engine again to calculate another page
+  Plugins map[string]*plugin.Plugin        // Wrapper to all the pre-loaded plugins for the system compiled go code (plugins cannot load plugins)
 }
 
+var linked bool = false

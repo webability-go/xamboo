@@ -94,13 +94,13 @@ func (p *LibraryStream) Run(ctx *enginecontext.Context, template *xcore.XTemplat
     return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION"
   }
   
-  fmt.Println(fct)
-  fmt.Println("Calling library: " + p.FilePlugin)
+//  fmt.Println(fct)
+//  fmt.Println("Calling library: " + p.FilePlugin)
   
   x1 := fct.(func(*enginecontext.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string)(ctx, template, language, e)
   
-  fmt.Println("End of call library: " + p.FilePlugin)
-  fmt.Println("Returned data: " + x1)
+//  fmt.Println("End of call library: " + p.FilePlugin)
+//  fmt.Println("Returned data: " + x1)
   
   
   

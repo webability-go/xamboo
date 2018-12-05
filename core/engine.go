@@ -4,7 +4,7 @@ import (
   "fmt"
   "strings"
   "net/http"
-//  "time"
+  "plugin"
   
   "github.com/webability-go/xcore"
   "github.com/webability-go/xconfig"
@@ -19,6 +19,8 @@ type Engine struct {
   Page string
   Listener *Listener
   Host *Host
+  Plugins map[string]*plugin.Plugin
+  
   MainContext *enginecontext.Context
   Recursivity []string
 
@@ -53,7 +55,7 @@ func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
     page = e.Host.Config.Get("mainpage").(string)
   }
   
-  code := e.Run(page, false, nil, "", "", "")
+  code := e.Run(page, false, nil, "", "", "").(string)
   
   // WRITE HERE THE WRITER WITH PAGECODE
   e.writer.Write([]byte(code))
@@ -61,7 +63,7 @@ func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
 
 // The main xamboo runner
 // innerpage is false for the default page call, true when it's a subcall (inner call, with context)
-func (e *Engine) Run(page string, innerpage bool, params *interface{}, version string, language string, method string) string {
+func (e *Engine) Run(page string, innerpage bool, params *interface{}, version string, language string, method string) interface{} {
   // string to print to the page
   var data []string
 //  fmt.Println("Engine-Run: " + page)
@@ -165,7 +167,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     LocalPageparams: pagedata,
     LocalInstanceparams: instancedata,
     LocalEntryparams: params,
-    Engine: wrapper,
+    Plugins: e.Plugins,
   }
   if innerpage {
     ctx.MainPage = e.MainContext.MainPage
@@ -254,7 +256,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   
   // check templates and get templates
   if x := pagedata.Get("template"); x != nil && x != ""  {
-    fathertemplate := e.Run(x.(string), true, params, version, language, method);
+    fathertemplate := e.Run(x.(string), true, params, version, language, method).(string);
 //    if (is_array($text))
 //    {
 //      foreach($text as $k => $block)
@@ -318,8 +320,12 @@ func (e *Engine) loadLanguage(P string, identities []server.Identity) *xcore.XLa
   return nil
 }
 
-func wrapper(e interface{}, page string, params *interface{}, version string, language string, method string) string {
+func wrapper(e interface{}, page string, params *interface{}, version string, language string, method string) interface{} {
   return e.(*Engine).Run(page, true, params, version, language, method)
+}
+
+func wrapperstring(e interface{}, page string, params *interface{}, version string, language string, method string) string {
+  return e.(*Engine).Run(page, true, params, version, language, method).(string)
 }
 
 func (e *Engine) launchError(innerpage bool, message string) string {
