@@ -12,4 +12,4 @@ type=simple
 # folder: it's a folder (no code, no nothing, just have sub pages)
 status=published
 # the template to use, or nothing
-template=
+template=templates/main

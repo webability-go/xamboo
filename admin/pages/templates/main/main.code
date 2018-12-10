@@ -1,0 +1,35 @@
+%--
+Main HTML skeletton for Xamboo Admin
+Written by: Phil
+Date: 2018-12-07
+
+Changes control:
+07/12/2018: Phil, creation
+--%
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>{{TITLE}}</title>
+    <meta charset="{{CHARSET}}">
+    <meta name="description" content="{{METATAG}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v={{VERSION}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v={{VERSION}}">
+    <link rel="manifest" href="/manifest.json?v={{VERSION}}">
+    <link rel="shortcut icon" href="/favicon.ico?v={{VERSION}}">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#8CC63E">
+
+    <meta name="author" content="Philippe Thomassigny, Copyright © 2018, MIT Licence" />
+    <meta name="generator" content="Xamboo Framework - {{HOSTNAME}}" />
+    <meta name="rating" content="General" />
+
+    <link rel="stylesheet" href="/css/admin.css?v={{VERSION}}">
+    <script src="/js/admin.js?lang={{LANGUAGE}}&v={{VERSION}}"></script>
+  </head>
+  <body onload="XB.onLoad();" class="user-pending" id="body">
+[[CALL,blocks/mainmenu]]
+[[CONTENT]]
+  </body>
+</html>
