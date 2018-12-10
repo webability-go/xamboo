@@ -34,6 +34,16 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.5 - 2018-??-??
+-----------------------
+> Uses XConfig 0.0.3
+
+> Uses XCore 0.0.2
+- Moved servers/cache.go to xcore
+- Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine. 
+  "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code.
+  The core as itsel is renamed "runner"
+  
 V0.0.4 - 2018-12-05
 -----------------------
 > Uses XConfig 0.0.3
