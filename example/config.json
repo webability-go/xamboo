@@ -29,7 +29,8 @@
       "hostnames": ["developers.webability.info"],
       "config": ["./example/application/config/example.conf"],
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
-      "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem"
+      "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
+      "static": "./example/repository/public/static"
     },
     {
       "name": "admin",
@@ -37,7 +38,8 @@
       "hostnames": ["developers.webability.info"],
       "config": ["./admin/admin.conf"],
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
-      "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem"
+      "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
+      "static": "./admin/public"
     }
   ],
   

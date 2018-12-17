@@ -7,7 +7,7 @@ Xamboo is the result of over 15 years of manufacturing engineering frameworks, o
 
 It is a very high quality framework for CMS, made in GO 1.8 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
-Xamboo is freeware, and uses several other freeware components (XConfig)
+Xamboo is freeware, and uses several other freeware components (XConfig, XCore)
 
 Xamboo is an engine to build applications that distribute any type of code to the client:
 It is completely independent of the generated code, i.e. you can send HTML, XHTML, XML, SGML, javascript, JS, JSON, WAP, PDF, etc.
@@ -21,11 +21,12 @@ TO DO
 - simple code server injector, finish all supported code
 - language server injector (beautify output)
 - template server injector (beautify output)
-- Caches generator
-- support for files (images, js, etc)
+- Caches generator from XCore
 - Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 - Stats module
 - Make admin site available with login for security
+- Errors manager and Logs managers
+- Verify memory leaks on destroy objects/garbage collector
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
@@ -33,15 +34,33 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.5 - 2018-12-17
+-----------------------
+> Uses XConfig 0.0.3
+
+> Uses XCore 0.0.2
+- Moved servers/cache.go to xcore
+- Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine. 
+  "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code.
+  The core as itsel is renamed "runner"
+  
 V0.0.4 - 2018-12-05
 -----------------------
+> Uses XConfig 0.0.3
+
+> Uses XCore 0.0.1
 - Added the pre-load for user application plugins, bridge and calls from library pages (.go compiled code)
+- .Code regexp modified so a comment may have a new line at the end that will not reflect on the final code
+- Support for static files added on each host. New config parameter "static" added in Host for filesystem path of static files
+- Admin console enhanced
+- Stat module created
 
 V0.0.3 - 2018-12-04
 -----------------------
 > Branch "late-night" added to github
 
 > Uses XConfig 0.0.3
+
 > Uses XCore 0.0.1
 - The servers auto-reload data from pages sources if there is any change into the code and invalid the cache
 - The library server can (re)compile the .go page if needed and can hot-load the plugin library on the fly (beware to the memory use !)
@@ -59,6 +78,14 @@ V0.0.3 - 2018-12-04
 - [[LOCALINSTANCEPARAM,id]] metalanguage parser and injector implemented
 - Nested blocks [[BOX...BOX]] metalanguage parser and injector implemented
 - Constants added for meta language orders
+
+V0.0.3 - 2018-??-??
+-----------------------
+> This version is working, examples are working, but the system is still incomplete
+
+> Uses XConfig 0.0.3
+- Added XCache to manage persistent memory caches
+
 
 V0.0.2 - 2018-11-27
 -----------------------

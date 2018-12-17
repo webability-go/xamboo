@@ -6,7 +6,7 @@ import (
   "errors"
 
   "github.com/webability-go/xcore"
-  "github.com/webability-go/xamboo/enginecontext"
+  "github.com/webability-go/xamboo/engine/context"
 )
 
 /* This package declare all the available functions of the app to be able to call them. */
@@ -14,7 +14,7 @@ import (
 
 var linked bool = false
 
-var GetPageData func(*enginecontext.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string
+var GetPageData func(*context.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string
 
 func Start(lib *plugin.Plugin) error {
   if linked {
@@ -28,7 +28,7 @@ func Start(lib *plugin.Plugin) error {
     fmt.Println(err)
     return errors.New("ERROR: THE APPLICATION LIBRARY DOES NOT CONTAIN GETPAGEDATA FUNCTION")
   }
-  GetPageData = fct.(func(*enginecontext.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string)
+  GetPageData = fct.(func(*context.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string)
   linked = true
   return nil
 }
