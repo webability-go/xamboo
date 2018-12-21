@@ -139,7 +139,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
           
           fmt.Println(c_plugindata.Get("library"))
     
-          p1, _ := c_plugindata.GetString("library")
+          p1 := c_plugindata.GetString("library")
           lib, err := plugin.Open(p1)
           if err != nil {
             fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
