@@ -35,7 +35,7 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
       return "END STREAM IN READ: " + fmt.Sprint(err)
     }
     // if the client asks for "data", we send it a resum
-    if message == "data" {
+    if string(message) == "data" {
       statmsg := fmt.Sprintf("Stats: num: %d, bytes: %d", stat.SystemStat.Requests, stat.SystemStat.LengthServed)
       err = stream.WriteMessage(websocket.TextMessage, []byte(statmsg))
     }

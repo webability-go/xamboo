@@ -37,7 +37,7 @@ func (p *Page) GetData(P string) *xconfig.XConfig {
     data := xconfig.New()
     data.LoadFile(filepath)
     
-    if data.Get("AcceptPathParameters") == nil {
+    if _, ok := data.Get("AcceptPathParameters"); !ok {
       data.Set("AcceptPathParameters", p.AcceptPathParameters)
     }
     

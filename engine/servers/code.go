@@ -236,28 +236,28 @@ func (c *CodeData) Inject (ctx *context.Context, language *xcore.XLanguage, e in
           }
         }
       case MetaSysParam: // sys param
-        pm := ctx.Sysparams.Get(v.data1)
-        if pm != nil {
+        pm, ok := ctx.Sysparams.Get(v.data1)
+        if ok {
           injected = append(injected, fmt.Sprint(pm))
         }
       case MetaPageParam: // main page params
-        pm := ctx.MainPageparams.Get(v.data1)
-        if pm != nil {
+        pm, ok := ctx.MainPageparams.Get(v.data1)
+        if ok {
           injected = append(injected, fmt.Sprint(pm))
         }
       case MetaLocalPageParam: // local page params
-        pm := ctx.LocalPageparams.Get(v.data1)
-        if pm != nil {
+        pm, ok := ctx.LocalPageparams.Get(v.data1)
+        if ok {
           injected = append(injected, fmt.Sprint(pm))
         }
       case MetaInstanceParam: // main instance params
-        pm := ctx.MainInstanceparams.Get(v.data1)
-        if pm != nil {
+        pm, ok := ctx.MainInstanceparams.Get(v.data1)
+        if ok {
           injected = append(injected, fmt.Sprint(pm))
         }
       case MetaLocalInstanceParam: // local instance params
-        pm := ctx.LocalInstanceparams.Get(v.data1)
-        if pm != nil {
+        pm, ok := ctx.LocalInstanceparams.Get(v.data1)
+        if ok {
           injected = append(injected, fmt.Sprint(pm))
         }
       case MetaJS:     // JS Call for Header
