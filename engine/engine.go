@@ -51,7 +51,7 @@ func (e *Engine)Start(w http.ResponseWriter, r *http.Request) {
   }
   
   if len(page) == 0 {
-    page = e.Host.Config.Get("mainpage").(string)
+    page, _ = e.Host.Config.GetString("mainpage")
   }
   
   code := e.Run(page, false, nil, "", "", "").(string)
@@ -71,10 +71,12 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   // P is the scanned page
   P := page
   
-  // Search the correct .page 
+  // Search the correct .page
+  p1, _ := e.Host.Config.GetString("pagesdir")
+  p2, _ := e.Host.Config.GetBool("acceptpathparameters")
   pageserver := &servers.Page {
-    PagesDir: e.Host.Config.Get("pagesdir").(string),
-    AcceptPathParameters: e.Host.Config.Get("acceptpathparameters").(bool),
+    PagesDir: p1,
+    AcceptPathParameters: p2,
   }
   
   var pagedata *xconfig.XConfig
@@ -99,28 +101,30 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 
   var xParams []string
   if P != page {
-    if pagedata.Get("AcceptPathParameters") != true {
+    if x, _ := pagedata.GetBool("AcceptPathParameters"); !x {
       return e.launchError(innerpage, "Error 404: no page found with parameters")
     }
     xParams = strings.Split(page[len(P)+1:], "/")
   }
   
   if !innerpage {
-    if pagedata.Get("type") == "redirect" {
+    if x, _ := pagedata.Get("type"); x == "redirect" {
       // launch the redirect of the page
-      e.launchRedirect(pagedata.Get("Redirect").(string))
+      if p1, ok := pagedata.GetString("Redirect"); ok {
+        e.launchRedirect(p1)
+      }
       return ""
     }
   }
   
-  defversion := e.Host.Config.Get("version").(string)
+  defversion, _ := e.Host.Config.GetString("version")
   versions := []string {defversion}
   if len(version) > 0 && version != defversion {
     versions = append(versions, version)
   }
   versions = append(versions, "")
   
-  deflanguage := e.Host.Config.Get("language").(string)
+  deflanguage, _ := e.Host.Config.GetString("language")
   languages := []string {deflanguage}
   if len(language) > 0 && language != deflanguage {
     languages = append(languages, language)
@@ -135,8 +139,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     }
   }
   
+  p3, _ := e.Host.Config.GetString("pagesdir")
   instanceserver := &servers.Instance {
-    PagesDir: e.Host.Config.Get("pagesdir").(string),
+    PagesDir: p3,
   }
 
   var instancedata *xconfig.XConfig
@@ -191,11 +196,13 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   // Resolve page code
   // 1. Build-in engines
   var xdata string
-  switch pagedata.Get("type") {
+  p4, _ := pagedata.GetString("type")
+  switch p4 {
     case "simple":
       var codedata *servers.CodeStream
+      p1, _ := e.Host.Config.GetString("pagesdir")
       codeserver := &servers.CodeServer {
-        PagesDir: e.Host.Config.Get("pagesdir").(string),
+        PagesDir: p1,
       }
       
       for _, n := range identities {
@@ -214,15 +221,16 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
       xdata = codedata.Run(ctx, languagedata, e)
 
     case "library":
+      p1, _ := e.Host.Config.GetString("pagesdir")
       libraryserver := &servers.LibraryServer {
-        PagesDir: e.Host.Config.Get("pagesdir").(string),
+        PagesDir: p1,
       }
-      
+
       librarydata := libraryserver.GetData(P)
       if librarydata == nil {
         return e.launchError(innerpage, "Error: the library page/block has no code")
       }
-      
+
       languagedata := e.loadLanguage(P, identities)
       templatedata := e.loadTemplate(P, identities)
 
@@ -254,8 +262,8 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
   // e.setCache()
   
   // check templates and get templates
-  if x := pagedata.Get("template"); x != nil && x != ""  {
-    fathertemplate := e.Run(x.(string), true, params, version, language, method).(string);
+  if x, ok := pagedata.GetString("template"); ok && x != ""  {
+    fathertemplate := e.Run(x, true, params, version, language, method).(string);
 //    if (is_array($text))
 //    {
 //      foreach($text as $k => $block)
@@ -290,8 +298,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 }
 
 func (e *Engine) loadTemplate(P string, identities []servers.Identity) *xcore.XTemplate {
+  p1, _ := e.Host.Config.GetString("pagesdir")
   templateserver := &servers.TemplateServer {
-    PagesDir: e.Host.Config.Get("pagesdir").(string),
+    PagesDir: p1,
   }
   
   var templatedata *xcore.XTemplate
@@ -305,8 +314,9 @@ func (e *Engine) loadTemplate(P string, identities []servers.Identity) *xcore.XT
 }
 
 func (e *Engine) loadLanguage(P string, identities []servers.Identity) *xcore.XLanguage {
+  p1, _ := e.Host.Config.GetString("pagesdir")
   languageserver := &servers.LanguageServer {
-    PagesDir: e.Host.Config.Get("pagesdir").(string),
+    PagesDir: p1,
   }
 
   var languagedata *xcore.XLanguage
@@ -345,15 +355,20 @@ func (e *Engine) launchRedirect(url string) {
 }
 
 func (e *Engine) isAvailable(innerpage bool, p *xconfig.XConfig) bool {
-  if p.Get("status") == "hidden" {
+  p1, ok := p.GetString("status")
+  if !ok {
     return false
   }
 
-  if p.Get("status") == "published" {
+  if p1 == "hidden" {
+    return false
+  }
+
+  if p1 == "published" {
     return true
   }
 
-  if innerpage && (p.Get("status") == "template" || p.Get("status") == "block") {
+  if innerpage && (p1 == "template" || p1 == "block") {
     return true
   }
 

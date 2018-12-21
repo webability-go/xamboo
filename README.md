@@ -34,6 +34,13 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.6 - 2018-12-21
+-----------------------
+> Uses XConfig 0.0.4
+
+> Uses XCore 0.0.2
+- Code modified to use xconfig.Get* with double variables return
+
 V0.0.5 - 2018-12-17
 -----------------------
 > Uses XConfig 0.0.3
@@ -41,8 +48,7 @@ V0.0.5 - 2018-12-17
 > Uses XCore 0.0.2
 - Moved servers/cache.go to xcore
 - Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine. 
-  "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code.
-  The core as itsel is renamed "runner"
+  "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code. The core as itself is renamed "runner"
   
 V0.0.4 - 2018-12-05
 -----------------------

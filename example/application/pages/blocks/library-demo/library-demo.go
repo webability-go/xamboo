@@ -23,9 +23,9 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
   strdata := bridge.GetPageData(ctx, template, language, e)
 
   // Let's inject some vars into the template
-  data := make(map[string]string)
-  data["data1"] = "Data 1 for the template"
-  data["dataapp"] = strdata
+  data := &xcore.XDataset{}
+  data.Set("data1", "Data 1 for the template")
+  data.Set("dataapp", strdata)
   
   return template.Execute(data)
 }
