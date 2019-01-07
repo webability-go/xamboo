@@ -9,7 +9,7 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
-var LanguageCache = xcore.NewXCache("language", 0, true, 3600 * time.Second)
+var LanguageCache = xcore.NewXCache("language", 0, 3600 * time.Second)
 
 type LanguageServer struct {
   PagesDir string

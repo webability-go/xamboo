@@ -9,7 +9,7 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
-var TemplateCache = xcore.NewXCache("template", 0, true, 3600 * time.Second)
+var TemplateCache = xcore.NewXCache("template", 0, 3600 * time.Second)
 
 type TemplateServer struct {
   PagesDir string

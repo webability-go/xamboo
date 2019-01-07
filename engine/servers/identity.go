@@ -1,5 +1,11 @@
 package servers
 
+import (
+  "fmt"
+  "os"
+  "time"
+)
+
 type Identity struct {
   Version string
   Language string
@@ -16,3 +22,30 @@ func (i *Identity)Stringify() string {
   
   return id
 }
+
+func fileValidator(key string, otime time.Time) bool {
+
+  fi, err := os.Stat(key)
+  if err != nil {
+    // Does not exists anymore, invalid
+    return false
+  }
+  mtime := fi.ModTime()
+  if mtime.After(otime) {
+    // file is newer, invalid
+    return false
+  }
+  // All ok, valid
+  return true
+}
+
+func Start() {
+  fmt.Println("START CODE SERVERS")
+  PageCache.SetValidator(fileValidator)
+  InstanceCache.SetValidator(fileValidator)
+  CodeCache.SetValidator(fileValidator)
+  TemplateCache.SetValidator(fileValidator)
+  LanguageCache.SetValidator(fileValidator)
+  LibraryCache.SetValidator(fileValidator)
+}
+

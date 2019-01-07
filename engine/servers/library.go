@@ -12,7 +12,7 @@ import (
   "github.com/webability-go/xamboo/engine/context"
 )
 
-var LibraryCache = xcore.NewXCache("library", 0, true, 3600 * time.Second)
+var LibraryCache = xcore.NewXCache("library", 0, 3600 * time.Second)
 
 type LibraryServer struct {
   PagesDir string

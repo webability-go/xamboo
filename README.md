@@ -34,11 +34,23 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.7 - 2019-01-06
+-----------------------
+> Uses XConfig 0.0.5
+
+> Uses XCore 0.0.4
+
+- Code modified to use new XDataset/XConfig with capabilities for XTemplate
+- Function servers.Start added to call caches starters (file validator function added)
+- Caches modified to use last version of XCore
+
+
 V0.0.6 - 2018-12-21
 -----------------------
 > Uses XConfig 0.0.4
 
 > Uses XCore 0.0.2
+
 - Code modified to use xconfig.Get* with double variables return
 
 V0.0.5 - 2018-12-17
@@ -46,6 +58,7 @@ V0.0.5 - 2018-12-17
 > Uses XConfig 0.0.3
 
 > Uses XCore 0.0.2
+
 - Moved servers/cache.go to xcore
 - Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine. 
   "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code. The core as itself is renamed "runner"
@@ -55,6 +68,7 @@ V0.0.4 - 2018-12-05
 > Uses XConfig 0.0.3
 
 > Uses XCore 0.0.1
+
 - Added the pre-load for user application plugins, bridge and calls from library pages (.go compiled code)
 - .Code regexp modified so a comment may have a new line at the end that will not reflect on the final code
 - Support for static files added on each host. New config parameter "static" added in Host for filesystem path of static files
@@ -68,6 +82,7 @@ V0.0.3 - 2018-12-04
 > Uses XConfig 0.0.3
 
 > Uses XCore 0.0.1
+
 - The servers auto-reload data from pages sources if there is any change into the code and invalid the cache
 - The library server can (re)compile the .go page if needed and can hot-load the plugin library on the fly (beware to the memory use !)
 - language page type implemented
