@@ -17,6 +17,7 @@ import (
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/config"
   "github.com/webability-go/xamboo/engine/context"
+  "github.com/webability-go/xamboo/engine/servers"
   "github.com/webability-go/xamboo/compiler"
   "github.com/webability-go/xamboo/stat"
 )
@@ -139,7 +140,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
           
           fmt.Println(c_plugindata.Get("library"))
     
-          p1 := c_plugindata.GetString("library")
+          p1, _ := c_plugindata.GetString("library")
           lib, err := plugin.Open(p1)
           if err != nil {
             fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
@@ -160,6 +161,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 func Run(file string) error {
 
+  servers.Start()
   go compiler.Supervisor()
   
   // Link the engines

@@ -10,7 +10,7 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
-var PageCache = xcore.NewXCache("page", 0, true, 3600 * time.Second)
+var PageCache = xcore.NewXCache("page", 0, 3600 * time.Second)
 
 type Page struct {
   PagesDir string

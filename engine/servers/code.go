@@ -38,7 +38,7 @@ const (
   MetaUnused                 = -1       // a "not used anymore" param to be freed
 )
 
-var CodeCache = xcore.NewXCache("code", 0, true, 3600 * time.Second)
+var CodeCache = xcore.NewXCache("code", 0, 3600 * time.Second)
 
 type CodeServer struct {
   PagesDir string
