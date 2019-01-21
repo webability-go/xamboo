@@ -56,25 +56,13 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     start := time.Now()
     cw := coreWriter{ResponseWriter: w}
-    
+
+    req := stat.CreateRequestStat(r.Host + r.URL.Path, r.Method, 0, 0, 0)
+
     handler.ServeHTTP(&cw, r)
     
     duration := time.Now().Sub(start)
-    stat.AddStat("", cw.status, cw.length, duration)
-    
-/*
-    Log(LogEntry{
-      Host:       r.Host,
-      RemoteAddr: r.RemoteAddr,
-      Method:     r.Method,
-      RequestURI: r.RequestURI,
-      Proto:      r.Proto,
-      Status:     sw.status,
-      ContentLen: sw.length,
-      UserAgent:  r.Header.Get("User-Agent"),
-      Duration:   duration,
-    })
-*/
+    req.UpdateStat(cw.status, cw.length, duration)
   }
 }
 

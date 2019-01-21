@@ -1,59 +1,53 @@
 
-XB = {}
-XB.onLoad = onLoad
+XB = {};
+XB.ws = null;
+XB.onLoad = onLoad;
 
 function onLoad()
 {
-    var output = document.getElementById("output");
-    var input = document.getElementById("input");
-    var ws;
-    var print = function(message) {
-        var d = document.createElement("div");
-        d.innerHTML = message;
-        output.appendChild(d);
-    };
+  // open ws
+  console.log("System OnLoad")
     
-    console.log("loading Hooks")
-    
-    document.getElementById("open").onclick = function(evt) {
-      console.log("CLICK OPEN")
-    
-    
-        if (ws) {
-            return false;
-        }
-        ws = new WebSocket("wss://developers.webability.info:81/listener");
-        ws.onopen = function(evt) {
-            print("OPEN");
-        }
-        ws.onclose = function(evt) {
-            print("CLOSE");
-            ws = null;
-        }
-        ws.onmessage = function(evt) {
-            print("RESPONSE: " + evt.data);
-        }
-        ws.onerror = function(evt) {
-            print("ERROR: " + evt.data);
-        }
-        return false;
-    };
-    document.getElementById("send").onclick = function(evt) {
-      console.log("CLICK SEND")
-        if (!ws) {
-            return false;
-        }
-        print("SEND: " + input.value);
-        ws.send(input.value);
-        return false;
-    };
-    document.getElementById("close").onclick = function(evt) {
-      console.log("CLICK CLOSE")
-        if (!ws) {
-            return false;
-        }
-        ws.close();
-        return false;
-    };
-    
+  console.log(window.location.host)
+  XB.ws = new WebSocket("wss://"+window.location.host+"/listener");
+  XB.ws.onopen = XB.wsopen;
+  XB.ws.onclose = XB.wsclose;
+  XB.ws.onmessage = XB.wsmessage;
+  XB.ws.onerror = XB.wserror;
 }
+
+XB.wsopen = function(evt)
+{
+  console.log("WS Open");
+}
+
+XB.wsclose = function(evt)
+{
+  console.log("WS Close");
+  XB.ws = null;
+}
+
+XB.wsmessage = function(evt)
+{
+  if (evt.data && evt.data)
+  {
+    code = JSON.parse(evt.data)
+  }
+  console.log(code)
+  
+  str = "";
+  for (i=0; i<code.lastrequests.length; i++)
+  {
+    str += code.lastrequests[i].Request + "<br />";
+  }
+  
+  document.getElementById("pagesserved").innerHTML = str
+}
+
+XB.wserror = function(evt)
+{
+  console.log("WS error: ", evt.data);
+}
+
+
+

@@ -34,6 +34,16 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.8 - 2019-01-21
+-----------------------
+> Uses XConfig 0.0.5
+
+> Uses XCore 0.0.4
+
+- CacheLibrary modified to have no timeout (.so are part of the code itself and cannot unload)
+- admin/listener enhanced to get read and write independant on go threads
+- admin console now receive and display last served pages and files (very basic interface)
+
 V0.0.7 - 2019-01-06
 -----------------------
 > Uses XConfig 0.0.5
