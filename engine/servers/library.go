@@ -3,7 +3,7 @@ package servers
 import (
   "fmt"
   "plugin"
-  "time"
+//  "time"
 
   "github.com/webability-go/xcore"
 
@@ -12,7 +12,8 @@ import (
   "github.com/webability-go/xamboo/engine/context"
 )
 
-var LibraryCache = xcore.NewXCache("library", 0, 3600 * time.Second)
+// no limits, no timeout (it's part of the code itself)
+var LibraryCache = xcore.NewXCache("library", 0, 0)  
 
 type LibraryServer struct {
   PagesDir string

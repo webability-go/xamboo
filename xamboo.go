@@ -6,7 +6,7 @@ import (
   "github.com/webability-go/xamboo/engine"
 )
 
-const VERSION = "0.0.7"
+const VERSION = "0.0.8"
 
 func main() {
   // *** system Language !!! preload
