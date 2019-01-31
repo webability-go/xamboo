@@ -1,8 +1,9 @@
 package stat
 
 import (
-//  "fmt"
+  "fmt"
   "time"
+  "net"
   
   "github.com/webability-go/xamboo/config"
 )
@@ -12,13 +13,18 @@ This code keeps tracks and stats of the whole webserver and served pages and req
 */
 
 type RequestStat struct {
-  Id       uint64
-  Time     time.Time
-  Request  string
-  Method   string
-  Code     int
-  Length   int
-  Duration time.Duration
+  Id        uint64
+  StartTime time.Time
+  Time      time.Time
+  Request   string
+  Protocol  string
+  Method    string
+  Code      int
+  Length    int
+  Duration  time.Duration
+  IP        string
+  Port      string
+  Alive     bool
 }
 
 type SiteStat struct {
@@ -52,22 +58,56 @@ func CreateStat() *Stat {
       RequestsServed: make(map[int]int),
     }
   }
+  
+  // launch cleaning thread, while the xamboo go system works
+  go s.Clean()
+  
   return s
 }
 
-func CreateRequestStat(request string, method string, code int, length int, duration time.Duration) *RequestStat {
+func (s* Stat)Clean() {
+  // 1. clean Requests from stat
+  for {
+    fmt.Println("Cleaning stats (1 min)")
+    n := time.Now()
+    // we keep 2 minutes
+    delta := time.Minute * 2
+    last := 0
+    
+    // if it's alive: no delete
+    for i, r := range s.Requests {
+      if r.Time.Add(delta).Before(n) {
+        last = i
+      } else {
+        break
+      }
+    }
+    s.Requests = s.Requests[last:]
+    // we clean every 60 seconds
+    time.Sleep(time.Minute)
+  }
+}
+
+func CreateRequestStat(request string, method string, protocol string, code int, length int, duration time.Duration, remoteaddr string) *RequestStat {
   
   SystemStat.RequestsTotal ++
   SystemStat.LengthServed += length
+
+  ip,port,_ := net.SplitHostPort(remoteaddr)
+
   r := &RequestStat{
     Id: RequestCounter,
+    StartTime: time.Now(),
     Time: time.Now(),
     Request: request,
     Method: method,
     Code: code,
     Length: length,
     Duration: duration,
-  } 
+    IP: ip,
+    Port: port,
+    Alive: true,
+  }
   RequestCounter++
   SystemStat.Requests = append(SystemStat.Requests, r)
   
@@ -75,10 +115,15 @@ func CreateRequestStat(request string, method string, code int, length int, dura
   return r
 }
 
-func (r *RequestStat)UpdateStat(code int, length int, duration time.Duration) {
-  r.Code = code
-  r.Length = length
+func (r *RequestStat)UpdateStat(code int, length int) {
+  r.Time = time.Now()
+  if code != 0 { r.Code = code }
+  r.Length += length
   SystemStat.LengthServed += length
-  r.Duration = duration
+  r.Duration = r.Time.Sub(r.StartTime)
+}
+
+func (r *RequestStat)UpdateProtocol(protocol string) {
+  r.Protocol = protocol
 }
 

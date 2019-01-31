@@ -34,6 +34,16 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.9 - 2019-01-31
+-----------------------
+> Uses XConfig 0.0.5
+
+> Uses XCore 0.0.4
+
+- Stats enhanced, now count memory, goroutines, CPUs, requests and length of data, alive time, and can be cleaned regularly (every minute)
+- engine.CoreWriter enhanced and Public, so the upgrader to the WSS protocol can also count written bytes
+- Admin and Admin Listener enhanced to show more accurate realtime data
+
 V0.0.8 - 2019-01-21
 -----------------------
 > Uses XConfig 0.0.5
