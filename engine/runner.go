@@ -42,7 +42,6 @@ func (cw *CoreWriter) Write(b []byte) (int, error) {
   }
   n, err := cw.ResponseWriter.Write(b)
   cw.length += n
-  fmt.Println("written: ", cw.length)
   return n, err
 }
 
@@ -58,8 +57,6 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     req := stat.CreateRequestStat(r.Host + r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 
-    fmt.Println("Request: ", req)
-    
     cw := CoreWriter{ResponseWriter: w, RequestStat: req,}
     handler.ServeHTTP(&cw, r)
 
