@@ -23,29 +23,31 @@ import (
 )
 
 // Structures to wrap writer and log stats
-type coreWriter struct {
+type CoreWriter struct {
   http.ResponseWriter
   http.Hijacker
   status int
   length int
+  RequestStat *stat.RequestStat
 }
 
-func (cw *coreWriter) WriteHeader(status int) {
+func (cw *CoreWriter) WriteHeader(status int) {
   cw.status = status
   cw.ResponseWriter.WriteHeader(status)
 }
 
-func (cw *coreWriter) Write(b []byte) (int, error) {
+func (cw *CoreWriter) Write(b []byte) (int, error) {
   if cw.status == 0 {
     cw.status = 200
   }
   n, err := cw.ResponseWriter.Write(b)
   cw.length += n
+  fmt.Println("written: ", cw.length)
   return n, err
 }
 
 // Makes the hijack function visible for gorilla websockets
-func (cw *coreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+func (cw *CoreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
 		return hj.Hijack()
 	}
@@ -54,15 +56,14 @@ func (cw *coreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 
 func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
-    start := time.Now()
-    cw := coreWriter{ResponseWriter: w}
+    req := stat.CreateRequestStat(r.Host + r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 
-    req := stat.CreateRequestStat(r.Host + r.URL.Path, r.Method, 0, 0, 0)
-
-    handler.ServeHTTP(&cw, r)
+    fmt.Println("Request: ", req)
     
-    duration := time.Now().Sub(start)
-    req.UpdateStat(cw.status, cw.length, duration)
+    cw := CoreWriter{ResponseWriter: w, RequestStat: req,}
+    handler.ServeHTTP(&cw, r)
+
+    req.UpdateStat(cw.status, cw.length)
   }
 }
 

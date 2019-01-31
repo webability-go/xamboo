@@ -1,6 +1,11 @@
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
-Total served pages: <span id="totalservedpages"></span><br />
-Total threads: <span id="totalthreads"></span><br />
+Num CPU: <span id="cpu"></span><br />
+Num Go routines: <span id="goroutines"></span><br />
+Memory alloc: <span id="memalloc"></span><br />
+System Memory: <span id="memsys"></span><br />
+<br />
+Total served requests: <span id="totalservedrequests"></span><br />
+Total served size: <span id="totalservedlength"></span><br />
 </div>
 
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
