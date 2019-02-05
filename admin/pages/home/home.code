@@ -20,6 +20,11 @@ Total threads: <br />
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
 Pages served:<br />
 <div id="pagesserved" style="max-height: 400px; overflow: auto;">
+
+<table border="1"><tbody id="lastrequests"><tr><td>Remote IP</td><td>Time ms</td><td>Code</td><td>Method</td><td>Protocol</td><td>Request</td><td>Length</td></tr>
+</tbody>
+</table>
+
 </div>
 </div>
 

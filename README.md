@@ -30,6 +30,9 @@ TO DO
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
+- Auth for pages https://stackoverflow.com/questions/21936332/idiomatic-way-of-requiring-http-basic-auth-in-go
+https://gist.github.com/elithrar/9146306
+https://gist.github.com/elithrar/9146306#gistcomment-2145050
 
 Version Changes Control
 =======================

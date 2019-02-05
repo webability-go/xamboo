@@ -4,6 +4,7 @@ import (
   "fmt"
   "time"
   "runtime"
+  "strings"
   "encoding/json"
 
   "github.com/gorilla/websocket"
@@ -19,6 +20,8 @@ type listenerStream struct {
   Upgrader websocket.Upgrader
   Stream *websocket.Conn
   RequestStat *stat.RequestStat
+  
+  fulldata bool
 }
 
 /* This function is MANDATORY and is the point of call from the xamboo
@@ -31,6 +34,7 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
   ls := listenerStream{
     Upgrader: websocket.Upgrader{},
     RequestStat: ctx.Writer.(*engine.CoreWriter).RequestStat,
+    fulldata: true,
   }
 
   stream, err := ls.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
@@ -45,16 +49,17 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
   
   defer stream.Close()
 
-  go Read(ls)
-  go Write(ls)
+  cdone := make(chan bool)
+  go Read(ls, cdone)
+  go Write(ls, cdone)
 
-  for {
-    time.Sleep(10*time.Second)
-  }
+  <-cdone
+  <-cdone
+  fmt.Println("LISTENER CLOSED")
   return "END STREAM CLOSED"
 }
 
-func Read(ls listenerStream) {
+func Read(ls listenerStream, done chan bool) {
   for {
     _, message, err := ls.Stream.ReadMessage()
     if err != nil {
@@ -62,12 +67,16 @@ func Read(ls listenerStream) {
       break
     }
     fmt.Println("MESSAGE: " + fmt.Sprint(message))
+    if strings.Contains(string(message), "F") {
+      ls.fulldata = true
+    }
     // if the client asks for "data", we send it a resume
     // err = stream.WriteMessage(websocket.TextMessage, []byte(statmsg))
   }
+  done <- true
 }
 
-func Write(ls listenerStream) {
+func Write(ls listenerStream, done chan bool) {
   last := time.Time{}
   for {
     // if no changes, do not send anything
@@ -75,27 +84,32 @@ func Write(ls listenerStream) {
     // Write every second stat actualization
 
     // search for all the data > last
-    min := len(stat.SystemStat.Requests)-10;
-    if min < 0 { min = 0 }
-    for _, x := range stat.SystemStat.Requests[min:] {
-      if last.Before(x.Time) { last = x.Time }
+    newreqs := []*stat.RequestStat{}
+    for _, x := range stat.SystemStat.Requests {
+      if last.Before(x.Time) {
+        newreqs = append(newreqs, x)
+        last = x.Time
+      }
     }
     
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
-    alloc := m.Alloc / 1024
-    sys := m.Sys / 1024
     
     data := map[string]interface{}{
-      "cpu": runtime.NumCPU(),
-      "memalloc": alloc,
-      "memsys": sys,
       "goroutines": runtime.NumGoroutine(),
-      "reqtotal" : stat.SystemStat.RequestsTotal,
+      "reqtotal": stat.SystemStat.RequestsTotal,
       "totalservedlength": stat.SystemStat.LengthServed,
-      "totalservedrequests": stat.SystemStat.RequestsServed,
-      "lastrequests": stat.SystemStat.Requests[min:],
+      "totalservedrequests": stat.SystemStat.RequestsTotal,
       "last": last,
+
+      "lastrequests": newreqs,
+    }
+    
+    if ls.fulldata {
+      data["cpu"] = runtime.NumCPU()
+      data["memalloc"] = m.Alloc
+      data["memsys"] = m.Sys
+      ls.fulldata = false
     }
     
     datajson, _ := json.Marshal(data)
@@ -109,6 +123,7 @@ func Write(ls listenerStream) {
 
     time.Sleep(1*time.Second) 
   }
+  done <- true
 }
 
 
