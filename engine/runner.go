@@ -61,6 +61,7 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
     handler.ServeHTTP(&cw, r)
 
     req.UpdateStat(cw.status, cw.length)
+    req.End()
   }
 }
 
@@ -68,7 +69,7 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 //  fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
 //  fmt.Println(r.Header)
-  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
+//  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
   
   // CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
   // 1. http, https, ftp, ftps, ws, wss ?
@@ -124,7 +125,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
         if plugindata != nil {
           c_plugindata := plugindata.(*xconfig.XConfig)
           
-          fmt.Println(c_plugindata.Get("library"))
+//          fmt.Println(c_plugindata.Get("library"))
     
           p1, _ := c_plugindata.GetString("library")
           lib, err := plugin.Open(p1)

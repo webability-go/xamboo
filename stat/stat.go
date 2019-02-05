@@ -101,6 +101,7 @@ func CreateRequestStat(request string, method string, protocol string, code int,
     Time: time.Now(),
     Request: request,
     Method: method,
+    Protocol: protocol,
     Code: code,
     Length: length,
     Duration: duration,
@@ -125,5 +126,9 @@ func (r *RequestStat)UpdateStat(code int, length int) {
 
 func (r *RequestStat)UpdateProtocol(protocol string) {
   r.Protocol = protocol
+}
+
+func (r *RequestStat)End() {
+  r.Alive = false
 }
 
