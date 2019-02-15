@@ -106,6 +106,25 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
       return
     }
     
+    // Check Origin
+    if hostdef.Origin != nil {
+      // origin MUST contain maindomain as ending string
+      origin := r.Header.Get("Origin")
+      dlen := len(hostdef.Origin.MainDomain)
+      // 7 is http:// minimum lentgh added to the domain name
+      if len(origin) < dlen+7 || origin[len(origin)-dlen:] != hostdef.Origin.MainDomain {
+        // we force origin
+        origin = hostdef.Origin.DefaultDomain
+      }
+      
+      w.Header().Set("Access-Control-Allow-Origin", origin)
+      w.Header().Set("Access-Control-Allow-Methods", strings.Join(hostdef.Origin.Methods, ", "))
+      w.Header().Set("Access-Control-Allow-Headers", strings.Join(hostdef.Origin.Headers, ", "))
+      if hostdef.Origin.Credentials {
+        w.Header().Set("Access-Control-Allow-Credentials", "true")
+      }
+    }
+    
     // SPLIT URI - QUERY to call the engine
     engine := &Engine {
       Method: r.Method,

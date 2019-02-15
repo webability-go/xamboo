@@ -71,7 +71,9 @@ XB.SetRequests = function(code)
     var color = "white";
     if (code[i].Code >= 200 && code[i].Code < 300)
       color = "#aaffaa";
-    if (code[i].Code >= 300)
+    if (code[i].Code >= 300 && code[i].Code < 400)
+      color = "#aaaaff";
+    if (code[i].Code >= 400)
       color = "#ffaaaa";
     
     var str = "";

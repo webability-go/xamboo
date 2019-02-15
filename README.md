@@ -45,6 +45,7 @@ V0.0.10 - 2019-02-15
 
 - Added SessionParams in engine context
 - admin javascript and presentation enhanced
+- Support for CORS - REST-API implemented from config file for host
 
 V0.0.9 - 2019-01-31
 -----------------------
