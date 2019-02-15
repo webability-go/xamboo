@@ -40,12 +40,12 @@ XB.wsmessage = function(evt)
   if (code.cpu)
   {
     document.getElementById("cpu").innerHTML = code.cpu;
-    document.getElementById("goroutines").innerHTML = code.goroutines;
-    document.getElementById("memalloc").innerHTML = code.memalloc;
-    document.getElementById("memsys").innerHTML = code.memsys;
+    document.getElementById("goroutines").innerHTML = code.goroutines.toLocaleString();
+    document.getElementById("memalloc").innerHTML =  XB.FormatUnit(code.memalloc);
+    document.getElementById("memsys").innerHTML =  XB.FormatUnit(code.memsys);
   }
-  document.getElementById("totalservedrequests").innerHTML = code.totalservedrequests;
-  document.getElementById("totalservedlength").innerHTML = code.totalservedlength;
+  document.getElementById("totalservedrequests").innerHTML = code.totalservedrequests.toLocaleString();
+  document.getElementById("totalservedlength").innerHTML = XB.FormatUnit(code.totalservedlength);
 
 }
 
@@ -61,15 +61,21 @@ XB.ParseMessage = function(code)
     XB.SetRequests(code.lastrequests);
   }
 }
-  
+
 XB.SetRequests = function(code)
 {
   var p = XB.getDomNode("lastrequests")
 
   for (i=0; i<code.length; i++)
   {
+    var color = "white";
+    if (code[i].Code >= 200 && code[i].Code < 300)
+      color = "#aaffaa";
+    if (code[i].Code >= 300)
+      color = "#ffaaaa";
+    
     var str = "";
-    str += "<td>" + code[i].IP + ":" + code[i].Port + "</td><td>" + (code[i].Duration/1000000).toFixed(2) + "ms</td><td>" + code[i].Code + "</td><td>" + code[i].Method + "</td><td>" + code[i].Protocol + "</td><td>" + code[i].Request + "</td><td>" + code[i].Length + "</td>";
+    str += "<td>" + code[i].IP + ":" + code[i].Port + "</td><td>" + (code[i].Duration/1000000).toFixed(2) + 'ms</td><td style="background-color: '+color+';">' + code[i].Code + "</td><td>" + code[i].Method + "</td><td>" + code[i].Protocol + "</td><td>" + code[i].Request + "</td><td>" + XB.FormatUnit(code[i].Length) + "</td>";
 
     var n = XB.getDomNode("request_" + code[i].Id)
     if (!n)
@@ -120,4 +126,16 @@ XB.getDomNode = function(domID)
   return document.getElementById(domID);
 }
 
+XB.FormatUnit = function(fnumber)
+{
+  if (fnumber < 1024) return fnumber;
+  fnumber /= 1024;
+  if (fnumber < 1024) return fnumber.toFixed(2) + 'KB';
+  fnumber /= 1024;
+  if (fnumber < 1024) return fnumber.toFixed(2) + 'MB';
+  fnumber /= 1024;
+  if (fnumber < 1024) return fnumber.toFixed(2) + 'GB';
+  fnumber /= 1024;
+  return fnumber.toFixed(2) + 'TB';
+}
 

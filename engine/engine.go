@@ -178,12 +178,14 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     ctx.MainURLparams = e.MainContext.MainURLparams
     ctx.MainPageparams = e.MainContext.MainPageparams
     ctx.MainInstanceparams = e.MainContext.MainInstanceparams
+    ctx.Sessionparams = e.MainContext.Sessionparams
   } else {
     ctx.MainPage = page
     ctx.MainPageUsed = P
     ctx.MainURLparams = xParams
     ctx.MainPageparams = pagedata
     ctx.MainInstanceparams = instancedata
+    ctx.Sessionparams = &xconfig.XConfig{}
     e.MainContext = ctx
   }
 

@@ -8,6 +8,7 @@ Total served requests: <span id="totalservedrequests"></span><br />
 Total served size: <span id="totalservedlength"></span><br />
 </div>
 
+%--
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
 By sites:<br />
 Site: XXX<br />
@@ -16,10 +17,11 @@ Last Reboot: <br />
 Total served pages since reboot: <br />
 Total threads: <br />
 </div>
+--%
 
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
 Pages served:<br />
-<div id="pagesserved" style="max-height: 400px; overflow: auto;">
+<div id="pagesserved" style="max-height: 600px; overflow: auto;">
 
 <table border="1"><tbody id="lastrequests"><tr><td>Remote IP</td><td>Time ms</td><td>Code</td><td>Method</td><td>Protocol</td><td>Request</td><td>Length</td></tr>
 </tbody>
