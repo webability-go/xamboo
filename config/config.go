@@ -9,6 +9,14 @@ import (
   "github.com/webability-go/xamboo/utils"
 )
 
+type OriginDef struct {
+  MainDomain string `json:"maindomain"`
+  DefaultDomain string `json:"defaultdomain"`
+  Methods []string `json:"methods"`
+  Headers []string `json:"headers"`
+  Credentials bool `json:"credentials"`
+}
+
 type Listener struct {
   Name string `json:"name"`
   IP string `json:"ip"`
@@ -28,12 +36,18 @@ type Host struct {
   ConfigFile []string `json:"config"`
   Config *xconfig.XConfig
   StaticPath string `json:"static"`
+  Origin *OriginDef `json:"origin"`
+}
+
+type Engine struct {
+  Name string `json:"name"`
 }
 
 type ConfigDef struct {
-    File string
-    Listeners []Listener
-    Hosts []Host
+  File string
+  Listeners []Listener `json:"listeners"`
+  Hosts []Host `json:"hosts"`
+  Engines []Engine `json:"engines"`
 }
 
 var Config = &ConfigDef{}
