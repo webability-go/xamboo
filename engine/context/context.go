@@ -33,6 +33,7 @@ type Context struct {
   LocalPageUsed string                     // The local real page to use (valid page found)
   LocalURLparams []string                  // The local URL params based on local page, if any
   Sysparams *xconfig.XConfig               // mandatory, site system params
+  Sessionparams *xconfig.XConfig           // Optional, for the programer to add any session data he needs.
   MainPageparams *xconfig.XConfig          // Original page params (real original .page file)
   MainInstanceparams *xconfig.XConfig      // Original instance params (real original .instance file)
   LocalPageparams *xconfig.XConfig         // Local real page params (.page file)

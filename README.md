@@ -37,6 +37,15 @@ https://gist.github.com/elithrar/9146306#gistcomment-2145050
 Version Changes Control
 =======================
 
+V0.0.10 - 2019-02-15
+-----------------------
+> Uses XConfig 0.0.6
+
+> Uses XCore 0.0.6
+
+- Added SessionParams in engine context
+- admin javascript and presentation enhanced
+
 V0.0.9 - 2019-01-31
 -----------------------
 > Uses XConfig 0.0.5
