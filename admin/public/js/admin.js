@@ -62,33 +62,48 @@ XB.ParseMessage = function(code)
   }
 }
 
-XB.SetRequests = function(code)
+XB.SetOneRequest = function()
 {
+  if (XB.pointer >= XB.xcode.length)
+    return;
+
+  code = XB.xcode[XB.pointer++];
+  
   var p = XB.getDomNode("lastrequests")
 
-  for (i=0; i<code.length; i++)
-  {
-    var color = "white";
-    if (code[i].Code >= 200 && code[i].Code < 300)
-      color = "#aaffaa";
-    if (code[i].Code >= 300 && code[i].Code < 400)
-      color = "#aaaaff";
-    if (code[i].Code >= 400)
-      color = "#ffaaaa";
-    
-    var str = "";
-    str += "<td>" + code[i].IP + ":" + code[i].Port + "</td><td>" + (code[i].Duration/1000000).toFixed(2) + 'ms</td><td style="background-color: '+color+';">' + code[i].Code + "</td><td>" + code[i].Method + "</td><td>" + code[i].Protocol + "</td><td>" + code[i].Request + "</td><td>" + XB.FormatUnit(code[i].Length) + "</td>";
+  var color = "white";
+  if (code.Code >= 200 && code.Code < 300)
+    color = "#aaffaa";
+  if (code.Code >= 300 && code.Code < 400)
+    color = "#aaaaff";
+  if (code.Code >= 400)
+    color = "#ffaaaa";
+  
+  var str = "";
+  str += "<td>" + code.IP + ":" + code.Port + '</td><td style="text-align: right;">' + XB.FormatTime((code.Duration/1000000).toFixed(2)) + '</td><td style="background-color: '+color+';">' + code.Code + "</td><td>" + code.Method + "</td><td>" + code.Protocol + "</td><td>" + code.Request + "</td><td>" + XB.FormatUnit(code.Length) + "</td>";
 
-    var n = XB.getDomNode("request_" + code[i].Id)
-    if (!n)
-    {
-      n = XB.createDomNode("TR", "request_" + code[i].Id)
-    }
-    p.appendChild(n);
-    n.innerHTML = str;
-    n.date = new Date(code[i].Time);
+  firstzero = XB.getFirstZero();
+  var n = XB.getDomNode("request_" + code.Id)
+  if (!n)
+  {
+    n = XB.createDomNode("TR", "request_" + code.Id)
+    n.code = code.Code;
+    // Si el nodo es code 0: hasta el final, sino antes del primer 0
+    if (code.Code == 0)
+      p.appendChild(n);
+    else
+      p.insertBefore(n,  firstzero);
   }
-  document.getElementById("pagesserved").scrollTo(0, 10000000);
+  else
+  {
+    // si ya no es code 0: antes del primer 0
+    n.code = code.Code;
+    if (code.Code != 0)
+      p.insertBefore(n, firstzero);
+  }
+
+  n.innerHTML = str;
+  n.date = new Date(code.Time);
   
   // purge old requests ( keep 20 last only, newest )
   var reqsnodes = p.childNodes;
@@ -109,8 +124,63 @@ XB.SetRequests = function(code)
       // remove the node
       p.removeChild(n);
     }
-    
   }
+
+  document.getElementById("pagesserved").scrollTo(0, 10000000);
+}
+
+XB.getFirstZero = function()
+{
+  var first = null;
+  var p = XB.getDomNode("lastrequests")
+  var reqsnodes = p.childNodes;
+  for (i = reqsnodes.length-1; i >= 0; i--)
+  {
+    if (reqsnodes[i].code == 0)
+      first = reqsnodes[i];
+    else
+      break;
+  }
+  return first;
+}
+
+
+XB.xcode = []
+XB.pointer = 0;
+
+XB.SetRequests = function(code)
+{
+  // put old requests instantly
+  if (XB.pointer < XB.xcode.length)
+  {
+    for (i=XB.pointer; i<XB.xcode.length; i++)
+    {
+      XB.SetOneRequest();
+    }
+  }
+  
+  // reorder XB.xcode: requests with Code=0 always at the end, ordered y ID
+  XB.xcode = XB.ReorderCode(code);
+  XB.pointer = 0;
+  // the server pushes data every second (1000 ms)
+  // put new requests slowly
+  for (i=0; i<code.length; i++)
+  {
+    setTimeout(function() { XB.SetOneRequest(); }, 900/code.length*i);
+  }
+}
+
+// order by Code != 0, Id, then by id = 0, Id
+XB.ReorderCode = function(code)
+{
+  code.sort(function(a,b)
+    {
+      if (a.Code != 0 && b.Code == 0) return -1;
+      if (b.Code != 0 && a.Code == 0) return 1;
+      return a.Id-b.Id;
+    });
+  console.log(code);
+  return code;
 }
 
 XB.createDomNode = function(type, id, classname)
@@ -130,7 +200,7 @@ XB.getDomNode = function(domID)
 
 XB.FormatUnit = function(fnumber)
 {
-  if (fnumber < 1024) return fnumber;
+  if (fnumber < 1024) return fnumber + "B";
   fnumber /= 1024;
   if (fnumber < 1024) return fnumber.toFixed(2) + 'KB';
   fnumber /= 1024;
@@ -139,5 +209,37 @@ XB.FormatUnit = function(fnumber)
   if (fnumber < 1024) return fnumber.toFixed(2) + 'GB';
   fnumber /= 1024;
   return fnumber.toFixed(2) + 'TB';
+}
+
+XB.FormatTime = function(fnumber)
+{
+  str = "ms";
+  ms = Math.floor((fnumber*100)%100);
+  str = ('0' + ms).slice(-2) + str;
+  fnumber = Math.floor(fnumber) / 1000;
+  if (fnumber >= 1)
+  {
+    s = Math.floor(fnumber%60);
+    str = ('0' + s).slice(-2) + "s" + str;
+    fnumber = Math.floor(fnumber) / 60;
+    if (fnumber >= 1)
+    {
+      m = Math.floor(fnumber%60);
+      str = ('0' + m).slice(-2) + "m" + str;
+      fnumber = Math.floor(fnumber) / 60;
+      if (fnumber >= 1)
+      {
+        h = Math.floor(fnumber%24);
+        str = ('0' + h).slice(-2) + "h" + str;
+        fnumber = Math.floor(fnumber) / 24;
+        if (fnumber >= 1)
+        {
+          d = Math.floor(fnumber)
+          str = d + "d" + str;
+        }
+      }
+    }
+  }
+  return str;
 }
 

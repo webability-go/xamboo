@@ -37,6 +37,15 @@ https://gist.github.com/elithrar/9146306#gistcomment-2145050
 Version Changes Control
 =======================
 
+V0.0.11 - 2019-02-18
+-----------------------
+> Uses XConfig 0.0.6
+
+> Uses XCore 0.0.6
+
+- admin javascript and presentation enhanced
+- admin listener modified to send correctly WSS and ordered last requests
+
 V0.0.10 - 2019-02-15
 -----------------------
 > Uses XConfig 0.0.6

@@ -17,12 +17,15 @@ import (
 )
 
 type listenerStream struct {
+  Id int
   Upgrader websocket.Upgrader
   Stream *websocket.Conn
   RequestStat *stat.RequestStat
   
   fulldata bool
 }
+
+var counter = 1
 
 /* This function is MANDATORY and is the point of call from the xamboo
    The enginecontext contains all what you need to link with the system
@@ -32,10 +35,12 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
   fmt.Println("Entering listener")
   // Note: the upgrader will hijack the writer, so we are responsible to actualize the stats
   ls := listenerStream{
+    Id: counter,
     Upgrader: websocket.Upgrader{},
     RequestStat: ctx.Writer.(*engine.CoreWriter).RequestStat,
     fulldata: true,
   }
+  counter++
 
   stream, err := ls.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
   if err != nil {
@@ -45,7 +50,7 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
   ls.Stream = stream
   ls.RequestStat.UpdateProtocol("WSS")
   
-  fmt.Println("LISTENER START")
+  fmt.Println("LISTENER START: ", ls.Id)
   
   defer stream.Close()
 
@@ -55,7 +60,7 @@ func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLangu
 
   <-cdone
   <-cdone
-  fmt.Println("LISTENER CLOSED")
+  fmt.Println("LISTENER CLOSED: ", ls.Id)
   return "END STREAM CLOSED"
 }
 
@@ -85,17 +90,22 @@ func Write(ls listenerStream, done chan bool) {
 
     // search for all the data > last
     newreqs := []*stat.RequestStat{}
+    newTime := time.Time{}
     for _, x := range stat.SystemStat.Requests {
       if last.Before(x.Time) {
         newreqs = append(newreqs, x)
-        last = x.Time
+        if newTime.Before(x.Time) {
+          newTime = x.Time
+        }
       }
     }
+    last = newTime
     
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
     
     data := map[string]interface{}{
+      "listenerid": ls.Id,
       "goroutines": runtime.NumGoroutine(),
       "reqtotal": stat.SystemStat.RequestsTotal,
       "totalservedlength": stat.SystemStat.LengthServed,

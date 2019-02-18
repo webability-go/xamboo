@@ -1,5 +1,9 @@
 <div style="border: 1px solid black; padding: 5px; margin: 5p; float: left;">
 Num CPU: <span id="cpu"></span><br />
+System name: <span id="sysname"></span><br />
+<br />
+Online: <span id="online"></span><br />
+Since: <span id="since"></span><br />
 Num Go routines: <span id="goroutines"></span><br />
 Memory alloc: <span id="memalloc"></span><br />
 System Memory: <span id="memsys"></span><br />
