@@ -4,16 +4,25 @@ import (
   "fmt"
   
   "github.com/webability-go/xcore"
+  "github.com/webability-go/xamboo/config"
   "github.com/webability-go/xamboo/engine/context"
 )
 
-func Start() {
-  fmt.Println("External APP Main SO library started")
+const VERSION = "1.0.0"
+
+func init() {
+  fmt.Println("External APP Main SO library initialized, VERSION =", VERSION)
 
   // Load CONFIG
 
   // Start a database POOL
 
+}
+
+func Start(h config.Host) {
+  fmt.Println("External APP Main SO library started (should start twice since there are 2 sites using it), HOST =", h.Name, "VERSION =", VERSION)
+  
+  
 }
 
 func GetPageData(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) string {

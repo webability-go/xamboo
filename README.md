@@ -46,6 +46,7 @@ V0.0.11 - 2019-02-18
 - admin javascript and presentation enhanced
 - admin listener modified to send correctly WSS and ordered last requests
 - Bug corrected on creation of SessionParams in engine context
+- Application library loading moved to the Host config loader, to be loaded and started only once by host
 
 V0.0.10 - 2019-02-15
 -----------------------
