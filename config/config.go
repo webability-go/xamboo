@@ -4,7 +4,9 @@ import (
   "fmt"
 //  "flag"
   "os"
+  "plugin"
   "encoding/json"
+
   "github.com/webability-go/xconfig"
   "github.com/webability-go/xamboo/utils"
 )
@@ -37,6 +39,7 @@ type Host struct {
   Config *xconfig.XConfig
   StaticPath string `json:"static"`
   Origin *OriginDef `json:"origin"`
+  Plugins map[string]*plugin.Plugin
 }
 
 type Engine struct {
@@ -77,6 +80,32 @@ func (c *ConfigDef) Load(file string) error {
           lc.LoadFile(c.Hosts[i].ConfigFile[j])
         }
         c.Hosts[i].Config = lc
+        
+        // creates user plugins
+        plugins, _ := c.Hosts[i].Config.Get("plugin")
+        if plugins != nil {
+          c.Hosts[i].Plugins = make(map[string]*plugin.Plugin)
+          c_plugins := plugins.(*xconfig.XConfig)
+          for app, _ := range c_plugins.Parameters {
+            plugindata, _ := c_plugins.Get(app)
+            if plugindata != nil {
+              c_plugindata := plugindata.(*xconfig.XConfig)
+
+              p1, _ := c_plugindata.GetString("library")
+              lib, err := plugin.Open(p1)
+              if err != nil {
+                fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
+                return err
+              } else {
+                c.Hosts[i].Plugins[app] = lib
+                fct, err := lib.Lookup("Start")
+                if err == nil {
+                  fct.(func(Host))(c.Hosts[i])
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -8,11 +8,8 @@ import (
   "net"
   "bufio"
   "net/http"
-  "plugin"
   "time"
   "log"
-
-  "github.com/webability-go/xconfig"
 
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/config"
@@ -131,31 +128,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
       Page: r.URL.Path,
       Listener: listenerdef,
       Host: hostdef,
-      Plugins: make(map[string]*plugin.Plugin),
-    }
-
-    // creates user plugins
-    plugins, _ := hostdef.Config.Get("plugin")
-    if plugins != nil {
-      c_plugins := plugins.(*xconfig.XConfig)
-    
-      for app, _ := range c_plugins.Parameters {
-        plugindata, _ := c_plugins.Get(app)
-        if plugindata != nil {
-          c_plugindata := plugindata.(*xconfig.XConfig)
-          
-//          fmt.Println(c_plugindata.Get("library"))
-    
-          p1, _ := c_plugindata.GetString("library")
-          lib, err := plugin.Open(p1)
-          if err != nil {
-            fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
-            fmt.Println(err)
-          } else {
-            engine.Plugins[app] = lib
-          }
-        }
-      }
     }
 
     engine.Start(w, r)

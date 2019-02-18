@@ -4,7 +4,6 @@ import (
   "fmt"
   "strings"
   "net/http"
-  "plugin"
   
   "github.com/webability-go/xcore"
   "github.com/webability-go/xconfig"
@@ -23,7 +22,6 @@ type Engine struct {
   Page string
   Listener *config.Listener
   Host *config.Host
-  Plugins map[string]*plugin.Plugin
   
   MainContext *context.Context
   Recursivity []string
@@ -170,7 +168,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     LocalPageparams: pagedata,
     LocalInstanceparams: instancedata,
     LocalEntryparams: params,
-    Plugins: e.Plugins,
+    Plugins: e.Host.Plugins,
   }
   if innerpage {
     ctx.MainPage = e.MainContext.MainPage
