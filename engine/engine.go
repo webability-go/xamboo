@@ -185,7 +185,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     ctx.MainURLparams = xParams
     ctx.MainPageparams = pagedata
     ctx.MainInstanceparams = instancedata
-    ctx.Sessionparams = &xconfig.XConfig{}
+    ctx.Sessionparams = xconfig.New()
     e.MainContext = ctx
   }
 
