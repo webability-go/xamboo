@@ -12,8 +12,8 @@ import (
 )
 
 type OriginDef struct {
-  MainDomain string `json:"maindomain"`
-  DefaultDomain string `json:"defaultdomain"`
+  MainDomains []string `json:"maindomains"`
+  Default string `json:"default"`
   Methods []string `json:"methods"`
   Headers []string `json:"headers"`
   Credentials bool `json:"credentials"`
@@ -29,6 +29,15 @@ type Listener struct {
   HeaderSize int `json:"headersize"`
 }
 
+type Log struct {
+  Pages string `json:"pages"`
+  Errors string `json:"errors"`
+  Sys string `json:"sys"`
+  Rotate string `json:"rotate"`
+  Compress bool `json:"compress"`
+  
+}
+
 type Host struct {
   Name string `json:"name"`
   Listeners []string `json:"listeners"`
@@ -39,6 +48,7 @@ type Host struct {
   Config *xconfig.XConfig
   StaticPath string `json:"static"`
   Origin *OriginDef `json:"origin"`
+  Log Log `json:"log"`
   Plugins map[string]*plugin.Plugin
 }
 
@@ -51,6 +61,7 @@ type ConfigDef struct {
   Listeners []Listener `json:"listeners"`
   Hosts []Host `json:"hosts"`
   Engines []Engine `json:"engines"`
+  Log Log `json:"log"`
 }
 
 var Config = &ConfigDef{}
