@@ -12,6 +12,7 @@ import (
   "log"
 
   "github.com/webability-go/xamboo/utils"
+  "github.com/webability-go/xamboo/logger"
   "github.com/webability-go/xamboo/config"
   "github.com/webability-go/xamboo/engine/context"
   "github.com/webability-go/xamboo/engine/servers"
@@ -107,11 +108,17 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
     if hostdef.Origin != nil {
       // origin MUST contain maindomain as ending string
       origin := r.Header.Get("Origin")
-      dlen := len(hostdef.Origin.MainDomain)
-      // 7 is http:// minimum lentgh added to the domain name
-      if len(origin) < dlen+7 || origin[len(origin)-dlen:] != hostdef.Origin.MainDomain {
-        // we force origin
-        origin = hostdef.Origin.DefaultDomain
+      candidate := true
+      for _, d := range hostdef.Origin.MainDomains {
+        dlen := len(d)
+        // 7 is http:// minimum lentgh added to the domain name
+        if len(origin) > dlen+7 && origin[len(origin)-dlen:] == d {
+          candidate = false
+          break
+        }
+      }
+      if candidate {
+        origin = hostdef.Origin.Default
       }
       
       w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -152,6 +159,8 @@ func Run(file string) error {
       fmt.Println(err.Error())
       return err
   }
+  
+  logger.Run()
   
   // Setup loggers (put them in CONFIG)
   logger := log.New(os.Stdout, "http: ", log.LstdFlags)

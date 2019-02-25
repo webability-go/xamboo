@@ -21,6 +21,14 @@
     }
   ],
 
+  "log": {
+    "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+    "sys": "file:./example/logs/xamboo-sys.log",
+    "errors": "file:./example/logs/xamboo-error.log",
+    "rotate": "1d",
+    "compress": true
+  },
+  
   "hosts":
   [
     {
@@ -30,7 +38,16 @@
       "config": ["./example/application/config/example.conf"],
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
-      "static": "./example/repository/public/static"
+      "static": "./example/repository/public/static",
+
+      "log": {
+        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+        "pages": "file:./example/logs/developers.log",
+        "errors": "file:./example/logs/developers-error.log",
+        "sys": "file:./example/logs/developers-sys.log",
+        "rotate": "1d",
+        "compress": true
+      }
     },
     {
       "name": "devapi-for-cors-api",
@@ -41,9 +58,18 @@
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
       "static": "./example/repository/public/static",
 
+      "log": {
+        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+        "pages": "file:./example/logs/developers.log",
+        "errors": "file:./example/logs/developers-error.log",
+        "sys": "file:./example/logs/developers-sys.log",
+        "rotate": "1d",
+        "compress": true
+      },
+
       "origin": {
-        "maindomain": "webability.info",
-        "defaultdomain": "https://developers.webability.info",
+        "maindomains": ["webability.info", "webability.org"],
+        "default": "https://developers.webability.info",
         "methods": ["GET", "POST", "OPTIONS"],
         "headers": ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Origin", "X-Requested-With", "Method"],
         "credentials": true
@@ -57,7 +83,17 @@
       "config": ["./admin/admin.conf"],
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
-      "static": "./admin/public"
+      "static": "./admin/public",
+
+      "log": {
+        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+        "pages": "file:./example/logs/xamboo-admin.log",
+        "errors": "file:./example/logs/xambo-admin-error.log",
+        "sys": "file:./example/logs/xamboo-admin-sys.log",
+        "rotate": "1d",
+        "compress": true
+      }
+
     }
   ],
   

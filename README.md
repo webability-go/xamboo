@@ -37,6 +37,14 @@ https://gist.github.com/elithrar/9146306#gistcomment-2145050
 Version Changes Control
 =======================
 
+V0.0.12 - 2019-02-25
+-----------------------
+> Uses XConfig 0.0.6
+
+> Uses XCore 0.0.6
+
+- Added and modified origin on multidomains ([]string of authorized domains), defaultdomain/maindomain json config entry renamed to default/maindomains
+
 V0.0.11 - 2019-02-18
 -----------------------
 > Uses XConfig 0.0.6
