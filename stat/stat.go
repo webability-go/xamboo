@@ -26,7 +26,7 @@ type RequestStat struct {
   IP        string
   Port      string
   Alive     bool
-  Context  *context.Context
+  Context  *context.Context `json:"-"`
 }
 
 type SiteStat struct {
