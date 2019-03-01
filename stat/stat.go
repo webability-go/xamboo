@@ -51,7 +51,7 @@ var RequestCounter uint64
 
 func CreateStat() *Stat {
   s := &Stat{
-    Start: time.Now()
+    Start: time.Now(),
     RequestsTotal: 0,
     RequestsServed: make(map[int]int),
     LengthServed: 0,
