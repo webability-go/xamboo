@@ -26,7 +26,7 @@ TO DO
 - Stats module
 - Make admin site available with login for security
 - Errors manager and Logs managers
-- Verify memory leaks on destroy objects/garbage collector
+- implement call stat function(context) 
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
@@ -36,6 +36,15 @@ https://gist.github.com/elithrar/9146306#gistcomment-2145050
 
 Version Changes Control
 =======================
+
+V0.0.13 - 2019-03-01
+-----------------------
+> Uses XConfig 0.0.6
+
+> Uses XCore 0.0.6
+
+- Loggers implemented for xamboo, listeners, hosts
+
 
 V0.0.12 - 2019-02-25
 -----------------------

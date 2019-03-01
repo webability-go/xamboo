@@ -6,6 +6,7 @@ import (
   "net"
   
   "github.com/webability-go/xamboo/config"
+  "github.com/webability-go/xamboo/engine/context"
 )
 
 /*
@@ -25,6 +26,7 @@ type RequestStat struct {
   IP        string
   Port      string
   Alive     bool
+  Context  *context.Context
 }
 
 type SiteStat struct {
@@ -35,6 +37,7 @@ type SiteStat struct {
 }
 
 type Stat struct {
+  Start          time.Time
   RequestsTotal  int                     // num requests total, anything included
   LengthServed   int                     // length total, anything included
   RequestsServed map[int]int             // by response code
@@ -48,6 +51,7 @@ var RequestCounter uint64
 
 func CreateStat() *Stat {
   s := &Stat{
+    Start: time.Now()
     RequestsTotal: 0,
     RequestsServed: make(map[int]int),
     LengthServed: 0,
@@ -67,8 +71,8 @@ func CreateStat() *Stat {
 
 func (s* Stat)Clean() {
   // 1. clean Requests from stat
+  fmt.Println("Stats cleaner launched. Clean every minute.")
   for {
-    fmt.Println("Cleaning stats (1 min)")
     n := time.Now()
     // we keep 2 minutes
     delta := time.Minute * 2
@@ -129,6 +133,10 @@ func (r *RequestStat)UpdateProtocol(protocol string) {
 }
 
 func (r *RequestStat)End() {
+  
+  // Call stats ? (code entry)
+  
+  // closed case
   r.Alive = false
 }
 

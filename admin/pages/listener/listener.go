@@ -116,6 +116,7 @@ func Write(ls listenerStream, done chan bool) {
     }
     
     if ls.fulldata {
+      data["starttime"] = stat.SystemStat.Start
       data["cpu"] = runtime.NumCPU()
       data["memalloc"] = m.Alloc
       data["memsys"] = m.Sys

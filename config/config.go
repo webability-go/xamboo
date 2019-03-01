@@ -27,15 +27,16 @@ type Listener struct {
   ReadTimeOut int `json:"readtimeout"`
   WriteTimeOut int `json:"writetimeout"`
   HeaderSize int `json:"headersize"`
+  Log Log `json:"log"`
 }
 
 type Log struct {
   Pages string `json:"pages"`
   Errors string `json:"errors"`
   Sys string `json:"sys"`
+  Stats string `json:"stats"`
   Rotate string `json:"rotate"`
   Compress bool `json:"compress"`
-  
 }
 
 type Host struct {
