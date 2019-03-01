@@ -40,7 +40,7 @@ func fileValidator(key string, otime time.Time) bool {
 }
 
 func Start() {
-  fmt.Println("START CODE SERVERS")
+  fmt.Println("Start Caches Validators for each engine/servers/*")
   PageCache.SetValidator(fileValidator)
   InstanceCache.SetValidator(fileValidator)
   CodeCache.SetValidator(fileValidator)

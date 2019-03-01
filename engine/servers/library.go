@@ -13,7 +13,7 @@ import (
 )
 
 // no limits, no timeout (it's part of the code itself)
-var LibraryCache = xcore.NewXCache("library", 0, 0)  
+var LibraryCache = xcore.NewXCache("library", 0, 0)
 
 type LibraryServer struct {
   PagesDir string
@@ -37,7 +37,6 @@ func (p *LibraryServer) GetData(P string) *LibraryStream {
     }
     return data
   }
-  
   return nil
 }
 

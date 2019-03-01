@@ -82,7 +82,7 @@ func Supervisor() {
   
   CPile.Workers = make(map[string]Worker)
   
-  fmt.Println("Launching the supervisor for compilation: will scan .go file to try to compile them when they are outdated - this happen at app launch")
+  fmt.Println("Launching the compilation supervisor.")
 
   // put order in any .go and .so.xx, 
   
@@ -90,3 +90,7 @@ func Supervisor() {
   // listen to the things to compile and recompile
 }
 
+func Start() {
+  // Supervisor will work until the xamboo is working.
+  go Supervisor()
+}

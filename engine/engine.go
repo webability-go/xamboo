@@ -186,6 +186,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
     ctx.Sessionparams = xconfig.New()
     e.MainContext = ctx
   }
+  e.writer.(*CoreWriter).RequestStat.Context = ctx
 
 //  e.pushContext(innerpage, page, P, instancedata, params, version, language)
 

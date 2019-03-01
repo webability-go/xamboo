@@ -3,13 +3,11 @@ package engine
 import (
   "fmt"
   "strings"
-  "os"
   "crypto/tls"
   "net"
   "bufio"
   "net/http"
   "time"
-  "log"
 
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/logger"
@@ -146,9 +144,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 func Run(file string) error {
 
-  servers.Start()
-  go compiler.Supervisor()
-  
   // Link the engines
   context.EngineWrapper = wrapper
   context.EngineWrapperString = wrapperstring
@@ -160,28 +155,29 @@ func Run(file string) error {
       return err
   }
   
-  logger.Run()
+  compiler.Start()
+  servers.Start()
+  logger.Start()
   
-  // Setup loggers (put them in CONFIG)
-  logger := log.New(os.Stdout, "http: ", log.LstdFlags)
-  logger.Println("Server is starting...")
-
   http.HandleFunc("/", StatLoggerWrapper(mainHandler))
 
   finish := make(chan bool)
 
   // build the different servers
   for _, l := range config.Config.Listeners {
-    fmt.Println("Scanning Server " + l.Name)
+    fmt.Println("Scanning Listener: L[" + l.Name + "]")
     go func(listener config.Listener) {
-      fmt.Println("Launching Server " + listener.Name)
+      
+      llogger := logger.GetListenerLogger(listener.Name)
+      
+      fmt.Println("Launching Listener: L[" + listener.Name + "]")
       server := &http.Server{
         Addr: ":"+listener.Port,
-        ErrorLog: logger,
-        ReadTimeout:    time.Duration(listener.ReadTimeOut) * time.Second,
+        ErrorLog: llogger,
+        ReadTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
         ReadHeaderTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
         IdleTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
-        WriteTimeout:   time.Duration(listener.WriteTimeOut) * time.Second,
+        WriteTimeout: time.Duration(listener.WriteTimeOut) * time.Second,
         MaxHeaderBytes: listener.HeaderSize,
       }
     
@@ -192,6 +188,7 @@ func Run(file string) error {
         for _, host := range config.Config.Hosts {
           if utils.SearchInArray(listener.Name, host.Listeners) {
             numcertificates += 1
+            
           }
         }
 
@@ -230,8 +227,9 @@ func Run(file string) error {
           if utils.SearchInArray(listener.Name, host.Listeners) {
             tlsConfig.Certificates[i], err = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
             if err != nil {
-              logger.Fatal(err)
+              llogger.Fatal(err)
             }
+            fmt.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
             i += 1
           }
         }
@@ -240,16 +238,16 @@ func Run(file string) error {
 
         xserver, err := tls.Listen("tcp", listener.IP + ":" + listener.Port, tlsConfig)
         if err != nil {
-          logger.Fatal(err)
+          llogger.Fatal(err)
         }
         servererr := server.Serve(xserver)
         if servererr != nil {
-          logger.Fatal(err)
+          llogger.Fatal(err)
         }
       } else {
         // *******************************************
         // VERIFICAR EL LISTEN AND SERVE POR DEFECTO SIN TLS; ESTA MAL IMPLEMENTADO: HAY QUE USAR EL HANDLER Y TIMEOUTS Y ETC
-        logger.Fatal(http.ListenAndServe(listener.IP + ":" + listener.Port, nil))
+        llogger.Fatal(http.ListenAndServe(listener.IP + ":" + listener.Port, nil))
       }
     }(l)
     

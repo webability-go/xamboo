@@ -39,6 +39,7 @@ XB.wsmessage = function(evt)
   
   if (code.cpu)
   {
+    document.getElementById("since").innerHTML = code.starttime;
     document.getElementById("cpu").innerHTML = code.cpu;
     document.getElementById("goroutines").innerHTML = code.goroutines.toLocaleString();
     document.getElementById("memalloc").innerHTML =  XB.FormatUnit(code.memalloc);
@@ -46,7 +47,8 @@ XB.wsmessage = function(evt)
   }
   document.getElementById("totalservedrequests").innerHTML = code.totalservedrequests.toLocaleString();
   document.getElementById("totalservedlength").innerHTML = XB.FormatUnit(code.totalservedlength);
-
+  // calculate uptime
+  
 }
 
 XB.wserror = function(evt)
