@@ -1,10 +1,12 @@
 package main
 
 import (
+  "os"
   "fmt"
   "time"
   "runtime"
   "strings"
+  "io/ioutil"
   "encoding/json"
 
   "github.com/gorilla/websocket"
@@ -103,14 +105,21 @@ func Write(ls listenerStream, done chan bool) {
     
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
+    loadavg, err := ioutil.ReadFile("/proc/loadavg")
+    xloadavg := strings.Split(string(loadavg), " ")
     
     data := map[string]interface{}{
       "listenerid": ls.Id,
       "goroutines": runtime.NumGoroutine(),
+      "memalloc": m.Alloc,
+      "memsys": m.Sys,
       "reqtotal": stat.SystemStat.RequestsTotal,
       "totalservedlength": stat.SystemStat.LengthServed,
       "totalservedrequests": stat.SystemStat.RequestsTotal,
       "last": last,
+      "load1": xloadavg[0],
+      "load2": xloadavg[1],
+      "load3": xloadavg[2],
 
       "lastrequests": newreqs,
     }
@@ -118,14 +127,13 @@ func Write(ls listenerStream, done chan bool) {
     if ls.fulldata {
       data["starttime"] = stat.SystemStat.Start
       data["cpu"] = runtime.NumCPU()
-      data["memalloc"] = m.Alloc
-      data["memsys"] = m.Sys
+      data["sysname"], _ = os.Hostname()
       ls.fulldata = false
     }
     
     datajson, _ := json.Marshal(data)
     ls.RequestStat.UpdateStat(0, len(datajson))
-    err := ls.Stream.WriteMessage(websocket.TextMessage, []byte(datajson))
+    err = ls.Stream.WriteMessage(websocket.TextMessage, []byte(datajson))
 
     if err != nil {
       fmt.Println("END STREAM IN WRITE: " + fmt.Sprint(err))

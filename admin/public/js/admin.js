@@ -2,6 +2,7 @@
 XB = {};
 XB.ws = null;
 XB.onLoad = onLoad;
+XB.timestart = 0;
 
 function onLoad()
 {
@@ -39,16 +40,20 @@ XB.wsmessage = function(evt)
   
   if (code.cpu)
   {
-    document.getElementById("since").innerHTML = code.starttime;
     document.getElementById("cpu").innerHTML = code.cpu;
-    document.getElementById("goroutines").innerHTML = code.goroutines.toLocaleString();
-    document.getElementById("memalloc").innerHTML =  XB.FormatUnit(code.memalloc);
-    document.getElementById("memsys").innerHTML =  XB.FormatUnit(code.memsys);
+    document.getElementById("sysname").innerHTML = code.sysname;
+    XB.timestart = new Date(code.starttime)
+    document.getElementById("since").innerHTML = XB.FormatDate(XB.timestart);
   }
+  document.getElementById("load").innerHTML =  code.load1 + ' - ' + code.load2 + ' - ' + code.load3;
+  document.getElementById("memalloc").innerHTML =  XB.FormatUnit(code.memalloc);
+  document.getElementById("memsys").innerHTML =  XB.FormatUnit(code.memsys);
+  document.getElementById("goroutines").innerHTML = code.goroutines.toLocaleString();
   document.getElementById("totalservedrequests").innerHTML = code.totalservedrequests.toLocaleString();
   document.getElementById("totalservedlength").innerHTML = XB.FormatUnit(code.totalservedlength);
   // calculate uptime
-  
+  n = new Date();
+  document.getElementById("online").innerHTML = XB.FormatTime(n - XB.timestart);
 }
 
 XB.wserror = function(evt)
@@ -243,5 +248,16 @@ XB.FormatTime = function(fnumber)
     }
   }
   return str;
+}
+
+XB.FormatDate = function(d)
+{
+  return ("00" + (d.getMonth() + 1)).slice(-2) + "/" + 
+    ("00" + d.getDate()).slice(-2) + "/" + 
+    d.getFullYear() + " " + 
+    ("00" + d.getHours()).slice(-2) + ":" + 
+    ("00" + d.getMinutes()).slice(-2) // + ":" + 
+//    ("00" + d.getSeconds()).slice(-2)
+    ;
 }
 
