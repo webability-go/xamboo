@@ -37,6 +37,15 @@ https://gist.github.com/elithrar/9146306#gistcomment-2145050
 Version Changes Control
 =======================
 
+V0.0.14 - 2019-03-06
+-----------------------
+> Uses XConfig 0.0.7
+
+> Uses XCore 0.0.7
+
+- Admin console enhanced with cpu load, uptime, dynamic data actualized, etc
+
+
 V0.0.13 - 2019-03-01
 -----------------------
 > Uses XConfig 0.0.6
