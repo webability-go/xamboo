@@ -30,12 +30,20 @@ TO DO
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
-- Auth for pages https://stackoverflow.com/questions/21936332/idiomatic-way-of-requiring-http-basic-auth-in-go
-https://gist.github.com/elithrar/9146306
-https://gist.github.com/elithrar/9146306#gistcomment-2145050
+- Implements https://github.com/tdewolff/minify
 
 Version Changes Control
 =======================
+
+V0.0.15 - 2019-03-22
+-----------------------
+> Uses XConfig 0.0.7
+
+> Uses XCore 0.0.7
+
+- administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
+- listener.go modified to not serve "too much information"
+- Basic Auth implemented for simple username/pass/realm
 
 V0.0.14 - 2019-03-06
 -----------------------

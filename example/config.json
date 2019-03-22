@@ -100,6 +100,11 @@
       "cert": "/etc/letsencrypt/live/developers.webability.info/cert.pem",
       "key": "/etc/letsencrypt/live/developers.webability.info/privkey.pem",
       "static": "./admin/public",
+      
+      "basicauth": true,
+      "basicrealm": "Xamboo admin console",
+      "basicuser": "admin",
+      "basicpass": "manager",
 
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",

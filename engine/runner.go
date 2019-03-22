@@ -8,6 +8,7 @@ import (
   "bufio"
   "net/http"
   "time"
+  "crypto/subtle"
 
   "github.com/webability-go/xamboo/utils"
   "github.com/webability-go/xamboo/logger"
@@ -43,10 +44,10 @@ func (cw *CoreWriter) Write(b []byte) (int, error) {
 
 // Makes the hijack function visible for gorilla websockets
 func (cw *CoreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
-		return hj.Hijack()
-	}
-	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported")
+  if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
+    return hj.Hijack()
+  }
+  return nil, nil, fmt.Errorf("http.Hijacker interface is not supported")
 }
 
 func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
@@ -100,6 +101,17 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
     if pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath + r.URL.Path) {
       http.FileServer(http.Dir(hostdef.StaticPath)).ServeHTTP(w, r)
       return
+    }
+    
+    // check AUTH
+    if hostdef.BasicAuth {
+      user, pass, ok := r.BasicAuth()
+      if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(hostdef.BasicUser)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(hostdef.BasicPass)) != 1 {
+        w.Header().Set("WWW-Authenticate", `Basic realm="`+hostdef.BasicRealm+`"`)
+        w.WriteHeader(401)
+        w.Write([]byte("Unauthorised.\n"))
+        return
+      }
     }
     
     // Check Origin
