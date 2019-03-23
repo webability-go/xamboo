@@ -84,7 +84,7 @@ func Read(ls listenerStream, done chan bool) {
 }
 
 func Write(ls listenerStream, done chan bool) {
-  last := time.Time{}
+  last := time.Now()
   for {
     // if no changes, do not send anything
     // if more than 10 seconds, send a pingpong
@@ -93,12 +93,17 @@ func Write(ls listenerStream, done chan bool) {
     // search for all the data > last
     newreqs := []*stat.RequestStat{}
     newTime := time.Time{}
+    num := 0
     for _, x := range stat.SystemStat.Requests {
       if last.Before(x.Time) {
-        newreqs = append(newreqs, x)
+        // we limit paquet size to 100 for security
+        if num < 100 {
+          newreqs = append(newreqs, x)
+        }
         if newTime.Before(x.Time) {
           newTime = x.Time
         }
+        num ++
       }
     }
     last = newTime
@@ -122,6 +127,7 @@ func Write(ls listenerStream, done chan bool) {
       "load3": xloadavg[2],
 
       "lastrequests": newreqs,
+      "numlastrequests": num,
     }
     
     if ls.fulldata {
@@ -144,8 +150,3 @@ func Write(ls listenerStream, done chan bool) {
   }
   done <- true
 }
-
-
-
-
-

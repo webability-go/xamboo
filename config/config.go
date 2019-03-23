@@ -49,6 +49,10 @@ type Host struct {
   Config *xconfig.XConfig
   StaticPath string `json:"static"`
   Origin *OriginDef `json:"origin"`
+  BasicAuth bool `json:"basicauth"`
+  BasicRealm string `json:"basicrealm"`
+  BasicUser string `json:"basicuser"`
+  BasicPass string `json:"basicpass"`
   Log Log `json:"log"`
   Plugins map[string]*plugin.Plugin
 }

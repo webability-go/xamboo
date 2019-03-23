@@ -4,6 +4,15 @@ XB.ws = null;
 XB.onLoad = onLoad;
 XB.timestart = 0;
 
+XB.ispause = false;
+XB.methods = {get: true, post: true, put: true, delete: true, options: true};
+
+XB.stat = {};
+XB.statip = {};
+XB.statlastreceived = -1;
+XB.xcode = [];
+XB.pointer = 0;
+
 function onLoad()
 {
   // open ws
@@ -15,6 +24,31 @@ function onLoad()
   XB.ws.onclose = XB.wsclose;
   XB.ws.onmessage = XB.wsmessage;
   XB.ws.onerror = XB.wserror;
+  XB.paintfilter();
+  
+  document.getElementById("flag-alive").state = true;
+}
+
+XB.pause = function()
+{
+  XB.ispause = !XB.ispause;
+  XB.paintfilter()
+}
+
+XB.setfilter = function(id)
+{
+  XB.methods[id] = !XB.methods[id];
+  XB.paintfilter()
+}
+
+XB.paintfilter = function()
+{
+  document.getElementById("b_pause").style.backgroundColor = XB.ispause?'blue':'white';
+  document.getElementById("b_get").style.backgroundColor = XB.methods.get?'green':'red';
+  document.getElementById("b_post").style.backgroundColor = XB.methods.post?'green':'red';
+  document.getElementById("b_put").style.backgroundColor = XB.methods.put?'green':'red';
+  document.getElementById("b_delete").style.backgroundColor = XB.methods.delete?'green':'red';
+  document.getElementById("b_options").style.backgroundColor = XB.methods.options?'green':'red';
 }
 
 XB.wsopen = function(evt)
@@ -30,13 +64,12 @@ XB.wsclose = function(evt)
 
 XB.wsmessage = function(evt)
 {
+  XB.SwitchFlagAlive();
+  
   if (evt.data && evt.data)
   {
     code = JSON.parse(evt.data)
   }
-  console.log(code);
-  
-  XB.ParseMessage(code);
   
   if (code.cpu)
   {
@@ -54,6 +87,22 @@ XB.wsmessage = function(evt)
   // calculate uptime
   n = new Date();
   document.getElementById("online").innerHTML = XB.FormatTime(n - XB.timestart);
+  
+  if (code.lastrequests)
+    XB.ParseRequests(code.lastrequests);
+  
+  var sum = 0;
+  for (var i in XB.stat)
+    sum += XB.stat[i];
+  
+  console.log(XB.stat, XB.statlastreceived-1, XB.stat[XB.statlastreceived-1])
+  if (XB.stat[XB.statlastreceived-1])
+    document.getElementById("servedrequests").innerHTML = XB.stat[XB.statlastreceived-1] + " req/s " + sum + " req/2min";
+  else
+    document.getElementById("servedrequests").innerHTML = sum + " req/2min";
+  
+  document.getElementById("uniqueip").innerHTML =  XB.CountObject(XB.statip) + " ip/2min";
+  
 }
 
 XB.wserror = function(evt)
@@ -61,19 +110,27 @@ XB.wserror = function(evt)
   console.log("WS error: ", evt.data);
 }
 
-XB.ParseMessage = function(code)
+XB.SwitchFlagAlive = function()
 {
-  if (code.lastrequests)
+  node = document.getElementById("flag-alive");
+  if (node.state == true)
   {
-    XB.SetRequests(code.lastrequests);
+    node.style.backgroundColor = "yellow";
+    node.state = false;
+  }
+  else
+  {
+    node.style.backgroundColor = "red";
+    node.state = true;
   }
 }
+
 
 XB.SetOneRequest = function()
 {
   if (XB.pointer >= XB.xcode.length)
     return;
-
+  
   code = XB.xcode[XB.pointer++];
   
   var p = XB.getDomNode("lastrequests")
@@ -121,6 +178,8 @@ XB.SetOneRequest = function()
     {
       if (!reqsnodes[i].date)
         continue;
+      if (reqsnodes[i].code == 0)
+        continue;
       reqs.push([ reqsnodes[i].id, reqsnodes[i].date ]);
     }
     // order 
@@ -151,31 +210,79 @@ XB.getFirstZero = function()
   return first;
 }
 
-
-XB.xcode = []
-XB.pointer = 0;
-
-XB.SetRequests = function(code)
+XB.ParseRequests = function(code)
 {
-  // put old requests instantly
-  if (XB.pointer < XB.xcode.length)
+  // 1. clean old stats: we keep only 2 minutes alive
+  var old = Math.floor(new Date()/1000)-120;
+  for (var i in XB.stat)
   {
-    for (i=XB.pointer; i<XB.xcode.length; i++)
-    {
-      XB.SetOneRequest();
-    }
+    if (i < old)
+      delete(XB.stat[i]);
   }
+  for (var i in XB.statip)
+  {
+    for (var j = XB.statip[i].length-1; j >= 0; j--)
+    {
+      if (XB.statip[i][j] < old)
+      {
+        XB.statip[i].splice(j, 1);
+      }
+    }
+    if (XB.statip[i].length == 0)
+      delete(XB.statip[i]);
+  }
+  // 2. get all stats
+  for (var i = 0; i < code.length; i++)
+  {
+    d = Math.floor(new Date(code[i].Time).getTime()/1000);
+    if (d > XB.statlastreceived)
+      XB.statlastreceived = d;
+
+    // WSS: no count
+    if (code[i].Protocol == "WSS")
+      continue;
+    
+    ip = code[i].IP;
+
+    if (XB.stat[d])
+      XB.stat[d]++;
+    else
+      XB.stat[d] = 1;
+    
+    if (XB.statip[ip])
+      XB.statip[ip].push(d);
+    else
+      XB.statip[ip] = [d];
+  }
+  
+  return;
   
   // reorder XB.xcode: requests with Code=0 always at the end, ordered y ID
   XB.xcode = XB.ReorderCode(code);
   XB.pointer = 0;
-  // the server pushes data every second (1000 ms)
-  // put new requests slowly
+  start = 0;
+  if (code.length > 20)
+  {
+    start = code.length-20;
+  }
+  
   for (i=0; i<code.length; i++)
   {
-    setTimeout(function() { XB.SetOneRequest(); }, 900/code.length*i);
+    XB.MakeStat(code[i]);
+  }
+  
+  // the server pushes data every second (1000 ms)
+  // put new requests slowly
+  for (i=start; i<code.length; i++)
+  {
+    setTimeout(function() { XB.SetOneRequest(); }, 1000/(code.length-start)*(i-start));
   }
 }
+
+
+
+
+
 
 // order by Code != 0, Id, then by id = 0, Id
 XB.ReorderCode = function(code)
@@ -186,7 +293,7 @@ XB.ReorderCode = function(code)
       if (b.Code != 0 && a.Code == 0) return 1;
       return a.Id-b.Id;
     });
-  console.log(code);
+//  console.log(code);
   return code;
 }
 
@@ -261,3 +368,10 @@ XB.FormatDate = function(d)
     ;
 }
 
+XB.CountObject = function(o)
+{
+  var c = 0;
+  for (var i in o)
+    c++;
+  return c;
+}
