@@ -16,6 +16,7 @@ import (
 var LibraryCache = xcore.NewXCache("library", 0, 0)
 
 type LibraryServer struct {
+  Prefix string
   PagesDir string
 }
 
@@ -28,7 +29,7 @@ func (p *LibraryServer) GetData(P string) *LibraryStream {
   // build File Path:
   lastpath := utils.LastPath(P)
   filepath := p.PagesDir + P + "/" + lastpath + ".go"
-  fileplugin := p.PagesDir + P + "/" + lastpath + ".so"
+  fileplugin := p.PagesDir + P + "/" + p.Prefix + lastpath + ".so"
 
   if utils.FileExists(filepath) {
     data := &LibraryStream{
@@ -95,27 +96,8 @@ func (p *LibraryStream) Run(ctx *context.Context, template *xcore.XTemplate, lan
     return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION"
   }
   
-//  fmt.Println(fct)
-//  fmt.Println("Calling library: " + p.FilePlugin)
-  
   x1 := fct.(func(*context.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string)(ctx, template, language, e)
   
-//  fmt.Println("End of call library: " + p.FilePlugin)
-//  fmt.Println("Returned data: " + x1)
-  
-  
-  
-  // loads the HOT LOAD
-/*  
-  fmt.Println(p.FilePlugin + ".2")
-  lib, err = plugin.Open(p.FilePlugin + ".2")
-  if err != nil {
-    fmt.Println(err)
-    return "ERROR: LIBRARY PAGE/BLOCK NOT LOADED V2"
-  }
-  fct, err = lib.Lookup("Run")
-  
-  x2 := fct.(func(*context.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) string)(ctx, template, language, e)
-  */
+
   return x1
 }

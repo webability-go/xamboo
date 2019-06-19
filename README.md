@@ -35,13 +35,23 @@ Extras:
 Version Changes Control
 =======================
 
+V0.0.16 - 2019-06-19
+-----------------------
+> Uses XConfig 0.0.7
+
+> Uses XCore 0.0.7
+
+- Prefix added to the .so page libraries to avoid competitive problem of pages with same names between different sites. The unicity of the page is mandatory only on every site, but can be repeated between sites. The prefix is the config name of the host controller.
+- Administration console again with all the requests viewable.
+- Pause implemented (will close the websocket) and restart (will open again the websocket)
+
 V0.0.15 - 2019-03-22
 -----------------------
 > Uses XConfig 0.0.7
 
 > Uses XCore 0.0.7
 
-- administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
+- Administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
 - listener.go modified to not serve "too much information"
 - Basic Auth implemented for simple username/pass/realm
 

@@ -221,6 +221,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 
     case "library":
       libraryserver := &servers.LibraryServer {
+        Prefix: e.Host.Name + "-",
         PagesDir: pd,
       }
 
