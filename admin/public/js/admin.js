@@ -17,21 +17,39 @@ function onLoad()
 {
   // open ws
   console.log("System OnLoad")
-    
-  console.log(window.location.host)
-  XB.ws = new WebSocket("wss://"+window.location.host+"/listener");
-  XB.ws.onopen = XB.wsopen;
-  XB.ws.onclose = XB.wsclose;
-  XB.ws.onmessage = XB.wsmessage;
-  XB.ws.onerror = XB.wserror;
+
+  XB.openWS();
   XB.paintfilter();
   
   document.getElementById("flag-alive").state = true;
 }
 
+XB.openWS = function()
+{
+  XB.ws = new WebSocket("wss://"+window.location.host+"/listener");
+  XB.ws.onopen = XB.wsopen;
+  XB.ws.onclose = XB.wsclose;
+  XB.ws.onmessage = XB.wsmessage;
+  XB.ws.onerror = XB.wserror;
+}
+
+XB.closeWS = function()
+{
+  XB.ws.close();
+  XB.ws = null;
+}
+
 XB.pause = function()
 {
   XB.ispause = !XB.ispause;
+  if (XB.ispause)
+  { // close WS
+    XB.closeWS();
+  }
+  else
+  { // open WS
+    XB.openWS();
+  }
   XB.paintfilter()
 }
 
@@ -95,7 +113,7 @@ XB.wsmessage = function(evt)
   for (var i in XB.stat)
     sum += XB.stat[i];
   
-  console.log(XB.stat, XB.statlastreceived-1, XB.stat[XB.statlastreceived-1])
+//  console.log(XB.stat, XB.statlastreceived-1, XB.stat[XB.statlastreceived-1])
   if (XB.stat[XB.statlastreceived-1])
     document.getElementById("servedrequests").innerHTML = XB.stat[XB.statlastreceived-1] + " req/s " + sum + " req/2min";
   else
@@ -255,8 +273,6 @@ XB.ParseRequests = function(code)
       XB.statip[ip] = [d];
   }
   
-  return;
-  
   // reorder XB.xcode: requests with Code=0 always at the end, ordered y ID
   XB.xcode = XB.ReorderCode(code);
   XB.pointer = 0;
@@ -266,10 +282,10 @@ XB.ParseRequests = function(code)
     start = code.length-20;
   }
   
-  for (i=0; i<code.length; i++)
-  {
-    XB.MakeStat(code[i]);
-  }
+//  for (i=0; i<code.length; i++)
+//  {
+//    XB.MakeStat(code[i]);
+//  }
   
   // the server pushes data every second (1000 ms)
   // put new requests slowly

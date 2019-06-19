@@ -73,6 +73,9 @@ func Read(ls listenerStream, done chan bool) {
       fmt.Println("END STREAM IN READ: " + fmt.Sprint(err))
       break
     }
+//    if message == "stat"
+    
+    
     fmt.Println("MESSAGE: " + fmt.Sprint(message))
     if strings.Contains(string(message), "F") {
       ls.fulldata = true
