@@ -1,271 +1,270 @@
 package engine
 
 import (
-  "fmt"
-  "strings"
-  "crypto/tls"
-  "net"
-  "bufio"
-  "net/http"
-  "time"
-  "crypto/subtle"
+	"bufio"
+	"crypto/subtle"
+	"crypto/tls"
+	"fmt"
+	"net"
+	"net/http"
+	"strings"
+	"time"
 
-  "github.com/webability-go/xamboo/utils"
-  "github.com/webability-go/xamboo/logger"
-  "github.com/webability-go/xamboo/config"
-  "github.com/webability-go/xamboo/engine/context"
-  "github.com/webability-go/xamboo/engine/servers"
-  "github.com/webability-go/xamboo/compiler"
-  "github.com/webability-go/xamboo/stat"
+	"github.com/webability-go/xamboo/compiler"
+	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/engine/context"
+	"github.com/webability-go/xamboo/engine/servers"
+	"github.com/webability-go/xamboo/logger"
+	"github.com/webability-go/xamboo/stat"
+	"github.com/webability-go/xamboo/utils"
 )
 
 // Structures to wrap writer and log stats
 type CoreWriter struct {
-  http.ResponseWriter
-  http.Hijacker
-  status int
-  length int
-  RequestStat *stat.RequestStat
+	http.ResponseWriter
+	http.Hijacker
+	status      int
+	length      int
+	RequestStat *stat.RequestStat
 }
 
 func (cw *CoreWriter) WriteHeader(status int) {
-  cw.status = status
-  cw.ResponseWriter.WriteHeader(status)
+	cw.status = status
+	cw.ResponseWriter.WriteHeader(status)
 }
 
 func (cw *CoreWriter) Write(b []byte) (int, error) {
-  if cw.status == 0 {
-    cw.status = 200
-  }
-  n, err := cw.ResponseWriter.Write(b)
-  cw.length += n
-  return n, err
+	if cw.status == 0 {
+		cw.status = 200
+	}
+	n, err := cw.ResponseWriter.Write(b)
+	cw.length += n
+	return n, err
 }
 
 // Makes the hijack function visible for gorilla websockets
 func (cw *CoreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-  if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
-    return hj.Hijack()
-  }
-  return nil, nil, fmt.Errorf("http.Hijacker interface is not supported")
+	if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
+		return hj.Hijack()
+	}
+	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported")
 }
 
 func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    req := stat.CreateRequestStat(r.Host + r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := stat.CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 
-    cw := CoreWriter{ResponseWriter: w, RequestStat: req,}
-    handler.ServeHTTP(&cw, r)
+		cw := CoreWriter{ResponseWriter: w, RequestStat: req}
+		handler.ServeHTTP(&cw, r)
 
-    req.UpdateStat(cw.status, cw.length)
-    req.End()
-  }
+		req.UpdateStat(cw.status, cw.length)
+		req.End()
+	}
 }
 
 // certificados desde la config
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-//  fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
-//  fmt.Println(r.Header)
-//  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
-  
-  // CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
-  // 1. http, https, ftp, ftps, ws, wss ?
-  // *** WHAT WILL WE SUPPORT ? (at least WS => CHECK TEST DONE)
-  secure := false
-  if (r.TLS != nil) {
-    secure = true
-  }
+	//  fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
+	//  fmt.Println(r.Header)
+	//  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
 
-  var host string
-  var port string
-  if poscolumn := strings.Index(r.Host, ":"); poscolumn < 0 {
-    host = r.Host
-    port = ""
-    if r.TLS == nil {
-      port = "80"
-    } else {
-      port = "443"
-    }
-  } else {
-    // search for the correct config
-    host, port, _ = net.SplitHostPort(r.Host)
-  }
-  hostdef, listenerdef := config.Config.GetListener(host, port, secure)
+	// CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
+	// 1. http, https, ftp, ftps, ws, wss ?
+	// *** WHAT WILL WE SUPPORT ? (at least WS => CHECK TEST DONE)
+	secure := false
+	if r.TLS != nil {
+		secure = true
+	}
 
-  if listenerdef != nil {
-    
-    // IS it a static file to server ?
-    // 2 conditions: 1. Has an extension, 2. exists on file directory for this site
-    pospoint := strings.Index(r.URL.Path, ".")
-    posdoublepoint := strings.Index(r.URL.Path, "..")
-    if pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath + r.URL.Path) {
-      http.FileServer(http.Dir(hostdef.StaticPath)).ServeHTTP(w, r)
-      return
-    }
-    
-    // check AUTH
-    if hostdef.BasicAuth {
-      user, pass, ok := r.BasicAuth()
-      if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(hostdef.BasicUser)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(hostdef.BasicPass)) != 1 {
-        w.Header().Set("WWW-Authenticate", `Basic realm="`+hostdef.BasicRealm+`"`)
-        w.WriteHeader(401)
-        w.Write([]byte("Unauthorised.\n"))
-        return
-      }
-    }
-    
-    // Check Origin
-    if hostdef.Origin != nil {
-      // origin MUST contain maindomain as ending string
-      origin := r.Header.Get("Origin")
-      candidate := true
-      for _, d := range hostdef.Origin.MainDomains {
-        dlen := len(d)
-        // 7 is http:// minimum lentgh added to the domain name
-        if len(origin) > dlen+7 && origin[len(origin)-dlen:] == d {
-          candidate = false
-          break
-        }
-      }
-      if candidate {
-        origin = hostdef.Origin.Default
-      }
-      
-      w.Header().Set("Access-Control-Allow-Origin", origin)
-      w.Header().Set("Access-Control-Allow-Methods", strings.Join(hostdef.Origin.Methods, ", "))
-      w.Header().Set("Access-Control-Allow-Headers", strings.Join(hostdef.Origin.Headers, ", "))
-      if hostdef.Origin.Credentials {
-        w.Header().Set("Access-Control-Allow-Credentials", "true")
-      }
-    }
-    
-    // SPLIT URI - QUERY to call the engine
-    engine := &Engine {
-      Method: r.Method,
-      Page: r.URL.Path,
-      Listener: listenerdef,
-      Host: hostdef,
-    }
+	var host string
+	var port string
+	if poscolumn := strings.Index(r.Host, ":"); poscolumn < 0 {
+		host = r.Host
+		port = ""
+		if r.TLS == nil {
+			port = "80"
+		} else {
+			port = "443"
+		}
+	} else {
+		// search for the correct config
+		host, port, _ = net.SplitHostPort(r.Host)
+	}
+	hostdef, listenerdef := config.Config.GetListener(host, port, secure)
 
-    engine.Start(w, r)
-  } else {
-    // ERROR: NO LISTENER DEFINED 
-    http.Error(w, "Error, no site found", http.StatusNotImplemented)
-  }
+	if listenerdef != nil {
+
+		// IS it a static file to server ?
+		// 2 conditions: 1. Has an extension, 2. exists on file directory for this site
+		pospoint := strings.Index(r.URL.Path, ".")
+		posdoublepoint := strings.Index(r.URL.Path, "..")
+		if pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath+r.URL.Path) {
+			http.FileServer(http.Dir(hostdef.StaticPath)).ServeHTTP(w, r)
+			return
+		}
+
+		// check AUTH
+		if hostdef.BasicAuth {
+			user, pass, ok := r.BasicAuth()
+			if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(hostdef.BasicUser)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(hostdef.BasicPass)) != 1 {
+				w.Header().Set("WWW-Authenticate", `Basic realm="`+hostdef.BasicRealm+`"`)
+				w.WriteHeader(401)
+				w.Write([]byte("Unauthorised.\n"))
+				return
+			}
+		}
+
+		// Check Origin
+		if hostdef.Origin != nil {
+			// origin MUST contain maindomain as ending string
+			origin := r.Header.Get("Origin")
+			candidate := true
+			for _, d := range hostdef.Origin.MainDomains {
+				dlen := len(d)
+				// 7 is http:// minimum lentgh added to the domain name
+				if len(origin) > dlen+7 && origin[len(origin)-dlen:] == d {
+					candidate = false
+					break
+				}
+			}
+			if candidate {
+				origin = hostdef.Origin.Default
+			}
+
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", strings.Join(hostdef.Origin.Methods, ", "))
+			w.Header().Set("Access-Control-Allow-Headers", strings.Join(hostdef.Origin.Headers, ", "))
+			if hostdef.Origin.Credentials {
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+			}
+		}
+
+		// SPLIT URI - QUERY to call the engine
+		engine := &Engine{
+			Method:   r.Method,
+			Page:     r.URL.Path,
+			Listener: listenerdef,
+			Host:     hostdef,
+		}
+
+		engine.Start(w, r)
+	} else {
+		// ERROR: NO LISTENER DEFINED
+		http.Error(w, "Error, no site found", http.StatusNotImplemented)
+	}
 }
 
 func Run(file string) error {
 
-  // Link the engines
-  context.EngineWrapper = wrapper
-  context.EngineWrapperString = wrapperstring
+	// Link the engines
+	context.EngineWrapper = wrapper
+	context.EngineWrapperString = wrapperstring
 
-  // Load the config
-  err := config.Config.Load(file)
-  if err != nil {
-      fmt.Println(err.Error())
-      return err
-  }
-  
-  compiler.Start()
-  servers.Start()
-  logger.Start()
-  
-  http.HandleFunc("/", StatLoggerWrapper(mainHandler))
+	// Load the config
+	err := config.Config.Load(file)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
 
-  finish := make(chan bool)
+	compiler.Start()
+	servers.Start()
+	logger.Start()
 
-  // build the different servers
-  for _, l := range config.Config.Listeners {
-    fmt.Println("Scanning Listener: L[" + l.Name + "]")
-    go func(listener config.Listener) {
-      
-      llogger := logger.GetListenerLogger(listener.Name)
-      
-      fmt.Println("Launching Listener: L[" + listener.Name + "]")
-      server := &http.Server{
-        Addr: ":"+listener.Port,
-        ErrorLog: llogger,
-        ReadTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
-        ReadHeaderTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
-        IdleTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
-        WriteTimeout: time.Duration(listener.WriteTimeOut) * time.Second,
-        MaxHeaderBytes: listener.HeaderSize,
-      }
-    
-      // If the server is protocol HTTPS, we have to scan all the certificates for this listener
-      if (listener.Protocol == "https") {
-        numcertificates := 0
-        // We search for all the hosts on this listener
-        for _, host := range config.Config.Hosts {
-          if utils.SearchInArray(listener.Name, host.Listeners) {
-            numcertificates += 1
-            
-          }
-        }
+	http.HandleFunc("/", StatLoggerWrapper(mainHandler))
 
-        tlsConfig := &tls.Config{
-          CipherSuites: []uint16{
-//              tls.TLS_RSA_WITH_RC4_128_SHA,
-//              tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
-//              tls.TLS_RSA_WITH_AES_128_CBC_SHA,
-//              tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-//              tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
-//              tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
-//              tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-//              tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
-              tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-              tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-//              tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
-//              tls.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
-              tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-              tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-              tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-              tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-              tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-              tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-              tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-              tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-              tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
-              tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-            },
-        }
-        tlsConfig.PreferServerCipherSuites = true
-        tlsConfig.MinVersion = tls.VersionTLS12
-        tlsConfig.MaxVersion = tls.VersionTLS12
-        tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
-        i := 0
-        for _, host := range config.Config.Hosts {
-          if utils.SearchInArray(listener.Name, host.Listeners) {
-            tlsConfig.Certificates[i], err = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
-            if err != nil {
-              llogger.Fatal(err)
-            }
-            fmt.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
-            i += 1
-          }
-        }
-        tlsConfig.BuildNameToCertificate()
-        server.TLSConfig = tlsConfig
+	finish := make(chan bool)
 
-        xserver, err := tls.Listen("tcp", listener.IP + ":" + listener.Port, tlsConfig)
-        if err != nil {
-          llogger.Fatal(err)
-        }
-        servererr := server.Serve(xserver)
-        if servererr != nil {
-          llogger.Fatal(err)
-        }
-      } else {
-        // *******************************************
-        // VERIFICAR EL LISTEN AND SERVE POR DEFECTO SIN TLS; ESTA MAL IMPLEMENTADO: HAY QUE USAR EL HANDLER Y TIMEOUTS Y ETC
-        llogger.Fatal(http.ListenAndServe(listener.IP + ":" + listener.Port, nil))
-      }
-    }(l)
-    
-  }
-  
-  <-finish
-  return nil
+	// build the different servers
+	for _, l := range config.Config.Listeners {
+		fmt.Println("Scanning Listener: L[" + l.Name + "]")
+		go func(listener config.Listener) {
+
+			llogger := logger.GetListenerLogger(listener.Name)
+
+			fmt.Println("Launching Listener: L[" + listener.Name + "]")
+			server := &http.Server{
+				Addr:              ":" + listener.Port,
+				ErrorLog:          llogger,
+				ReadTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
+				ReadHeaderTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
+				IdleTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
+				WriteTimeout:      time.Duration(listener.WriteTimeOut) * time.Second,
+				MaxHeaderBytes:    listener.HeaderSize,
+			}
+
+			// If the server is protocol HTTPS, we have to scan all the certificates for this listener
+			if listener.Protocol == "https" {
+				numcertificates := 0
+				// We search for all the hosts on this listener
+				for _, host := range config.Config.Hosts {
+					if utils.SearchInArray(listener.Name, host.Listeners) {
+						numcertificates += 1
+
+					}
+				}
+
+				tlsConfig := &tls.Config{
+					CipherSuites: []uint16{
+						//              tls.TLS_RSA_WITH_RC4_128_SHA,
+						//              tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
+						//              tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
+						//              tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+						//              tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+						//              tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
+						//              tls.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+						tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+						tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+						tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+					},
+				}
+				tlsConfig.PreferServerCipherSuites = true
+				tlsConfig.MinVersion = tls.VersionTLS12
+				tlsConfig.MaxVersion = tls.VersionTLS12
+				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
+				i := 0
+				for _, host := range config.Config.Hosts {
+					if utils.SearchInArray(listener.Name, host.Listeners) {
+						tlsConfig.Certificates[i], err = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
+						if err != nil {
+							llogger.Fatal(err)
+						}
+						fmt.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
+						i += 1
+					}
+				}
+				tlsConfig.BuildNameToCertificate()
+				server.TLSConfig = tlsConfig
+
+				xserver, err := tls.Listen("tcp", listener.IP+":"+listener.Port, tlsConfig)
+				if err != nil {
+					llogger.Fatal(err)
+				}
+				servererr := server.Serve(xserver)
+				if servererr != nil {
+					llogger.Fatal(err)
+				}
+			} else {
+				// *******************************************
+				// VERIFICAR EL LISTEN AND SERVE POR DEFECTO SIN TLS; ESTA MAL IMPLEMENTADO: HAY QUE USAR EL HANDLER Y TIMEOUTS Y ETC
+				llogger.Fatal(http.ListenAndServe(listener.IP+":"+listener.Port, nil))
+			}
+		}(l)
+
+	}
+
+	<-finish
+	return nil
 }
-
