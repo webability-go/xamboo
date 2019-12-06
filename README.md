@@ -60,7 +60,7 @@ V0.0.15 - 2019-03-22
 
 > Uses XCore 0.0.7
 
-- administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
+- Administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
 - listener.go modified to not serve "too much information"
 - Basic Auth implemented for simple username/pass/realm
 
