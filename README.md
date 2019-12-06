@@ -26,7 +26,7 @@ TO DO
 - Stats module
 - Make admin site available with login for security
 - Errors manager and Logs managers
-- implement call stat function(context) 
+- implement call stat function(context)
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
@@ -34,6 +34,15 @@ Extras:
 
 Version Changes Control
 =======================
+
+V0.1.0 - 2019-12-06
+-----------------------
+> Uses XConfig 0.0.9
+
+> Uses XCore 0.2.0
+
+- Code modifications to meet new XCore build functions and Objects attributes
+- Code formated before sending to github (gofmt -s)
 
 V0.0.16 - 2019-06-19
 -----------------------
@@ -148,9 +157,9 @@ V0.0.5 - 2018-12-17
 > Uses XCore 0.0.2
 
 - Moved servers/cache.go to xcore
-- Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine. 
+- Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine.
   "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code. The core as itself is renamed "runner"
-  
+
 V0.0.4 - 2018-12-05
 -----------------------
 > Uses XConfig 0.0.3
@@ -247,7 +256,7 @@ Types of pages:
 Simple Page (.code)
 -----------------------
 
-The type of the page in the .page file must be 
+The type of the page in the .page file must be
 type=simple
 
 The code of the page is your native code (for instance HTML) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
@@ -270,8 +279,3 @@ The code of the page is your native code (for instance HTML) and you can use a M
 - %--   --%
 - [[BOX,(.*?):
 - BOX]]
-
-
-
-
-
