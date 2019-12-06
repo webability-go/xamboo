@@ -42,7 +42,7 @@ V0.1.0 - 2019-12-06
 > Uses XCore 0.2.0
 
 - Code modifications to meet new XCore build functions and Objects attributes
-- Code formated (gofmt -s)
+- Code formated before sending to github (gofmt -s)
 
 V0.0.16 - 2019-06-19
 -----------------------
