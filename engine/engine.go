@@ -95,8 +95,15 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		P = strings.Join(path, "/")
 	}
 
+	fullpath := false
 	if pagedata == nil {
-		return e.launchError(innerpage, "Error 404: no page found .page for "+page)
+		// last chance: main page accept parameters too ?
+		P, _ = e.Host.Config.GetString("mainpage")
+		pagedata = pageserver.GetData(P)
+		if pagedata == nil || !e.isAvailable(innerpage, pagedata) {
+			return e.launchError(innerpage, "Error 404: no page found .page for "+page)
+		}
+		fullpath = true
 	}
 
 	var xParams []string
@@ -104,7 +111,11 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		if app, _ := pagedata.GetBool("AcceptPathParameters"); !app {
 			return e.launchError(innerpage, "Error 404: no page found with parameters")
 		}
-		xParams = strings.Split(page[len(P)+1:], "/")
+		if fullpath {
+			xParams = strings.Split(page, "/")
+		} else {
+			xParams = strings.Split(page[len(P)+1:], "/")
+		}
 	}
 
 	if !innerpage {
@@ -160,6 +171,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		return e.launchError(innerpage, "Error: the page/block is recursive")
 	}
 
+	// listener can gzip? (flag en config)
+	clientgzip := strings.Contains(e.reader.Header.Get("Accept-Encoding"), "gzip")
+
 	ctx := &context.Context{
 		Request:             e.reader,
 		Writer:              e.writer,
@@ -171,6 +185,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		LocalInstanceparams: instancedata,
 		LocalEntryparams:    params,
 		Plugins:             e.Host.Plugins,
+		CanGZip:             e.Host.GZip && clientgzip,
 	}
 	if innerpage {
 		ctx.MainPage = e.MainContext.MainPage
@@ -236,6 +251,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		templatedata := e.loadTemplate(P, identities)
 
 		xdata = librarydata.Run(ctx, templatedata, languagedata, e)
+		if ctx.GZiped { // do not append anything or we can break the code. No template is allowed in this case
+			return xdata
+		}
 
 	case "template":
 		templatedata := e.loadTemplate(P, identities)

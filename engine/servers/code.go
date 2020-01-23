@@ -261,8 +261,10 @@ func (c *CodeData) Inject(ctx *context.Context, language *xcore.XLanguage, e int
 				injected = append(injected, fmt.Sprint(pm))
 			}
 		case MetaJS: // JS Call for Header
+			// JS can be called (script src=) or inserted inline (script code)
 			injected = append(injected, "JS CALL NOT IMPLEMENTED YET: "+v.data1)
 		case MetaCSS: // CSS Call for Header
+			// CSS can be called (link src=) or inserted inline (style code)
 			injected = append(injected, "CSS CALL NOT IMPLEMENTED YET: "+v.data1)
 		case MetaCall:
 			// build the params

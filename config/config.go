@@ -40,20 +40,21 @@ type Log struct {
 }
 
 type Host struct {
-	Name       string   `json:"name"`
-	Listeners  []string `json:"listeners"`
-	HostNames  []string `json:"hostnames"`
-	Cert       string   `json:"cert"`
-	PrivateKey string   `json:"key"`
-	ConfigFile []string `json:"config"`
-	Config     *xconfig.XConfig
+	Name       string     `json:"name"`
+	Listeners  []string   `json:"listeners"`
+	HostNames  []string   `json:"hostnames"`
+	Cert       string     `json:"cert"`
+	PrivateKey string     `json:"key"`
+	ConfigFile []string   `json:"config"`
 	StaticPath string     `json:"static"`
 	Origin     *OriginDef `json:"origin"`
 	BasicAuth  bool       `json:"basicauth"`
 	BasicRealm string     `json:"basicrealm"`
 	BasicUser  string     `json:"basicuser"`
 	BasicPass  string     `json:"basicpass"`
+	GZip       bool       `json:"gzip"`
 	Log        Log        `json:"log"`
+	Config     *xconfig.XConfig
 	Plugins    map[string]*plugin.Plugin
 }
 

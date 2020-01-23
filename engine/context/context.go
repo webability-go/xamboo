@@ -20,8 +20,7 @@ import (
 var EngineWrapperString func(interface{}, string, *interface{}, string, string, string) string
 var EngineWrapper func(interface{}, string, *interface{}, string, string, string) interface{}
 
-/* The context is needed to be transported between every call from the engine to the different pages servers
- */
+// Context structure is needed to be transported between every call from the engine to the different pages servers
 type Context struct {
 	Request             *http.Request             // The request (and all its data available: headers, variables, form, files, etc)
 	Writer              http.ResponseWriter       // The request (and all its data available: headers, variables, form, files, etc)
@@ -39,4 +38,6 @@ type Context struct {
 	LocalInstanceparams *xconfig.XConfig          // Local real page instance (.instance file)
 	LocalEntryparams    *interface{}              // Params of local page call (NIL if main original page)
 	Plugins             map[string]*plugin.Plugin // Wrapper to all the pre-loaded plugins for the system compiled go code (plugins cannot load plugins)
+	CanGZip             bool                      // set to true if the listener AND the client can accept gziped response
+	GZiped              bool                      // Set to true if the content is gzipped by the code (xamboo will not gzip it again)
 }
