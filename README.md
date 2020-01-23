@@ -35,6 +35,16 @@ Extras:
 Version Changes Control
 =======================
 
+V0.2.0 - 2020-01-23
+-----------------------
+> Uses XConfig 0.1.0
+
+> Uses XCore 0.2.3
+
+- Added ability to GZip content, with a new flag on Host config ("gzip": true,) to authorize compressing the host.
+- The client must support compressing too to fire this ability.
+- Added ability to gzip from the library page too (based on context boolean variables CanGZip and GZiped) and return the gzip data instead of the uncompressed data (usefull if you cache the gziped data for instance)
+
 V0.1.0 - 2019-12-06
 -----------------------
 > Uses XConfig 0.0.9
@@ -53,6 +63,7 @@ V0.0.16 - 2019-06-19
 - Prefix added to the .so page libraries to avoid competitive problem of pages with same names between different sites. The unicity of the page is mandatory only on every site, but can be repeated between sites. The prefix is the config name of the host controller.
 - Administration console again with all the requests viewable.
 - Pause implemented (will close the websocket) and restart (will open again the websocket)
+- bug corrected, the default site page could not receive parameters like other pages if AcceptPathParameters=yes
 
 V0.0.15 - 2019-03-22
 -----------------------

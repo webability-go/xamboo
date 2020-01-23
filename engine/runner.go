@@ -2,12 +2,15 @@ package engine
 
 import (
 	"bufio"
+	"compress/gzip"
 	"crypto/subtle"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/webability-go/xamboo/compiler"
@@ -21,12 +24,18 @@ import (
 
 // Structures to wrap writer and log stats
 type CoreWriter struct {
+	io.Writer
 	http.ResponseWriter
 	http.Hijacker
 	status      int
 	length      int
+	zlength     int
 	RequestStat *stat.RequestStat
 }
+
+var zippers = sync.Pool{New: func() interface{} {
+	return gzip.NewWriter(nil)
+}}
 
 func (cw *CoreWriter) WriteHeader(status int) {
 	cw.status = status
@@ -37,7 +46,14 @@ func (cw *CoreWriter) Write(b []byte) (int, error) {
 	if cw.status == 0 {
 		cw.status = 200
 	}
-	n, err := cw.ResponseWriter.Write(b)
+	var n int
+	var err error
+
+	if cw.Writer != nil && cw.RequestStat != nil && cw.RequestStat.Context != nil && cw.RequestStat.Context.CanGZip && !cw.RequestStat.Context.GZiped {
+		n, err = cw.Writer.Write(b)
+	} else {
+		n, err = cw.ResponseWriter.Write(b)
+	}
 	cw.length += n
 	return n, err
 }
@@ -55,7 +71,30 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
 		req := stat.CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 
 		cw := CoreWriter{ResponseWriter: w, RequestStat: req}
+
+		// There are 2 conditions to use gzip:
+		// 1. authorized on this site
+		// 2. client is compatible
+		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			w.Header().Set("Content-Encoding", "gzip")
+			// Si no hay content type, set to HTML
+			ct := w.Header().Get("Content-Type")
+			if ct == "" {
+				w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+			}
+			// Get a Writer from the Pool
+			gz := zippers.Get().(*gzip.Writer)
+			// When done, put the Writer back in to the Pool
+			defer zippers.Put(gz)
+			// We use Reset to set the writer we want to use.
+			gz.Reset(w)
+			defer gz.Close()
+			cw.Writer = gz
+		}
 		handler.ServeHTTP(&cw, r)
+		if cw.RequestStat != nil && cw.RequestStat.Context != nil && cw.RequestStat.Context.GZiped {
+			w.Header().Set("Content-Encoding", "gzip")
+		}
 
 		req.UpdateStat(cw.status, cw.length)
 		req.End()
@@ -64,6 +103,7 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
 
 // certificados desde la config
 func mainHandler(w http.ResponseWriter, r *http.Request) {
+
 	//  fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
 	//  fmt.Println(r.Header)
 	//  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
@@ -163,7 +203,7 @@ func Run(file string) error {
 	// Load the config
 	err := config.Config.Load(file)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("ERROR EN CONFIG FILE: ", file, err.Error())
 		return err
 	}
 
@@ -200,7 +240,6 @@ func Run(file string) error {
 				for _, host := range config.Config.Hosts {
 					if utils.SearchInArray(listener.Name, host.Listeners) {
 						numcertificates += 1
-
 					}
 				}
 

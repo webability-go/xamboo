@@ -1,7 +1,6 @@
 package servers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/webability-go/xcore"
@@ -31,7 +30,6 @@ func (s *LanguageServer) GetData(P string, i Identity) *xcore.XLanguage {
 		// load the page instance
 		data, err := xcore.NewXLanguageFromXMLFile(filepath)
 		if err != nil {
-			fmt.Println(err)
 			return nil
 		}
 
