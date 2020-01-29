@@ -14,19 +14,24 @@ It is completely independent of the generated code, i.e. you can send HTML, XHTM
 
 Xamboo works on sites currently distributing more than **60 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
 
+COMPILATION
+=======================
+Xamboo needs:
+- github.com/gorilla/websockets
+- github.com/tdewolff/minify
 
 TO DO
 =======================
-- creates a fake SSH key cert for examples to put in examples dir
+- BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
 - language server injector (beautify output)
 - template server injector (beautify output)
 - Caches generator from XCore
 - Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 - Stats module
-- Make admin site available with login for security
 - Errors manager and Logs managers
 - implement call stat function(context)
+- Minify with config and code
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
@@ -34,6 +39,19 @@ Extras:
 
 Version Changes Control
 =======================
+
+V0.3.0 - 2020-01-29
+-----------------------
+- Implementation of recursivity security (launch an error after using 3 times the same page by default).
+- Added parameter maxrecursion=<int> into .page files to change max authorized recursion of a page (for instance a template may be called many times).
+- Added self signed SSL certificate for examples.
+- Auth in config/Host replaces BasicAuth and is now a sub structure with User, Pass, Realm, and Enabled flag.
+- GZip in config/Host is now a sub structure with Mimes, Files and Enabled flag.
+- Logs in config/Host has now an Enabled flag.
+- File server (on static directory) is know served after verifying Auth (error corrected).
+- GZip correctly implemented with mime and file filter options. A library can now gzip a content and return already gzipped data to xamboo, which will only set the correct headers (context.IsGZiped new entry).
+- Minify in config/Host added with enabled flag and rules to minify
+- Minify code implemented in engine. (for test purposes, not yet fully implemented)
 
 V0.2.0 - 2020-01-23
 -----------------------

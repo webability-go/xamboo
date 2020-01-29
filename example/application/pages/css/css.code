@@ -1,0 +1,4 @@
+/* CSS example from a simple page */
+body {
+  background-color: red;
+}

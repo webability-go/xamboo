@@ -3,7 +3,17 @@ package engine
 import (
 	"fmt"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/css"
+	"github.com/tdewolff/minify/html"
+	"github.com/tdewolff/minify/js"
+	"github.com/tdewolff/minify/json"
+	"github.com/tdewolff/minify/svg"
+	"github.com/tdewolff/minify/xml"
 
 	"github.com/webability-go/xconfig"
 	"github.com/webability-go/xcore"
@@ -11,6 +21,7 @@ import (
 	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/engine/context"
 	"github.com/webability-go/xamboo/engine/servers"
+	"github.com/webability-go/xamboo/utils"
 )
 
 /* The main engine structure
@@ -23,8 +34,9 @@ type Engine struct {
 	Listener *config.Listener
 	Host     *config.Host
 
-	MainContext *context.Context
-	Recursivity []string
+	MainContext   *context.Context
+	Recursivity   map[string]int
+	GZipCandidate bool
 }
 
 func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +65,17 @@ func (e *Engine) Start(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code := e.Run(page, false, nil, "", "", "").(string)
+
+	// check config if we will minify before sending code
+	m := minify.New()
+	m.AddFunc("text/css", css.Minify)
+	m.AddFunc("text/html", html.Minify)
+	m.AddFunc("image/svg+xml", svg.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
+	m.String("application/javascript", code)
+	//	fmt.Println(err)
 
 	// WRITE HERE THE WRITER WITH PAGECODE
 	e.writer.Write([]byte(code))
@@ -108,7 +131,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 
 	var xParams []string
 	if P != page {
-		if app, _ := pagedata.GetBool("AcceptPathParameters"); !app {
+		if app, _ := pagedata.GetBool("acceptpathparameters"); !app {
 			return e.launchError(innerpage, "Error 404: no page found with parameters")
 		}
 		if fullpath {
@@ -121,7 +144,7 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 	if !innerpage {
 		if x, _ := pagedata.Get("type"); x == "redirect" {
 			// launch the redirect of the page
-			if p1, _ := pagedata.GetString("Redirect"); p1 != "" {
+			if p1, _ := pagedata.GetString("redirect"); p1 != "" {
 				e.launchRedirect(p1)
 			}
 			return ""
@@ -167,12 +190,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 	}
 
 	// verify the possible recursion
-	if e.verifyRecursion(P) {
-		return e.launchError(innerpage, "Error: the page/block is recursive")
+	if r, c := e.verifyRecursion(P, pagedata); r {
+		return e.launchError(innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
 	}
-
-	// listener can gzip? (flag en config)
-	clientgzip := strings.Contains(e.reader.Header.Get("Accept-Encoding"), "gzip")
 
 	ctx := &context.Context{
 		Request:             e.reader,
@@ -185,7 +205,6 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		LocalInstanceparams: instancedata,
 		LocalEntryparams:    params,
 		Plugins:             e.Host.Plugins,
-		CanGZip:             e.Host.GZip && clientgzip,
 	}
 	if innerpage {
 		ctx.MainPage = e.MainContext.MainPage
@@ -251,9 +270,9 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 		templatedata := e.loadTemplate(P, identities)
 
 		xdata = librarydata.Run(ctx, templatedata, languagedata, e)
-		if ctx.GZiped { // do not append anything or we can break the code. No template is allowed in this case
-			return xdata
-		}
+		//		if ctx.GZiped { // do not append anything or we can break the code. No template is allowed in this case
+		//			return xdata
+		//		}
 
 	case "template":
 		templatedata := e.loadTemplate(P, identities)
@@ -296,23 +315,32 @@ func (e *Engine) Run(page string, innerpage bool, params *interface{}, version s
 
 	data = append(data, xdata)
 
+	// only main page called by client can setup those things
+	if !innerpage {
+		// Control content-type and gzip based on page calculation
+		contenttype := e.writer.Header().Get("Content-Type")
+		if contenttype == "" {
+			contenttype, _ = instancedata.GetString("content-type")
+			if contenttype == "" {
+				contenttype = "text/html; charset=utf-8"
+			}
+		}
+		e.writer.Header().Set("Content-Type", contenttype)
+
+		// GZIPER based on content type?
+		if ctx.IsGZiped {
+			e.writer.Header().Set("Content-Encoding", "gzip")
+		} else {
+			if e.GZipCandidate && utils.GzipMimeCandidate(e.Host.GZip.Mimes, contenttype) {
+				e.writer.Header().Set("Content-Encoding", "gzip")
+				e.writer.(*CoreWriter).CreateGZiper()
+			}
+		}
+	}
+
 	// Cache system disabled for now
 	// e.setFullCache()
-	/*
-	   data = append(data, "<hr><br>The Xamboo CMS Framework<br>")
-	   data = append(data, fmt.Sprintf("Original P: %s<br>", page))
-	   data = append(data, fmt.Sprintf("Method: %s<br>", e.Method))
 
-	   data = append(data, fmt.Sprintf("XParams: %v<br>", xParams))
-	   data = append(data, fmt.Sprintf("identity: %v<br>", identity))
-	   data = append(data, fmt.Sprintf(".page: %v<br>", pagedata))
-	   data = append(data, fmt.Sprintf(".instance: %v<br>", instancedata))
-
-	   data = append(data, fmt.Sprintf("Request Data: %s - %s - %s - %s - %s - %s<br>", e.reader.Method, e.reader.Host, e.reader.URL.Path, e.reader.Proto, e.reader.RemoteAddr, e.reader.RequestURI))
-	   if (e.reader.TLS != nil) {
-	     data = append(data, fmt.Sprintf("TLS: %s - %s - %s - %s - %s - %s<br>", e.reader.TLS.Version, e.reader.TLS.NegotiatedProtocol, e.reader.TLS.CipherSuite, "", "", "" ))
-	   }
-	*/
 	return strings.Join(data, "")
 }
 
@@ -391,8 +419,22 @@ func (e *Engine) isAvailable(innerpage bool, p *xconfig.XConfig) bool {
 }
 
 // return true if there is a recursion
-func (e *Engine) verifyRecursion(page string) bool {
-	return false
+// We authorize up to 3 reentry in the same page before launching recursion (it may happen ?)
+func (e *Engine) verifyRecursion(page string, pagedata *xconfig.XConfig) (bool, int) {
+	c, ok := e.Recursivity[page]
+	max, _ := pagedata.GetInt("maxrecursion")
+	if max <= 0 {
+		max = 3
+	}
+	if !ok {
+		e.Recursivity[page] = 1
+	} else {
+		if c+1 > max {
+			return true, c + 1
+		}
+		e.Recursivity[page]++
+	}
+	return false, 0
 }
 
 func (e *Engine) pushContext(context bool, originP string, P string, instancedata *xconfig.XConfig, params *interface{}, version string, language string) {
