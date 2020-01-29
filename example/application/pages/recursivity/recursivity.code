@@ -1,0 +1,4 @@
+Recursivity test<br />
+call sub page:<br />
+[[CALL,recursivity/subpage]]<br />
+--<br />

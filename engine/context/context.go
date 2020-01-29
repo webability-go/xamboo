@@ -38,6 +38,5 @@ type Context struct {
 	LocalInstanceparams *xconfig.XConfig          // Local real page instance (.instance file)
 	LocalEntryparams    *interface{}              // Params of local page call (NIL if main original page)
 	Plugins             map[string]*plugin.Plugin // Wrapper to all the pre-loaded plugins for the system compiled go code (plugins cannot load plugins)
-	CanGZip             bool                      // set to true if the listener AND the client can accept gziped response
-	GZiped              bool                      // Set to true if the content is gzipped by the code (xamboo will not gzip it again)
+	IsGZiped            bool                      // set to true if the content of the code returned by a library is already gziped
 }

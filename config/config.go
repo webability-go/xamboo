@@ -31,12 +31,26 @@ type Listener struct {
 }
 
 type Log struct {
+	Enabled  bool   `json:"enabled"`
 	Pages    string `json:"pages"`
 	Errors   string `json:"errors"`
 	Sys      string `json:"sys"`
 	Stats    string `json:"stats"`
 	Rotate   string `json:"rotate"`
 	Compress bool   `json:"compress"`
+}
+
+type Auth struct {
+	Enabled bool   `json:"enabled"`
+	Realm   string `json:"realm"`
+	User    string `json:"user"`
+	Pass    string `json:"pass"`
+}
+
+type GZip struct {
+	Enabled bool     `json:"enabled"`
+	Mimes   []string `json:"mimes"`
+	Files   []string `json:"files"`
 }
 
 type Host struct {
@@ -48,11 +62,8 @@ type Host struct {
 	ConfigFile []string   `json:"config"`
 	StaticPath string     `json:"static"`
 	Origin     *OriginDef `json:"origin"`
-	BasicAuth  bool       `json:"basicauth"`
-	BasicRealm string     `json:"basicrealm"`
-	BasicUser  string     `json:"basicuser"`
-	BasicPass  string     `json:"basicpass"`
-	GZip       bool       `json:"gzip"`
+	Auth       Auth       `json:"auth"`
+	GZip       GZip       `json:"gzip"`
 	Log        Log        `json:"log"`
 	Config     *xconfig.XConfig
 	Plugins    map[string]*plugin.Plugin

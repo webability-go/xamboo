@@ -14,6 +14,9 @@ status=published
 # the template to use, or nothing
 template=/templates/main
 
+# Main page should never accept plain url parameters
+acceptpathparameters=no
+
 The following parameters are NOT used by the xamboo itself, but is for the code of the example site. You can define as much as parameters you wish.
 mainid=HomePage
 maintitle=Title of the Home Page

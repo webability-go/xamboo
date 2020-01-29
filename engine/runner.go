@@ -6,7 +6,6 @@ import (
 	"crypto/subtle"
 	"crypto/tls"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"strings"
@@ -24,18 +23,28 @@ import (
 
 // Structures to wrap writer and log stats
 type CoreWriter struct {
-	io.Writer
 	http.ResponseWriter
 	http.Hijacker
 	status      int
 	length      int
 	zlength     int
 	RequestStat *stat.RequestStat
+	GZip        bool
+	GZipWriter  *gzip.Writer
 }
 
 var zippers = sync.Pool{New: func() interface{} {
 	return gzip.NewWriter(nil)
 }}
+
+func (cw *CoreWriter) CreateGZiper() {
+	// If there is still not gzip writer, we create one based on cw WRITER
+	// Get a Writer from the Pool
+	gz := zippers.Get().(*gzip.Writer)
+	gz.Reset(cw.ResponseWriter)
+	cw.GZipWriter = gz
+	cw.GZip = true
+}
 
 func (cw *CoreWriter) WriteHeader(status int) {
 	cw.status = status
@@ -48,9 +57,8 @@ func (cw *CoreWriter) Write(b []byte) (int, error) {
 	}
 	var n int
 	var err error
-
-	if cw.Writer != nil && cw.RequestStat != nil && cw.RequestStat.Context != nil && cw.RequestStat.Context.CanGZip && !cw.RequestStat.Context.GZiped {
-		n, err = cw.Writer.Write(b)
+	if cw.GZip {
+		n, err = cw.GZipWriter.Write(b)
 	} else {
 		n, err = cw.ResponseWriter.Write(b)
 	}
@@ -72,28 +80,11 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
 
 		cw := CoreWriter{ResponseWriter: w, RequestStat: req}
 
-		// There are 2 conditions to use gzip:
-		// 1. authorized on this site
-		// 2. client is compatible
-		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			w.Header().Set("Content-Encoding", "gzip")
-			// Si no hay content type, set to HTML
-			ct := w.Header().Get("Content-Type")
-			if ct == "" {
-				w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-			}
-			// Get a Writer from the Pool
-			gz := zippers.Get().(*gzip.Writer)
-			// When done, put the Writer back in to the Pool
-			defer zippers.Put(gz)
-			// We use Reset to set the writer we want to use.
-			gz.Reset(w)
-			defer gz.Close()
-			cw.Writer = gz
-		}
 		handler.ServeHTTP(&cw, r)
-		if cw.RequestStat != nil && cw.RequestStat.Context != nil && cw.RequestStat.Context.GZiped {
-			w.Header().Set("Content-Encoding", "gzip")
+		if cw.GZip {
+			// IF a gzip writer has been declared during the write, then we close it and put it back to the pool
+			defer cw.GZipWriter.Close()
+			defer zippers.Put(cw.GZipWriter)
 		}
 
 		req.UpdateStat(cw.status, cw.length)
@@ -134,24 +125,39 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	if listenerdef != nil {
 
+		// check AUTH
+		if hostdef.Auth.Enabled {
+			user, pass, ok := r.BasicAuth()
+			if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(hostdef.Auth.User)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(hostdef.Auth.Pass)) != 1 {
+				w.Header().Set("WWW-Authenticate", `Basic realm="`+hostdef.Auth.Realm+`"`)
+				w.WriteHeader(401)
+				w.Write([]byte("Unauthorised.\n"))
+				return
+			}
+		}
+
+		// Check if gzip is available
+		gzipcandidate := false
+		if hostdef.GZip.Enabled {
+			if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+				// type of data ok ?
+				gzipcandidate = true
+			}
+		}
+
 		// IS it a static file to server ?
 		// 2 conditions: 1. Has an extension, 2. exists on file directory for this site
 		pospoint := strings.Index(r.URL.Path, ".")
 		posdoublepoint := strings.Index(r.URL.Path, "..")
 		if pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath+r.URL.Path) {
+
+			// verify filetype and mimes if auth to gzip
+			if gzipcandidate && utils.GzipFileCandidate(hostdef.GZip.Files, r.URL.Path) {
+				w.Header().Set("Content-Encoding", "gzip")
+				w.(*CoreWriter).CreateGZiper()
+			}
 			http.FileServer(http.Dir(hostdef.StaticPath)).ServeHTTP(w, r)
 			return
-		}
-
-		// check AUTH
-		if hostdef.BasicAuth {
-			user, pass, ok := r.BasicAuth()
-			if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(hostdef.BasicUser)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(hostdef.BasicPass)) != 1 {
-				w.Header().Set("WWW-Authenticate", `Basic realm="`+hostdef.BasicRealm+`"`)
-				w.WriteHeader(401)
-				w.Write([]byte("Unauthorised.\n"))
-				return
-			}
 		}
 
 		// Check Origin
@@ -181,12 +187,13 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 		// SPLIT URI - QUERY to call the engine
 		engine := &Engine{
-			Method:   r.Method,
-			Page:     r.URL.Path,
-			Listener: listenerdef,
-			Host:     hostdef,
+			Method:        r.Method,
+			Page:          r.URL.Path,
+			Listener:      listenerdef,
+			Host:          hostdef,
+			Recursivity:   map[string]int{},
+			GZipCandidate: gzipcandidate,
 		}
-
 		engine.Start(w, r)
 	} else {
 		// ERROR: NO LISTENER DEFINED
@@ -245,6 +252,7 @@ func Run(file string) error {
 
 				tlsConfig := &tls.Config{
 					CipherSuites: []uint16{
+						// obsolete tls options
 						//              tls.TLS_RSA_WITH_RC4_128_SHA,
 						//              tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
 						//              tls.TLS_RSA_WITH_AES_128_CBC_SHA,
@@ -253,10 +261,10 @@ func Run(file string) error {
 						//              tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
 						//              tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
 						//              tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
-						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-						tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
 						//              tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
 						//              tls.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
 						tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
 						tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,

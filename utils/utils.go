@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -28,4 +29,24 @@ func LastPath(path string) string {
 		return ""
 	}
 	return xpath[len(xpath)-1]
+}
+
+func GzipFileCandidate(patterns []string, filename string) bool {
+	for _, pattern := range patterns {
+		name := filepath.Base(filename)
+		matched, _ := filepath.Match(pattern, name)
+		if matched {
+			return true
+		}
+	}
+	return false
+}
+
+func GzipMimeCandidate(patterns []string, mime string) bool {
+	for _, pattern := range patterns {
+		if strings.Contains(mime, pattern) {
+			return true
+		}
+	}
+	return false
 }
