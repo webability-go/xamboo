@@ -175,9 +175,10 @@
 
   "engines":
   [
-    { "name": "simple" },
-    { "name": "library" },
-    { "name": "template" },
-    { "name": "language" }
+    { "name": "simple", "source": "built-in" },
+    { "name": "library", "source": "built-in" },
+    { "name": "template", "source": "built-in" },
+    { "name": "language", "source": "built-in" },
+    { "name": "box", "source": "extern", "library": "./example/engine/engine.so" }
   ]
 }

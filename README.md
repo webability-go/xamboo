@@ -32,13 +32,22 @@ TO DO
 - Errors manager and Logs managers
 - implement call stat function(context)
 - Minify with config and code
+- Implements https://github.com/tdewolff/minify
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
-- Implements https://github.com/tdewolff/minify
 
 Version Changes Control
 =======================
+
+V1.0.0 - 2020-01-30
+-----------------------
+- All the code has been restructured so the whole code is into "server" directory. Server is the main code body and Engines are every type of pages (as it should be)
+- All the engines has been homologated and the user can create his own engines (as plugins)
+- The 4 main engines have been rewritten to meet Engine interface
+- The Redirect engine has been added
+- All library functions now return an interface{} as variable, not anymore a string (you may have to change all your libraries Run functions)
+  This change is important since a library can return a data structure for another library, not necessarly a string.
 
 V0.3.0 - 2020-01-29
 -----------------------

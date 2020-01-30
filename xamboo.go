@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/webability-go/xamboo/engine"
+	"github.com/webability-go/xamboo/server"
 )
 
 const VERSION = "0.3.0"
@@ -20,7 +20,7 @@ func main() {
 		return
 	}
 
-	err := engine.Run(file)
+	err := server.Run(file)
 	if err != nil {
 		fmt.Println(err)
 	}

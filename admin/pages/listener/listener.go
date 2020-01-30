@@ -13,9 +13,9 @@ import (
 
 	"github.com/webability-go/xcore"
 
-	"github.com/webability-go/xamboo/engine"
-	"github.com/webability-go/xamboo/engine/context"
-	"github.com/webability-go/xamboo/stat"
+	"github.com/webability-go/xamboo/server"
+	"github.com/webability-go/xamboo/server/assets"
+	"github.com/webability-go/xamboo/server/stat"
 )
 
 type listenerStream struct {
@@ -32,14 +32,14 @@ var counter = 1
 /* This function is MANDATORY and is the point of call from the xamboo
    The enginecontext contains all what you need to link with the system
 */
-func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) string {
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
 	fmt.Println("Entering listener")
 	// Note: the upgrader will hijack the writer, so we are responsible to actualize the stats
 	ls := listenerStream{
 		Id:          counter,
 		Upgrader:    websocket.Upgrader{},
-		RequestStat: ctx.Writer.(*engine.CoreWriter).RequestStat,
+		RequestStat: ctx.Writer.(*server.CoreWriter).RequestStat,
 		fulldata:    true,
 	}
 	counter++
