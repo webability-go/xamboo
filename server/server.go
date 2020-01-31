@@ -3,9 +3,10 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"plugin"
+	"regexp"
 	"strconv"
 	"strings"
-	"regexp"
 
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
@@ -18,30 +19,44 @@ import (
 	"github.com/webability-go/xconfig"
 	"github.com/webability-go/xcore"
 
-	"github.com/webability-go/xamboo/server/utils"
-	"github.com/webability-go/xamboo/server/config"
 	"github.com/webability-go/xamboo/server/assets"
+	"github.com/webability-go/xamboo/server/config"
 	"github.com/webability-go/xamboo/server/engines"
+	"github.com/webability-go/xamboo/server/engines/language"
+	"github.com/webability-go/xamboo/server/engines/library"
 	"github.com/webability-go/xamboo/server/engines/redirect"
 	"github.com/webability-go/xamboo/server/engines/simple"
-	"github.com/webability-go/xamboo/server/engines/language"
 	"github.com/webability-go/xamboo/server/engines/template"
-	"github.com/webability-go/xamboo/server/engines/library"
+	"github.com/webability-go/xamboo/server/utils"
 )
 
 var Engines = map[string]assets.Engine{}
 
 func LinkEngines(engines []config.Engine) {
- 	fmt.Println("Build Engines Containers native and external")
+	fmt.Println("Build Engines Containers native and external")
 	Engines["redirect"] = redirect.Engine
-  Engines["simple"] = simple.Engine
+	Engines["simple"] = simple.Engine
 	Engines["language"] = language.Engine
 	Engines["template"] = template.Engine
 	Engines["library"] = library.Engine
-  for _, engine := range engines {
+	for _, engine := range engines {
 		if engine.Source == "built-in" {
 			continue
 		}
+
+		lib, err := plugin.Open(engine.Library)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		enginelink, err := lib.Lookup("Engine")
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		Engines[engine.Name] = enginelink.(assets.Engine)
 	}
 }
 
@@ -53,8 +68,8 @@ type Server struct {
 	Listener *config.Listener
 	Host     *config.Host
 
-	MainContext *assets.Context
-	Recursivity map[string]int
+	MainContext   *assets.Context
+	Recursivity   map[string]int
 	GZipCandidate bool
 }
 
@@ -83,39 +98,46 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 		page, _ = s.Host.Config.GetString("mainpage")
 	}
 
-	code := s.Run(page, false, nil, "", "", "").(string)
+	code := s.Run(page, false, nil, "", "", "")
 
-	// TODO(phil) check if returned code is string, else "print" it
+	// check if returned code is string, else "print" it
+	scode, ok := code.(string)
+	if !ok {
+		scode = fmt.Sprint(code)
+	}
 
-
-
-  var instancedata *xconfig.XConfig = nil
-	// Control content-type and gzip based on page calculation
+	// Last pass: minify if necesary and gzip if necesary. Content type Should be set by the Run function, main page is always resolved to a content type
 	contenttype := s.writer.Header().Get("Content-Type")
-	if contenttype == "" {
-		if instancedata != nil {
-			contenttype, _ = instancedata.GetString("content-type")
+
+	if s.Host.Minify.Enabled {
+		// check config if we will minify before sending code
+		m := minify.New()
+		if s.Host.Minify.CSS {
+			m.AddFunc("text/css", css.Minify)
 		}
-		if contenttype == "" {
-			contenttype = "text/html; charset=utf-8"
+		if s.Host.Minify.HTML {
+			html.DefaultMinifier.KeepDocumentTags = true
+			m.AddFunc("text/html", html.Minify)
+		}
+		if s.Host.Minify.SVG {
+			m.AddFunc("image/svg+xml", svg.Minify)
+		}
+		if s.Host.Minify.JS {
+			m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+		}
+		if s.Host.Minify.JSON {
+			m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+		}
+		if s.Host.Minify.XML {
+			m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
+		}
+		newcode, err := m.String(contenttype, scode)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			scode = newcode
 		}
 	}
-	s.writer.Header().Set("Content-Type", contenttype)
-
-
-
-		// check config if we will minify before sending code
-	  m := minify.New()
-		m.AddFunc("text/css", css.Minify)
-		m.AddFunc("text/html", html.Minify)
-		m.AddFunc("image/svg+xml", svg.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
-	  m.String("application/javascript", code)
-	//	fmt.Println(err)
-
-
 
 	// GZIPER based on content type?
 	if s.MainContext != nil && s.MainContext.IsGZiped {
@@ -127,18 +149,18 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	s.writer.Write([]byte(code))
+	s.writer.Write([]byte(scode))
 }
 
 // The main xamboo runner
 // innerpage is false for the default page call, true when it's a subcall (inner call, with context)
-func (s *Server) Run(page string, innerpage bool, params *interface{}, version string, language string, method string) interface{} {
+func (s *Server) Run(page string, innerpage bool, params interface{}, version string, language string, method string) interface{} {
 
 	// page is the original page to scan
 	// P is the scanned page
 	P := page
 
-  // ==========================================================
+	// ==========================================================
 	// Chapter 1: Search the correct .page
 	// ==========================================================
 	pagesdir, _ := s.Host.Config.GetString("pagesdir")
@@ -172,7 +194,7 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 		P, _ = s.Host.Config.GetString("mainpage")
 		pagedata = pageserver.GetData(P)
 		if pagedata == nil || !s.isAvailable(innerpage, pagedata) {
-			return s.launchError(innerpage, "Error 404: no page found .page for "+page)
+			return s.launchError(page, http.StatusNotFound, innerpage, "Error 404: no page found .page for "+page)
 		}
 		fullpath = true
 	}
@@ -180,7 +202,7 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	var xParams []string
 	if P != page {
 		if app, _ := pagedata.GetBool("acceptpathparameters"); !app {
-			return s.launchError(innerpage, "Error 404: no page found with parameters")
+			return s.launchError(page, http.StatusNotFound, innerpage, "Error 404: no page found with parameters")
 		}
 		if fullpath {
 			xParams = strings.Split(page, "/")
@@ -228,8 +250,8 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	// homologation of servers
 	// ===========================================================
 	engine, ok := Engines[tp]
-	if (!ok) {
-		return s.launchError(innerpage, "Error: Server " + tp + " does not exist")
+	if !ok {
+		return s.launchError(page, http.StatusNotFound, innerpage, "Error: Server "+tp+" does not exist")
 	}
 
 	if !engine.NeedInstance() {
@@ -276,12 +298,12 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	}
 
 	if instancedata == nil {
-		return s.launchError(innerpage, "Error: the page/block has no instance")
+		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the page/block has no instance")
 	}
 
 	// verify the possible recursion
 	if r, c := s.verifyRecursion(P, pagedata); r {
-		return s.launchError(innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
+		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
 	}
 
 	//  s.pushContext(innerpage, page, P, instancedata, params, version, language)
@@ -292,7 +314,7 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	// ==========================================================
 	// Chapter 3: Search the correct engine instance with identities
 	// ==========================================================
-  var engineinstance assets.EngineInstance
+	var engineinstance assets.EngineInstance
 	for _, n := range identities {
 		engineinstance = engine.GetInstance(s.Host.Name, pagesdir, P, n)
 		if engineinstance != nil {
@@ -301,12 +323,12 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	}
 
 	if engineinstance == nil {
-		return s.launchError(innerpage, "Error: the engine could not find an instance to Run. Please verify the available instances.")
+		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the engine could not find an instance to Run. Please verify the available instances.")
 	}
 
-  var templatedata *xcore.XTemplate = nil
+	var templatedata *xcore.XTemplate = nil
 	var languagedata *xcore.XLanguage = nil
-  if engineinstance.NeedLanguage() {
+	if engineinstance.NeedLanguage() {
 		for _, n := range identities {
 			languageinstance := Engines["language"].GetInstance(s.Host.Name, pagesdir, P, n)
 			if languageinstance != nil {
@@ -330,11 +352,11 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	}
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)
-  if innerpage /* && xdata is not string */ {
+	if innerpage /* && xdata is not string */ {
 		return data
 	} else {
-	  xdata = fmt.Sprint(data)
-  }
+		xdata = fmt.Sprint(data)
+	}
 
 	// Cache system disabled for now
 	// s.setCache()
@@ -356,8 +378,7 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 		xdata = strings.Replace(fathertemplate, "[[CONTENT]]", xdata, -1)
 	}
 
-  if (!innerpage)
-	{
+	if !innerpage {
 		// Control content-type and gzip based on page calculation
 		contenttype := s.writer.Header().Get("Content-Type")
 		if contenttype == "" {
@@ -375,11 +396,11 @@ func (s *Server) Run(page string, innerpage bool, params *interface{}, version s
 	return xdata
 }
 
-func wrapper(s interface{}, page string, params *interface{}, version string, language string, method string) interface{} {
+func wrapper(s interface{}, page string, params interface{}, version string, language string, method string) interface{} {
 	return s.(*Server).Run(page, true, params, version, language, method)
 }
 
-func wrapperstring(s interface{}, page string, params *interface{}, version string, language string, method string) string {
+func wrapperstring(s interface{}, page string, params interface{}, version string, language string, method string) string {
 	data := s.(*Server).Run(page, true, params, version, language, method)
 	if sdata, ok := data.(string); ok {
 		return sdata
@@ -387,15 +408,27 @@ func wrapperstring(s interface{}, page string, params *interface{}, version stri
 	return fmt.Sprint(data)
 }
 
-func (s *Server) launchError(innerpage bool, message string) string {
-	// Call the error page
-	// TODO(phil) we must call error page with 404
-
-	if !innerpage {
-		http.Error(s.writer, message, http.StatusNotFound)
-		return ""
+func (s *Server) launchError(page string, code int, innerpage bool, message string) interface{} {
+	// error page or error block?
+	errpage := ""
+	if innerpage {
+		errpage, _ = s.Host.Config.GetString("errorblock")
+		if errpage == page {
+			return "The config parameter errorblock is pointing to a non existing page. Please verify"
+		}
+	} else {
+		errpage, _ = s.Host.Config.GetString("errorpage")
+		if errpage == "" || errpage == page {
+			http.Error(s.writer, message, code)
+			return "The config parameter errorpage is pointing to a non existing page. Please verify"
+		}
 	}
-	return message
+	data := map[string]interface{}{
+		"page":    page,
+		"code":    code,
+		"message": message,
+	}
+	return s.Run(errpage, innerpage, data, "", "", "")
 }
 
 func (s *Server) launchRedirect(url string) {
@@ -439,8 +472,4 @@ func (s *Server) verifyRecursion(page string, pagedata *xconfig.XConfig) (bool, 
 		s.Recursivity[page]++
 	}
 	return false, 0
-}
-
-func (s *Server) pushContext(context bool, originP string, P string, instancedata *xconfig.XConfig, params *interface{}, version string, language string) {
-
 }

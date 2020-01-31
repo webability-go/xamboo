@@ -24,7 +24,7 @@ type Context struct {
 	MainInstanceparams  *xconfig.XConfig          // Original instance params (real original .instance file)
 	LocalPageparams     *xconfig.XConfig          // Local real page params (.page file)
 	LocalInstanceparams *xconfig.XConfig          // Local real page instance (.instance file)
-	LocalEntryparams    *interface{}              // Params of local page call (NIL if main original page)
+	LocalEntryparams    interface{}               // Params of local page call (NIL if main original page)
 	Plugins             map[string]*plugin.Plugin // Wrapper to all the pre-loaded plugins for the system compiled go code (plugins cannot load plugins)
 	IsGZiped            bool                      // set to true if the content of the code returned by a library is already gziped
 }

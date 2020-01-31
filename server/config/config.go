@@ -47,6 +47,16 @@ type Auth struct {
 	Pass    string `json:"pass"`
 }
 
+type Minify struct {
+	Enabled bool `json:"enabled"`
+	HTML    bool `json:"html"`
+	CSS     bool `json:"css"`
+	JS      bool `json:"js"`
+	JSON    bool `json:"json"`
+	SVG     bool `json:"svg"`
+	XML     bool `json:"xml"`
+}
+
 type GZip struct {
 	Enabled bool     `json:"enabled"`
 	Mimes   []string `json:"mimes"`
@@ -63,6 +73,7 @@ type Host struct {
 	StaticPath string     `json:"static"`
 	Origin     *OriginDef `json:"origin"`
 	Auth       Auth       `json:"auth"`
+	Minify     Minify     `json:"minify"`
 	GZip       GZip       `json:"gzip"`
 	Log        Log        `json:"log"`
 	Config     *xconfig.XConfig

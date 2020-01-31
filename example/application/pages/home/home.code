@@ -34,6 +34,13 @@ mainlanguage = [[LOCALPAGEPARAM,mainlanguage]]<br />
 <font style="color: [[LOCALPAGEPARAM,maincolor]];">maincolor = [[LOCALPAGEPARAM,maincolor]]</font><br />
 <br />
 
+A non existing block (should call ERROR BLOCK page)<br />
+<div style="border: 1px solid red;">
+[[CALL,blocks/not-existing-block]]
+</div>
+
+
+
 
 Demo of a page of type library included:<br />
 <div style="border: 1px solid #ccc;">

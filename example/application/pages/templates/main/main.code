@@ -1,5 +1,7 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+  <title>Main Xamboo Demo</title>
 </head>
 <body>
 MAIN TEMPLATE v4<br>
@@ -7,5 +9,31 @@ MAIN TEMPLATE v4<br>
 [[CONTENT]]
 <hr>
 footer
+<style>
+body {
+  background-color: #eee;
+  margin: 10px;
+}
+/* Comentario dentro del style */
+
+.text {
+  font-weight: bold;
+}
+
+</style>
+
+<script>
+
+/* comment into the script */
+ENG = {};
+ENG.Data = "some data";
+ENG.alert = function() {
+  alert("Hello world");
+}
+
+ENG.alert();
+
+</script>
+
 </body>
 </html>

@@ -269,7 +269,7 @@ func (c *CodeData) Inject(ctx *assets.Context, language *xcore.XLanguage, e inte
 			injected = append(injected, pm)
 		case MetaParam: // Entry (Run) Param
 			if ctx.LocalEntryparams != nil { // params are set
-				pm, ok := (*(ctx.LocalEntryparams)).(map[string]interface{})[v.data1]
+				pm, ok := (ctx.LocalEntryparams).(map[string]interface{})[v.data1]
 				if ok { // entry exists
 					injected = append(injected, fmt.Sprint(pm))
 				}

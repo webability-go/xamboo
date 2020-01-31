@@ -179,6 +179,6 @@
     { "name": "library", "source": "built-in" },
     { "name": "template", "source": "built-in" },
     { "name": "language", "source": "built-in" },
-    { "name": "box", "source": "extern", "library": "./example/engine/engine.so" }
+    { "name": "box", "source": "extern", "library": "./example/engines/box/box.so" }
   ]
 }

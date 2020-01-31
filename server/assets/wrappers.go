@@ -9,5 +9,5 @@ package assets
    - Version
    - Method (GET, POST, PUT, DELETE..)
 */
-var EngineWrapperString func(interface{}, string, *interface{}, string, string, string) string
-var EngineWrapper func(interface{}, string, *interface{}, string, string, string) interface{}
+var EngineWrapperString func(interface{}, string, interface{}, string, string, string) string
+var EngineWrapper func(interface{}, string, interface{}, string, string, string) interface{}
