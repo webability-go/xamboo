@@ -14,11 +14,31 @@ It is completely independent of the generated code, i.e. you can send HTML, XHTM
 
 Xamboo works on sites currently distributing more than **60 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
 
-COMPILATION
-=======================
+INSTALATION AND COMPILATION
+=============================
 Xamboo needs:
 - github.com/gorilla/websockets
 - github.com/tdewolff/minify
+
+With a:
+go get -u github.com/webability-go/xamboo
+you should grab all what you need to make it work.
+
+Start the server with
+start.sh
+
+To build your own server:
+Edit start.sh and change the config file path.
+
+You can copy the example directory and change anything you need.
+
+You can compile xamboo to an executable with
+go build xamboo.go
+Copy the xamboo executable where you want to.
+Just call it like in the start.sh
+
+./xamboo --config=/path/to/configFile
+
 
 TO DO
 =======================
@@ -32,13 +52,25 @@ TO DO
 - Errors manager and Logs managers
 - implement call stat function(context)
 - Minify with config and code
+- Implements https://github.com/tdewolff/minify
+- Adds minify=on/off and gzip=on/off en .instance or .page
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
-- Implements https://github.com/tdewolff/minify
 
 Version Changes Control
 =======================
+
+V1.0.0 - 2020-01-31
+-----------------------
+- All the code has been restructured so the whole code is into "server" directory. Server is the main code body and Engines are every type of pages (as it should be)
+- All the engines has been homologated and the user can create his own engines (as plugins)
+- The 4 main engines have been rewritten to meet Engine interface
+- The Redirect engine has been added
+- All library functions now return an interface{} as variable, not anymore a string (you may have to change all your libraries Run functions)
+  This change is important since a library can return a data structure for another library, not necessarly a string.
+- Code Minifier implemented with entry in congig/Host to enable or disable it, and which part are available to minify.
+- Error management implemented (parameters errorpage and errorblock in site configuration)
 
 V0.3.0 - 2020-01-29
 -----------------------

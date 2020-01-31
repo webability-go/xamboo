@@ -1,3 +1,5 @@
 type=simple
 status=template
 template=
+# High available recursion since it's a template box block
+maxrecursion=100

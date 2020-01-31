@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"compress/gzip"
 
-	"github.com/webability-go/xamboo/engine/context"
+	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xcore"
 	//	"github.com/webability-go/xamboo/example/app/bridge"
 )
@@ -13,7 +13,7 @@ import (
 /* This function is MANDATORY and is the point of call from the xamboo
    The enginecontext contains all what you need to link with the system
 */
-func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) string {
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
 	filetype := ctx.Request.Form.Get("type")
 	switch filetype {
