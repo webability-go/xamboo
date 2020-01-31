@@ -14,11 +14,31 @@ It is completely independent of the generated code, i.e. you can send HTML, XHTM
 
 Xamboo works on sites currently distributing more than **60 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
 
-COMPILATION
-=======================
+INSTALATION AND COMPILATION
+=============================
 Xamboo needs:
 - github.com/gorilla/websockets
 - github.com/tdewolff/minify
+
+With a:
+go get -u github.com/webability-go/xamboo
+you should grab all what you need to make it work.
+
+Start the server with
+start.sh
+
+To build your own server:
+Edit start.sh and change the config file path.
+
+You can copy the example directory and change anything you need.
+
+You can compile xamboo to an executable with
+go build xamboo.go
+Copy the xamboo executable where you want to.
+Just call it like in the start.sh
+
+./xamboo --config=/path/to/configFile
+
 
 TO DO
 =======================
