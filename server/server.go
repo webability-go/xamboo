@@ -352,7 +352,8 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)
-	if innerpage /* && xdata is not string */ {
+	_, okstr := data.(string)
+	if innerpage && !okstr { // If Data is not string so it may be any type of data for the caller. We will not incapsulate it
 		return data
 	} else {
 		xdata = fmt.Sprint(data)

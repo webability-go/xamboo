@@ -24,8 +24,8 @@ With a:
 go get -u github.com/webability-go/xamboo
 you should grab all what you need to make it work.
 
-Start the server with
-start.sh
+Start the example server with
+./start.sh
 
 To build your own server:
 Edit start.sh and change the config file path.
@@ -52,7 +52,6 @@ TO DO
 - Errors manager and Logs managers
 - implement call stat function(context)
 - Minify with config and code
-- Implements https://github.com/tdewolff/minify
 - Adds minify=on/off and gzip=on/off en .instance or .page
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
@@ -60,6 +59,10 @@ Extras:
 
 Version Changes Control
 =======================
+
+V1.0.1 - 2020-02-10
+-----------------------
+- Bug corrected on the server that was returning a code without checking if it was string or not before processing
 
 V1.0.0 - 2020-01-31
 -----------------------
