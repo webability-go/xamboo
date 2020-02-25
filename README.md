@@ -1,6 +1,6 @@
 @UTF-8
 
-Xamboo for GO v0
+Xamboo for GO v1
 =============================
 
 Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.8+
@@ -42,6 +42,7 @@ Just call it like in the start.sh
 
 TO DO
 =======================
+- capture compiler result for page, not for stdout
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
 - language server injector (beautify output)
@@ -51,14 +52,18 @@ TO DO
 - Stats module
 - Errors manager and Logs managers
 - implement call stat function(context)
-- Minify with config and code
-- Adds minify=on/off and gzip=on/off en .instance or .page
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 
 Version Changes Control
 =======================
+
+V1.0.2 - 2020-02-25
+-----------------------
+- Support for language and version added into the context, so the language or version can be changed dynamically page by page, by code
+- Compiler is now thread safe (many asks, only first compile and broadcast to others it's ready to use)
+- Some minor bugs corrected
 
 V1.0.1 - 2020-02-10
 -----------------------

@@ -225,6 +225,8 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 	if innerpage {
 		ctx.IsMainPage = false
+		ctx.Language = s.MainContext.Language
+		ctx.Version = s.MainContext.Version
 		ctx.MainPage = s.MainContext.MainPage
 		ctx.MainPageUsed = s.MainContext.MainPageUsed
 		ctx.MainURLparams = s.MainContext.MainURLparams
@@ -232,6 +234,10 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 		ctx.MainInstanceparams = s.MainContext.MainInstanceparams
 		ctx.Sessionparams = s.MainContext.Sessionparams
 	} else {
+		deflanguage, _ := s.Host.Config.GetString("language")
+		defversion, _ := s.Host.Config.GetString("version")
+		ctx.Language = deflanguage
+		ctx.Version = defversion
 		ctx.IsMainPage = true
 		ctx.MainPage = page
 		ctx.MainPageUsed = P
@@ -263,17 +269,21 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	// Chapter 2: Search the correct .instance with identities
 	// ==========================================================
 
-	defversion, _ := s.Host.Config.GetString("version")
-	versions := []string{defversion}
-	if len(version) > 0 && version != defversion {
+	versions := []string{}
+	if len(version) > 0 && version != ctx.Version {
 		versions = append(versions, version)
+	}
+	if len(ctx.Version) > 0 && version != ctx.Version {
+		versions = append(versions, ctx.Version)
 	}
 	versions = append(versions, "")
 
-	deflanguage, _ := s.Host.Config.GetString("language")
-	languages := []string{deflanguage}
-	if len(language) > 0 && language != deflanguage {
+	languages := []string{}
+	if len(language) > 0 && language != ctx.Language {
 		languages = append(languages, language)
+	}
+	if len(ctx.Language) > 0 && language != ctx.Language {
+		languages = append(languages, ctx.Language)
 	}
 	languages = append(languages, "")
 
@@ -353,7 +363,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)
 	_, okstr := data.(string)
-	if innerpage && !okstr { // If Data is not string so it may be any type of data for the caller. We will not incapsulate it
+	if innerpage && !okstr { // If Data is not string so it may be any type of data for the caller. We will not incapsulate it into a template, even if asked
 		return data
 	} else {
 		xdata = fmt.Sprint(data)

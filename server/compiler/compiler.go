@@ -2,16 +2,32 @@ package compiler
 
 import (
 	"fmt"
-	"github.com/webability-go/xamboo/server/utils"
+	"os"
 	"os/exec"
+
+	"github.com/webability-go/xamboo/server/utils"
 )
 
 type Worker struct {
-	ready chan bool
+	version     int
+	ready       chan bool
+	Subscribers []chan bool
+}
+
+func (w *Worker) Subscribe() chan bool {
+	c := make(chan bool)
+	w.Subscribers = append(w.Subscribers, c)
+	return c
+}
+
+func (w *Worker) Broadcast() {
+	for _, c := range w.Subscribers {
+		c <- true
+	}
 }
 
 type Pile struct {
-	Workers map[string]Worker
+	Workers map[string]*Worker
 }
 
 var CPile Pile
@@ -21,41 +37,45 @@ func (p *Pile) CreateCompiler(path string, plugin string, version int) *Worker {
 	// we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
 	//  fmt.Println("Creating the compiler for " + path)
 
-	w := &Worker{ready: make(chan bool)}
-	p.Workers[path] = *w
+	w := &Worker{ready: make(chan bool), version: version}
+	p.Workers[path] = w
 	go w.Compile(path, plugin, version)
 	return w
 }
 
 func (w *Worker) Compile(path string, plugin string, version int) {
 
-	//  fmt.Println("Compiling " + path)
-	// go build -buildmode=plugin
-
 	if version > 0 {
-		plugin += fmt.Sprintf(".%d", version)
+		plugin = plugin + fmt.Sprintf(".%d", version)
 	}
 
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin, path)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error running go build:", err)
 	}
-	//  fmt.Println("Finish Compiling " + path)
-
 	w.ready <- true
-
+	w.Broadcast()
 }
 
 func PleaseCompile(path string, plugin string, version int) (int, error) {
 
-	// 1. Creates a channel, send message to supervisor, wait for response
-	//  fmt.Println("PleaseCompile: " + path)
-	newversion := searchNextFreeVersion(plugin, version)
-	worker := CPile.CreateCompiler(path, plugin, newversion)
-	<-worker.ready
-	//  fmt.Println("Compiled: " + path)
+	newversion := 0
+	if worker, ok := CPile.Workers[path]; ok {
+		newversion = worker.version
+		readychannel := worker.Subscribe()
+		<-readychannel
+	} else {
+		// 1. Creates a channel, send message to supervisor, wait for response
+		newversion = searchNextFreeVersion(plugin, version)
+		fmt.Println("Recompiling:", path, newversion)
+		worker := CPile.CreateCompiler(path, plugin, newversion)
+		<-worker.ready
+		// destroys the Worker
+		delete(CPile.Workers, path)
+	}
 	return newversion, nil
 }
 
@@ -79,7 +99,7 @@ func searchNextFreeVersion(plugin string, version int) int {
 
 func Supervisor() {
 
-	CPile.Workers = make(map[string]Worker)
+	CPile.Workers = make(map[string]*Worker)
 
 	fmt.Println("Launching the compilation supervisor.")
 
