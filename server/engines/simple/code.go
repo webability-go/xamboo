@@ -310,7 +310,9 @@ func (c *CodeData) Inject(ctx *assets.Context, language *xcore.XLanguage, e inte
 
 			injected = append(injected, assets.EngineWrapperString(e, v.data1, nil, "", "", ""))
 		case MetaLanguage:
-			injected = append(injected, "LANGUAGE ENTRY "+v.data1)
+			if language != nil {
+				injected = append(injected, language.Get(v.data1))
+			}
 		case MetaComment:
 			// nothing to do: comment ignored
 		case MetaBox:

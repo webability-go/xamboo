@@ -80,10 +80,8 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	} else {
 		// Check if HOT reload authorized
 		if !invalid {
-			fmt.Println(p.FilePlugin)
 			lib, err = plugin.Open(p.FilePlugin)
 			if err != nil {
-				fmt.Println(err)
 				invalid = true
 			}
 		}
@@ -92,8 +90,8 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			// get back version number && error
 			version, err := compiler.PleaseCompile(p.FilePath, p.FilePlugin, 0)
 			if err != nil {
-				fmt.Println(err)
-				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE"
+				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
+				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE, Error: " + fmt.Sprint(err)
 			}
 
 			// try to reload new library (hot load)
@@ -102,12 +100,10 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 				p.FilePlugin = p.FilePlugin + fmt.Sprintf(".%d", version)
 			}
 
-			fmt.Println(version, p.FilePlugin)
-
 			lib, err = plugin.Open(p.FilePlugin)
 			if err != nil {
-				fmt.Println(err)
-				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD"
+				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
+				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD, Error: " + fmt.Sprint(err)
 			}
 		}
 		LibraryCache.Set(p.FilePath, lib)
@@ -115,8 +111,8 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 	fct, err := lib.Lookup("Run")
 	if err != nil {
-		fmt.Println(err)
-		return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION"
+		fmt.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
+		return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION, Error: " + fmt.Sprint(err)
 	}
 
 	x1 := fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})(ctx, template, language, e)

@@ -12,6 +12,8 @@ type Context struct {
 	Request             *http.Request             // The request (and all its data available: headers, variables, form, files, etc)
 	Writer              http.ResponseWriter       // The request (and all its data available: headers, variables, form, files, etc)
 	IsMainPage          bool                      // true it this page is the main page itself, false if any other page or blocks
+	Language            string                    // default system language by host. can be changed by code
+	Version             string                    // default system version by host. can be changed by code
 	MainPage            string                    // The original page URL called from outside
 	MainPageUsed        string                    // The original real page called from outside (valid page found)
 	MainURLparams       []string                  // The original URL params based on main page
