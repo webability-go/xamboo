@@ -42,6 +42,7 @@ Just call it like in the start.sh
 
 TO DO
 =======================
+- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
 - capture compiler result for page, not for stdout
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
@@ -58,6 +59,17 @@ Extras:
 
 Version Changes Control
 =======================
+
+V1.0.4 - 2020-03-
+-----------------------
+- The error page can now set the correct content-type and is called upon error. The http.Error has been disabled (send only text) and the internal LaunchError has been correctly implemented.
+- The server.Code has been added in the server structure. If the code is different of statusOK, then the error is managed as needed. All other headers are kept (content type, encoding, gziped, etc)
+
+V1.0.3 - 2020-03-11
+-----------------------
+- Bug correction: the resolution of correct instance was broken and always selecting the last know instance
+- The server now check the template and other pagedata variables based on the context object so the library code can change values into the object and the changes will be honoured.
+- Racing for memory corrected in runner.go code (certerror added)
 
 V1.0.2 - 2020-02-25
 -----------------------

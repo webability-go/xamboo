@@ -191,6 +191,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 			Page:          r.URL.Path,
 			Listener:      listenerdef,
 			Host:          hostdef,
+			Code:          http.StatusOK,
 			Recursivity:   map[string]int{},
 			GZipCandidate: gzipcandidate,
 		}
@@ -283,11 +284,12 @@ func Run(file string) error {
 				tlsConfig.MaxVersion = tls.VersionTLS12
 				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
 				i := 0
+				var certerror error
 				for _, host := range config.Config.Hosts {
 					if utils.SearchInArray(listener.Name, host.Listeners) {
-						tlsConfig.Certificates[i], err = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
-						if err != nil {
-							llogger.Fatal(err)
+						tlsConfig.Certificates[i], certerror = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
+						if certerror != nil {
+							llogger.Fatal(certerror)
 						}
 						fmt.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
 						i += 1
