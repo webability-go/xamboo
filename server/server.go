@@ -68,6 +68,7 @@ type Server struct {
 	Listener *config.Listener
 	Host     *config.Host
 
+	Code          int
 	MainContext   *assets.Context
 	Recursivity   map[string]int
 	GZipCandidate bool
@@ -149,6 +150,9 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if s.Code != http.StatusOK {
+		s.writer.WriteHeader(s.Code)
+	}
 	s.writer.Write([]byte(scode))
 }
 
@@ -312,7 +316,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	// verify the possible recursion
-	if r, c := s.verifyRecursion(P, pagedata); r {
+	if r, c := s.verifyRecursion(P, ctx.LocalPageparams); r {
 		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
 	}
 
@@ -345,6 +349,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 				lang := languageinstance.Run(ctx, nil, nil, s)
 				if lang != nil {
 					languagedata = lang.(*xcore.XLanguage)
+					break
 				}
 			}
 		}
@@ -356,6 +361,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 				temp := templateinstance.Run(ctx, nil, nil, s)
 				if temp != nil {
 					templatedata = temp.(*xcore.XTemplate)
+					break
 				}
 			}
 		}
@@ -377,7 +383,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	// ==========================================================
 
 	// check templates and get templates
-	if x, _ := pagedata.GetString("template"); x != "" {
+	if x, _ := ctx.LocalPageparams.GetString("template"); x != "" {
 		fathertemplate := s.Run(x, true, params, version, language, method).(string)
 		//    if (is_array($text))
 		//    {
@@ -424,13 +430,14 @@ func (s *Server) launchError(page string, code int, innerpage bool, message stri
 	errpage := ""
 	if innerpage {
 		errpage, _ = s.Host.Config.GetString("errorblock")
-		if errpage == page {
+		if errpage == "" || errpage == page {
 			return "The config parameter errorblock is pointing to a non existing page. Please verify"
 		}
 	} else {
+		s.Code = code
 		errpage, _ = s.Host.Config.GetString("errorpage")
 		if errpage == "" || errpage == page {
-			http.Error(s.writer, message, code)
+			s.writer.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			return "The config parameter errorpage is pointing to a non existing page. Please verify"
 		}
 	}
