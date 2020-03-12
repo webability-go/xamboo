@@ -60,7 +60,7 @@ Extras:
 Version Changes Control
 =======================
 
-V1.0.4 - 2020-03-
+V1.0.4 - 2020-03-12
 -----------------------
 - The error page can now set the correct content-type and is called upon error. The http.Error has been disabled (send only text) and the internal LaunchError has been correctly implemented.
 - The server.Code has been added in the server structure. If the code is different of statusOK, then the error is managed as needed. All other headers are kept (content type, encoding, gziped, etc)
