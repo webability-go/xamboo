@@ -248,7 +248,7 @@ func Run(file string) error {
 				// We search for all the hosts on this listener
 				for _, host := range config.Config.Hosts {
 					if utils.SearchInArray(listener.Name, host.Listeners) {
-						numcertificates += 1
+						numcertificates++
 					}
 				}
 
