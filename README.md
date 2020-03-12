@@ -64,6 +64,7 @@ V1.0.4 - 2020-03-
 -----------------------
 - The error page can now set the correct content-type and is called upon error. The http.Error has been disabled (send only text) and the internal LaunchError has been correctly implemented.
 - The server.Code has been added in the server structure. If the code is different of statusOK, then the error is managed as needed. All other headers are kept (content type, encoding, gziped, etc)
+- The error code is now correctly send to the client browser (the error page was sent with code 200)
 
 V1.0.3 - 2020-03-11
 -----------------------
