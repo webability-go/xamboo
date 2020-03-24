@@ -70,6 +70,13 @@
       "key": "./example/ssl/privkey.pem",
       "static": "./example/repository/public/static",
 
+      "browser": {
+        "useragent": {
+          "enabled": true,
+          "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
+        }
+      },
+
       "gzip": {
         "enabled": true,
         "mimes": ["text/html", "text/css"],

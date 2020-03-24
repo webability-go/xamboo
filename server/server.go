@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/avct/uasurfer"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -75,7 +76,6 @@ type Server struct {
 }
 
 func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
 	s.writer = w
 	s.reader = r
 
@@ -238,8 +238,13 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 		ctx.MainInstanceparams = s.MainContext.MainInstanceparams
 		ctx.Sessionparams = s.MainContext.Sessionparams
 	} else {
-		deflanguage, _ := s.Host.Config.GetString("language")
+
+		// If user agent enabled, we analyze version of page based on connected device
 		defversion, _ := s.Host.Config.GetString("version")
+		if s.Host.Browser.UserAgent.Enabled {
+			defversion = s.analyzeUserAgent()
+		}
+		deflanguage, _ := s.Host.Config.GetString("language")
 		ctx.Language = deflanguage
 		ctx.Version = defversion
 		ctx.IsMainPage = true
@@ -256,6 +261,10 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	// 1. Build-in engines
 	var xdata string
 	tp, _ := pagedata.GetString("type")
+	noparse, _ := pagedata.GetBool("keeporiginalbody")
+	if !noparse {
+		s.reader.ParseForm()
+	}
 
 	// homologation of servers
 	// ===========================================================
@@ -490,4 +499,22 @@ func (s *Server) verifyRecursion(page string, pagedata *xconfig.XConfig) (bool, 
 		s.Recursivity[page]++
 	}
 	return false, 0
+}
+
+func (s *Server) analyzeUserAgent() string {
+
+	devices := map[uasurfer.DeviceType]string{
+		uasurfer.DeviceComputer: "pc",
+		uasurfer.DevicePhone:    "mobile",
+		uasurfer.DeviceTablet:   "tablet",
+		uasurfer.DeviceTV:       "tv",
+		uasurfer.DeviceConsole:  "console",
+		uasurfer.DeviceWearable: "wearable",
+		uasurfer.DeviceUnknown:  "base",
+	}
+
+	useragent := s.reader.UserAgent()
+	// Detect if PC or Mobile
+	ua := uasurfer.Parse(useragent)
+	return devices[ua.DeviceType]
 }

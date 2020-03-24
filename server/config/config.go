@@ -63,6 +63,15 @@ type GZip struct {
 	Files   []string `json:"files"`
 }
 
+type Browser struct {
+	UserAgent UserAgent `json:"useragent"`
+}
+
+type UserAgent struct {
+	Enabled bool     `json:"enabled"`
+	Devices []string `json:"devices"`
+}
+
 type Host struct {
 	Name       string     `json:"name"`
 	Listeners  []string   `json:"listeners"`
@@ -75,6 +84,7 @@ type Host struct {
 	Auth       Auth       `json:"auth"`
 	Minify     Minify     `json:"minify"`
 	GZip       GZip       `json:"gzip"`
+	Browser    Browser    `json:"browser"`
 	Log        Log        `json:"log"`
 	Config     *xconfig.XConfig
 	Plugins    map[string]*plugin.Plugin

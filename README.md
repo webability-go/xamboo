@@ -60,6 +60,14 @@ Extras:
 Version Changes Control
 =======================
 
+V1.1.0 - 2020-03-25
+-----------------------
+- The form/body is parsed only if the parameter "keeporiginalbody" is not set. If the Xamboo is used as a proxy server, the body must not be parsed.
+- New module UASurfer added to recognize the type of connected device (know values: pc, mobile, tablet, tv, console, wearable, base).
+- config.json now support browser entries with useragent entry to activate the UASurfer module.
+- The type of device is in the context.Version parameter if the module is activated, the pages can have version like {pageid}.<Version>.instance, .code, .language, .template
+- Modules initialized (go init module)
+
 V1.0.4 - 2020-03-12
 -----------------------
 - The error page can now set the correct content-type and is called upon error. The http.Error has been disabled (send only text) and the internal LaunchError has been correctly implemented.
