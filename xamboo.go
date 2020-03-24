@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	"github.com/webability-go/xamboo/server"
 )
 
-const VERSION = "1.0.4"
+// VERSION oficial of the xamboo
+const VERSION = "1.1.0"
 
 func main() {
 	// *** system Language !!! preload

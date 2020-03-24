@@ -39,8 +39,10 @@ A non existing block (should call ERROR BLOCK page)<br />
 [[CALL,blocks/not-existing-block]]
 </div>
 
-
-
+A device dependant block (should put the device type)<br />
+<div style="border: 1px solid red;">
+[[CALL,blocks/device]]
+</div>
 
 Demo of a page of type library included:<br />
 <div style="border: 1px solid #ccc;">
