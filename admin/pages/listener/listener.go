@@ -11,11 +11,10 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/webability-go/xcore"
-
 	"github.com/webability-go/xamboo/server"
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/stat"
+	"github.com/webability-go/xcore/v2"
 )
 
 type listenerStream struct {
