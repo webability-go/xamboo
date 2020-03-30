@@ -6,10 +6,10 @@ github.com/tdewolff/minify v2.3.6+incompatible/go.mod h1:9Ov578KJUmAWpS6NeZwRZyT
 github.com/tdewolff/parse v1.1.0 h1:tMjj9GCK8zzwjWyxdZ4pabzdWO1VG+G3bvCnG6aUIyQ=
 github.com/tdewolff/parse v2.3.4+incompatible h1:x05/cnGwIMf4ceLuDMBOdQ1qGniMoxpP46ghf0Qzh38=
 github.com/tdewolff/parse v2.3.4+incompatible/go.mod h1:8oBwCsVmUkgHO8M5iCzSIDtpzXOT0WXX9cWhz+bIzJQ=
-github.com/webability-go/xconfig v0.3.0 h1:jDlqchgmEad/HWfcpVxq/zmbVm1WgXTvGV1JXxWLKRw=
-github.com/webability-go/xconfig v0.3.0/go.mod h1:c62w85ilKRIukfLpRfj9bUgl1WHvnl4X9jWrclZFnSk=
-github.com/webability-go/xcore v1.1.0 h1:mvlNUDeleKdx+3MbbsiF6wpfQUgXOFg4YabImZBttMw=
-github.com/webability-go/xcore v1.1.0/go.mod h1:Wq0uDNASOhur5bEOqGiEfBzDtq4NowjVeqgQkbftW/E=
+github.com/webability-go/xconfig v0.4.0 h1:avwYQ8y1d3EJY6x5Yu4rjWd8I85prCYHuFvH20Y4Zzw=
+github.com/webability-go/xconfig v0.4.0/go.mod h1:rOt/+lXMz7zAxkzLXzTjJNGUB85+L8PxUPUFCctpC9I=
+github.com/webability-go/xcore/v2 v2.0.2 h1:ztdwunb54Oe3i+qMV+JZAl2yGhMhjsWLr5oGRW9acpQ=
+github.com/webability-go/xcore/v2 v2.0.2/go.mod h1:8ZughUZ/qGYTcp02igrR43TjH+s+hsoV3m/rseLd3ZQ=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=
 golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=

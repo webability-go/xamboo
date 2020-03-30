@@ -60,6 +60,10 @@ Extras:
 Version Changes Control
 =======================
 
+V1.1.1 - 2020-03-29
+-----------------------
+- Uses now xconfig v0.4.0 and xcore v2*
+
 V1.1.0 - 2020-03-25
 -----------------------
 - The form/body is parsed only if the parameter "keeporiginalbody" is not set. If the Xamboo is used as a proxy server, the body must not be parsed.

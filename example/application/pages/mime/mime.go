@@ -6,7 +6,7 @@ import (
 	"compress/gzip"
 
 	"github.com/webability-go/xamboo/server/assets"
-	"github.com/webability-go/xcore"
+	"github.com/webability-go/xcore/v2"
 	//	"github.com/webability-go/xamboo/example/app/bridge"
 )
 

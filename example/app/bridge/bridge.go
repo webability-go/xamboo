@@ -6,7 +6,7 @@ import (
 	"plugin"
 
 	"github.com/webability-go/xamboo/server/assets"
-	"github.com/webability-go/xcore"
+	"github.com/webability-go/xcore/v2"
 )
 
 /* This package declare all the available functions of the app to be able to call them. */

@@ -1,7 +1,7 @@
 package assets
 
 import (
-	"github.com/webability-go/xcore"
+	"github.com/webability-go/xcore/v2"
 )
 
 // Servers must be compliant with the interface Server-

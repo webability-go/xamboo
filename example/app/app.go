@@ -5,7 +5,7 @@ import (
 
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/config"
-	"github.com/webability-go/xcore"
+	"github.com/webability-go/xcore/v2"
 )
 
 const VERSION = "1.0.0"
