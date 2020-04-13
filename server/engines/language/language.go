@@ -1,6 +1,7 @@
 package language
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/webability-go/xcore/v2"
@@ -28,7 +29,6 @@ func (re *LanguageEngine) GetInstance(Hostname string, PagesDir string, P string
 
 	lastpath := utils.LastPath(P)
 	filepath := PagesDir + P + "/" + lastpath + i.Stringify() + ".language"
-
 	if utils.FileExists(filepath) {
 		// load the page instance
 		data := &LanguageEngineInstance{
@@ -68,6 +68,7 @@ func (p *LanguageEngineInstance) Run(ctx *assets.Context, template *xcore.XTempl
 		// load the language data
 		data, err := xcore.NewXLanguageFromXMLFile(p.FilePath)
 		if err != nil {
+			fmt.Println("Error loading language:", err)
 			return nil
 		}
 

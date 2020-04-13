@@ -1,0 +1,286 @@
+/* Native XHTML elements */
+body
+{
+  color: black;
+  background-color: white;
+  font-family: Arial, Helvetica;
+  font-size: 12px;
+  line-height: 1.2em;
+}
+
+#install\|single\|
+{
+  background-color: #dfe8f6;
+  min-width: 840px !important;
+  min-height: 480px !important;
+}
+
+#install\|single\|header
+{
+  background-color: #c6d9f1;
+  overflow: hidden;
+}
+
+#install\|single\|workarea
+{
+  background-color: transparent;
+  border: 0px;
+  -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none;
+  overflow: hidden;
+}
+
+#install\|single\|step
+{
+  margin-left: 0px;
+  margin-right: 5px;
+}
+
+#install\|single\|wizard
+{
+  margin-right: 0px;
+}
+
+#install\|single\|footer
+{
+  background-color: #c6d9f1;
+}
+
+#masterindexinstall\|single\|workarea
+{
+  overflow: hidden;
+}
+
+/* used standard classes */
+.flaggreen
+{
+  background-color: #6f6;
+  border: 1px solid blue;
+}
+
+.flagred
+{
+  background-color: #f66;
+  border: 1px solid blue;
+}
+
+.flagyellow
+{
+  background-color: yellow;
+  border: 1px solid blue;
+  cursor: pointer;
+}
+
+.flagblue
+{
+  background-color: #66f;
+  border: 1px solid blue;
+}
+
+.maintitle
+{
+  font-size: 16px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
+.alttitle
+{
+  color: #aa0000;
+  font-size: 16px;
+}
+
+.timertitle
+{
+  color: #333333;
+  font-size: 12px;
+  text-align: right;
+}
+
+.footertitle
+{
+  font-size: 12px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
+.imagemenu
+{
+  border: 0px;
+  margin-left: 1px;
+  margin-right: 1px;
+  vertical-align: middle;
+}
+
+.buttonmenuhelp
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-tip.png');
+}
+
+.buttonmenuhelpfull
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-full.png');
+}
+
+.buttonmenuhelpmute
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-off.png');
+}
+
+.buttonmenusoundon
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/sound-on.png');
+}
+
+.buttonmenusoundoff
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/sound-off.png');
+}
+
+.textmenu
+{
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+.introcenter
+{
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.blocktitle
+{
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #dddddd;
+  vertical-align: middle;
+  padding-top: 5px;
+  height: 20px;
+  border: 1px solid #888888;
+}
+
+.installstep
+{
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #eeeeff;
+  text-align: center;
+  width: 150px;
+  padding: 3px;
+  border: 1px Solid #000088;
+  cursor: default;
+}
+
+.installstepactual
+{
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #ffccaa;
+  text-align: center;
+  width: 150px;
+  padding: 3px;
+  border: 1px Solid #883300;
+  cursor: default;
+}
+
+.installstepdone
+{
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #eeffee;
+  text-align: center;
+  width: 150px;
+  padding: 3px;
+  border: 1px Solid #008800;
+  cursor: default;
+}
+
+.installstep1done
+{
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #eeffee;
+  text-align: center;
+  width: 150px;
+  padding: 3px;
+  border: 1px Solid #008800;
+  cursor: pointer;
+}
+
+.languagename
+{
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.flag
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid black;
+  cursor: pointer;
+  width: 27px;
+  height: 17px;
+  margin-top: 10px;
+  color: transparent;
+}
+
+.flag:hover
+{
+  border: 1px solid #999999;
+}
+
+.flag:active
+{
+  border: 1px solid #cccccc;
+}
+
+.flagtext
+{
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.hidden
+{
+  display: none;
+}
+
+.visible
+{
+}
+
+.clear
+{
+  clear: both;
+}

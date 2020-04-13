@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="language" lang="en">
+  <entry id="language"><![CDATA[Language:]]></entry>
+  <entry id="country"><![CDATA[country:]]></entry>
+  <entry id="flag.title"><![CDATA[Select country:]]></entry>
+  <entry id="flag.description"><![CDATA[Clic on the flag of the desired country to select it. If the selected language of the system is not the language of the country, the system will reload in the correct language.]]></entry>
+</language>

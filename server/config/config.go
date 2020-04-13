@@ -97,6 +97,7 @@ type Engine struct {
 }
 
 type ConfigDef struct {
+	Version   string
 	File      string
 	Listeners []Listener `json:"listeners"`
 	Hosts     []Host     `json:"hosts"`

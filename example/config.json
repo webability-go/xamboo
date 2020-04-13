@@ -177,6 +177,39 @@
         "compress": true
       }
 
+    },
+    {
+      "name": "master",
+      "listeners": ["admin"],
+      "hostnames": ["master.webability.info"],
+      "config": ["./master/master.conf", "./master/resources/local.conf"],
+      "cert": "./example/ssl/cert.pem",
+      "key": "./example/ssl/privkey.pem",
+      "static": "./master/public",
+
+      "gzip": {
+        "enabled": false,
+        "mimes": ["text/html", ""],
+        "files": ["*.ico", "*.css", "*.js"]
+      },
+
+      "auth": {
+        "enabled": true,
+        "realm": "Xamboo master console",
+        "user": "master",
+        "pass": "manager"
+      },
+
+      "log": {
+        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+        "pages": "file:./example/logs/xamboo-master.log",
+        "errors": "file:./example/logs/xambo-master-error.log",
+        "sys": "file:./example/logs/xamboo-master-sys.log",
+        "stats": "discard",
+        "rotate": "1d",
+        "compress": true
+      }
+
     }
   ],
 
@@ -186,6 +219,7 @@
     { "name": "library", "source": "built-in" },
     { "name": "template", "source": "built-in" },
     { "name": "language", "source": "built-in" },
+    { "name": "wajafapp", "source": "built-in" },
     { "name": "box", "source": "extern", "library": "./example/engines/box/box.so" }
   ]
 }

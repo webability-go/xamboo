@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="install" lang="es">
+  <entry id="loading"><![CDATA[Cargando...]]></entry>
+  <entry id="xamboo"><![CDATA[Xamboo&reg; v1]]></entry>
+  <entry id="xamboologo"><![CDATA[Xamboo&reg; v1]]></entry>
+  <entry id="installation">Instalación</entry>
+  <entry id="mastersite">Sitio Maestro</entry>
+  <entry id="version">v</entry>
+
+  <entry id="steps">Avance:</entry>
+  <entry id="step1">Idioma</entry>
+  <entry id="step2">Cuenta</entry>
+  <entry id="step3">Confirmación</entry>
+  <entry id="step4">Login</entry>
+  <entry id="footer"><![CDATA[Xamboo&reg; v1 &copy; 2000-2020 - Master Engine]]></entry>
+  <entry id="soundonoff.summary"><![CDATA[Clic para cambiar el estatus del sónido on/off.]]></entry>
+  <entry id="soundonoff.title"><![CDATA[Sónido on/off:]]></entry>
+  <entry id="soundonoff.description"><![CDATA[Esta opción permite prender o apagar el sonido en el sistema.&lt;br /&gt;
+  La bocina con rayitas &lt;img src="/skins/master/icons/sound-on.png" alt="Bocina prendida" title="Bocina prendida" style="vertical-align: middle;" /&gt; indica que el sónido esta prendido.&lt;br /&gt;
+  La bocina tachada &lt;img src="/skins/master/icons/sound-off.png" alt="Bocina apagada" title="Bocina apagada" style="vertical-align: middle;" /&gt; indica que el sónido esta apagado.&lt;br /&gt;
+  Un clic sobre la bocina cambia el estatus.&lt;br /&gt;
+  ]]></entry>
+  <entry id="helponoff.summary"><![CDATA[Clic para cambiar el nivel de ayuda interactiva. Esperar 4 segundos para obtener más información en modo Ayuda completa.]]></entry>
+  <entry id="helponoff.title"><![CDATA[Ayuda interactiva:]]></entry>
+  <entry id="helponoff.description"><![CDATA[Esta opción permite prender o apagar la ayuda interactiva en el sistema.&lt;br /&gt;
+  El signo de interogación &lt;img src="/skins/master/icons/help-tip.png" alt="Ayuda resumida" title="Ayuda resumida" style="vertical-align: middle;" /&gt; indica el modo de Ayuda resumida.&lt;br /&gt;
+  El salvavidas &lt;img src="/skins/master/icons/help-full.png" alt="Ayuda completa" title="Ayuda completa" style="vertical-align: middle;" /&gt; indica el modo de Ayuda Completa.&lt;br /&gt;
+  El punto rojo &lt;img src="/skins/master/icons/help-off.png" alt="Ayuda apagada" title="Ayuda apagada" style="vertical-align: middle;" /&gt; indica que la ayuda esta apagada.&lt;br /&gt;
+  Cuando la ayuda completa esta prendida, esperar unos 3 a 4 segundos sobre un elemento permite acceder a una ayuda interactiva más amplia relacionada con la zona seleccionada.&lt;br /&gt;
+  Un clic sobre el ícono cambia el estatus.&lt;br /&gt;]]></entry>
+  <entry id="helpstep1.summary"><![CDATA[Puede regresar a la selección del idioma haciendo clic aquí]]></entry>
+  <entry id="helpstep1.title"><![CDATA[Seleccionar el idioma:]]></entry>
+  <entry id="helpstep1.description"><![CDATA[Esta opción permite seleccionar el idioma. Si esta en la pantalla para capturar la cuenta siempre puede regresar haciendo clic aqui para seleccionar otro idioma. Si no existe la combinación necesaria, podrá seleccionarla individualmente en la pantalla siguiente.]]></entry>
+
+  <entry id="helpstep2.summary"><![CDATA[Pantalla de captura de la cuenta.]]></entry>
+  <entry id="helpstep2.title"><![CDATA[Cuenta:]]></entry>
+  <entry id="helpstep2.description"><![CDATA[Esta pantalla permite capturar todos los datos del administrador del sitio.]]></entry>
+
+  <entry id="helpstep3.summary"><![CDATA[Pantalla de confirmación.]]></entry>
+  <entry id="helpstep3.title"><![CDATA[Confirmación:]]></entry>
+  <entry id="helpstep3.description"><![CDATA[Esta pantalla es el estatus de confirmación de la captura de los datos del administrador.]]></entry>
+
+  <entry id="helpstep4.summary"><![CDATA[Pantalla de conexión.]]></entry>
+  <entry id="helpstep4.title"><![CDATA[Conexión:]]></entry>
+  <entry id="helpstep4.description"><![CDATA[Cuando los datos de la cuenta son correctos, permite conectarse al sistema para administrarlo.]]></entry>
+
+  <entry id="sunday"><![CDATA[Domingo]]></entry>
+  <entry id="monday"><![CDATA[Lunes]]></entry>
+  <entry id="tuesday"><![CDATA[Martes]]></entry>
+  <entry id="wednesday"><![CDATA[Miércoles]]></entry>
+  <entry id="thursday"><![CDATA[Jueves]]></entry>
+  <entry id="friday"><![CDATA[Viernes]]></entry>
+  <entry id="saturday"><![CDATA[Sábado]]></entry>
+
+  <entry id="january"><![CDATA[Enero]]></entry>
+  <entry id="february"><![CDATA[Febrero]]></entry>
+  <entry id="march"><![CDATA[Marzo]]></entry>
+  <entry id="april"><![CDATA[Abril]]></entry>
+  <entry id="may"><![CDATA[Mayo]]></entry>
+  <entry id="june"><![CDATA[Junio]]></entry>
+  <entry id="july"><![CDATA[Julio]]></entry>
+  <entry id="august"><![CDATA[Agosto]]></entry>
+  <entry id="september"><![CDATA[Septiembre]]></entry>
+  <entry id="october"><![CDATA[Octubre]]></entry>
+  <entry id="november"><![CDATA[Noviembre]]></entry>
+  <entry id="december"><![CDATA[Diciembre]]></entry>
+
+</language>
