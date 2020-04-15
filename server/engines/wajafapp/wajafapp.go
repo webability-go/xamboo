@@ -135,14 +135,43 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 	// The data to return depends on the type of asked data
 	if out == "json" {
-		app := wajaf.NewApplication("")
-		err := xml.Unmarshal([]byte(x1.(string)), app)
-		if err != nil {
-			return "ERROR: UNMARSHALLING XML LIBRARY, Error: " + fmt.Sprint(err)
+		// inject language
+		strcode, ok := x1.(string)
+		if ok {
+			for id, lg := range language.GetEntries() {
+				strcode = strings.ReplaceAll(strcode, "##"+id+"##", lg)
+			}
+
+			if strcode[0] == '<' {
+				app := wajaf.NewApplication("")
+				err := xml.Unmarshal([]byte(strcode), app)
+				if err != nil {
+					return "ERROR: UNMARSHALLING XML LIBRARY, Error: " + fmt.Sprint(err)
+				}
+				json, err := json.Marshal(app)
+				if err != nil {
+					return "ERROR: MARSHALLING JSON LIBRARY, Error: " + fmt.Sprint(err)
+				}
+				return string(json)
+			}
+			if strcode[0] == '{' || strcode[0] == '[' {
+				// JSON code already
+				return strcode
+			}
+			// build a message
+			data := map[string]string{
+				"message": strcode,
+			}
+			json, err := json.Marshal(data)
+			if err != nil {
+				return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
+			}
+			return string(json)
 		}
-		json, err := json.Marshal(app)
+		// anything else: we just JSONify
+		json, err := json.Marshal(x1)
 		if err != nil {
-			return "ERROR: MARSHALLING JSON LIBRARY, Error: " + fmt.Sprint(err)
+			return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
 		}
 		return string(json)
 	}

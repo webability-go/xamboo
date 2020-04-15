@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="main">
+
+  <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes">
+    <zone id="header" size="45">
+
+      <element id="ajaxflag" type="htmlElement" classname="flaggreen" width="16" height="10" right="350" top="5">
+        <help>
+          <summary><![CDATA[Ajax Status flag]]></summary>
+          <title><![CDATA[Ajax Status flag]]></title>
+          <description><![CDATA[The flag is green when there is no AJAX request.<br />If there is an AJAX request on the go, the flag turns red during the request.<br />]]></description>
+        </help>
+      </element>
+
+      <element id="ddflag" type="htmlElement" classname="flaggreen" width="16" height="10" right="330" top="5">
+        <help>
+          <summary><![CDATA[Drag&Drop Status flag]]></summary>
+          <title><![CDATA[Drag&Drop Status flag]]></title>
+          <description><![CDATA[The flag is green when there is no D&D movement.<br />If there is a D&D movement on the go, the flag turns red during the dragging.<br />]]></description>
+        </help>
+      </element>
+
+      <element id="debugbutton" type="htmlElement" classname="flagyellow" width="16" height="10" right="310" top="5">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  var popupdebug = window.open('', 'debug', 'scrollbars=1,width=400,height=600');
+  popupdebug.moveTo(0,0);
+  WA.debug.Console = popupdebug.document;
+  WA.debug.Level = 1;
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary><![CDATA[Click to open the debug console]]></summary>
+          <title><![CDATA[Debug console]]></title>
+          <description><![CDATA[You can click on this button to open the debug console.<br />The debug console is a popup window. Be sure the popups are authorized in your browser to let it appear.]]></description>
+        </help>
+      </element>
+
+      <element id="header_content" type="htmlElement" classname="maintitle" left="0" top="*" height="28"><![CDATA[
+        <img src="/skins/master/application/wa5.gif" style="vertical-align: middle; height: 27px; margin-right: 10px;" alt="##webabilitylogo##" title="##webabilitylogo##" />
+        ##xamboo## <span class="alttitle">##version##{{VERSION}}</span> - ##mastersite##.]]>
+      </element>
+
+      <element id="alerts" type="htmlElement" classname="alerttitle" width="300" height="20" right="400" top="26"></element>
+      <element id="timer" type="htmlElement" classname="timertitle" width="300" height="20" right="100" top="26"></element>
+
+      <element type="htmlElement" classname="buttonmenuconfig" width="16" height="16" right="50" top="25">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  var node = this._4gl.app.getNode('index|single|app_config');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_config',title:'##CONFIG##',closeable:'yes',shortcut:'##CONFIGSHORTCUT##',application:'config|single'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_config');
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##config.summary##</summary>
+          <title>##config.title##</title>
+          <description>##config.description##</description>
+        </help>
+      </element>
+      <element id="help_header" type="htmlElement" classname="buttonmenuhelpfull" width="16" height="16" right="30" top="25">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  if (WA.Managers.help.mode == 2)
+  {
+    WA.Managers.help.switchOff();
+    WA.toDOM('help_header').className = 'buttonmenuhelpmute';
+  }
+  else if (WA.Managers.help.mode == 1)
+  {
+    WA.Managers.help.switchOn();
+    WA.toDOM('help_header').className = 'buttonmenuhelpfull';
+  }
+  else
+  {
+    WA.Managers.help.switchAlt();
+    WA.toDOM('help_header').className = 'buttonmenuhelp';
+  }
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##helponoff.summary##</summary>
+          <title>##helponoff.title##</title>
+          <description>##helponoff.description##</description>
+        </help>
+      </element>
+      <element id="sound_header" type="htmlElement" classname="buttonmenusoundoff" width="16" height="16" right="10" top="25">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  WA.Managers.sound.on = !WA.Managers.sound.on;
+  if (WA.Managers.sound.on)
+    WA.toDOM('sound_header').className = 'buttonmenusoundon';
+  else
+    WA.toDOM('sound_header').className = 'buttonmenusoundoff';
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##soundonoff.summary##</summary>
+          <title>##soundonoff.title##</title>
+          <description>##soundonoff.description##</description>
+        </help>
+      </element>
+
+      <element id="disconnect_header" type="htmlElement" classname="buttonmenudisconnect" width="16" height="16" right="10" top="5">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  window.location.href = '/?OrderSecurity=Disconnect';
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##disconnect.summary##</summary>
+          <title>##disconnect.title##</title>
+          <description>##disconnect.description##</description>
+        </help>
+      </element>
+      <element type="htmlElement" classname="buttonmenuuser" width="16" height="16" right="30" top="5">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  var node = this._4gl.app.getNode('index|single|app_mypage');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_mypage',title:'##MYPAGE##',closeable:'yes',shortcut:'##MYPAGESHORTCUT##',application:'mypage|single'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_mypage');
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##mypage.summary##</summary>
+          <title>##mypage.title##</title>
+          <description>##mypage.description##</description>
+        </help>
+      </element>
+      <element type="htmlElement" classname="" width="200" height="20" right="50" top="5"><![CDATA[<table style="width: 200px;"><tr><td id="main_username" class="usertitle">{{USER}}</td></tr></table>]]></element>
+
+    </zone>
+    <zone id="workarea" size="*">
+    </zone>
+    <zone id="footer" size="30">
+      <element id="footer_content" type="htmlElement" classname="footertitle" left="0" top="*"><![CDATA[##footer##]]>
+      </element>
+    </zone>
+  </container>
+
+  <container id="modalbackground" type="simpleContainer" classname="modalbackground" width="max" height="max" left="*" top="*">
+    <zone>
+    </zone>
+  </container>
+
+  <container id="modallogin" type="simpleContainer" width="800" height="400" left="*" top="*" classname="simplebox">
+    <zone>
+      <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes" classname="separatorinvisiblevertical">
+        <zone size="80">
+          <element type="htmlElement"><![CDATA[
+<img src="/skins/master/application/wa5.gif" style="margin: 15px; margin-bottom: 0px; float: left;" alt="##logo##" title="##logo##"><br /><span style="font-size: 20px; font-weight: bold; line-height: 1.2em;">##welcometitle##{{VERSION}}</span><span style="font-size: 14px; color: #666;  line-height: 1.2em;"><br />##intro1title##</span><span style="font-size: 12px; color: #333; line-height: 1.4em;"><br />##intro2title##</span>]]></element>
+        </zone>
+        <zone size="*">
+          <container id="logintool" type="simpleContainer" width="max" height="max">
+            <zone id="loginform">
+              <container id="formlogin" type="groupContainer" mode="1" authmodes="1" varorder="order" varmode="mode">
+                <zone type="field">
+                  <element id="username" type="textfieldElement" minlength="4" maxlength="80" visible="1" info="" disabled="" readonly="" notnull="1" helpmode="1">
+                    ##username##
+                    <defaultvalue></defaultvalue>
+                    <helpdescription>##username.description##</helpdescription>
+                    <statusnotnull>##username.notnull##</statusnotnull>
+                    <statustooshort>##username.tooshort##</statustooshort>
+                  </element>
+                </zone>
+
+                <zone type="field">
+                  <element id="password" type="textfieldElement" minlength="4" maxlength="80" visible="1" info="" disabled="" readonly="" notnull="1" helpmode="1" password="yes">
+                    ##password##
+                    <defaultvalue></defaultvalue>
+                    <helpdescription>##password.description##</helpdescription>
+                    <statusnotnull>##password.notnull##</statusnotnull>
+                    <statustooshort>##password.tooshort##</statustooshort>
+                  </element>
+                </zone>
+
+                <zone type="field">
+                  <element type="hiddenfieldElement" id="OrderSecurity">Connect</element>
+                </zone>
+
+                <zone type="control">
+                  <element id="submit" type="buttonElement" action="submit" extra="success">##submit##
+                    <help>
+                      <summary>##submit.summary##</summary>
+                      <title>##submit.help##</title>
+                      <description>##submit.description##</description>
+                    </help>
+                  </element>
+                  <element id="reset" type="buttonElement" action="reset" extra="warning">##reset##
+                    <help>
+                      <summary>##reset.summary##</summary>
+                      <title>##reset.help##</title>
+                      <description>##reset.description##</description>
+                    </help>
+                  </element>
+
+                  <element type="buttonElement">
+                    <![CDATA[##lostpassword##]]>
+                    <event type="click">
+                      <code><![CDATA[
+    function(e)
+    {
+    WA.$N('main|single|logintool').showZone('passwordform');
+    }
+                      ]]></code>
+                    </event>
+                    <help>
+                      <summary>##lostpassword.summary##</summary>
+                      <title>##lostpassword.title##</title>
+                      <description>##lostpassword.description##</description>
+                    </help>
+                  </element>
+                </zone>
+
+                <alertmessage>##alertmessage##</alertmessage>
+                <servermessage>##servermessage##</servermessage>
+                <titleinsert><![CDATA[##intro##]]></titleinsert>
+                <event type="success">
+                  <code>function(params)
+{
+  WA.$N('main|single|password').setValues('');
+  hidelogin();
+  userkey = params.userkey;
+  WA.browser.setInnerHTML(WA.toDOM('main_username'), params.username);
+  setSound(params.sound);
+  setHelp(parseInt(params.help, 10));
+  var app = WA.Managers.wa4gl.getApplication('index', 'single');
+  // we start app if not started already
+  if (!app)
+    WA.Managers.wa4gl.startApplication('main|single|workarea', 'index', 'single', '', '');
+  // if there was something pending
+  WA.Managers.wa4gl.resumeApplication();
+//  getalerts();
+}
+                  </code>
+                </event>
+              </container>
+
+            </zone>
+
+            <zone id="passwordform">
+
+              <container id="form2" type="groupContainer" mode="1" authmodes="1" varorder="order" varmode="mode">
+                <zone type="field">
+                  <element id="getusername" type="textfieldElement" minlength="4" maxlength="80" visible="1" info="" disabled="" readonly="" notnull="1" helpmode="1">
+                     ##getusername##
+                    <helpdescription>##getusername.description##</helpdescription>
+                    <statusnotnull>##getusername.notnull##</statusnotnull>
+                    <statustooshort>##getusername.tooshort##</statustooshort>
+                  </element>
+                </zone>
+
+                <zone type="control">
+                  <element id="passwordsubmit" type="buttonElement" action="submit" extra="success">##passwordsubmit##
+                    <help>
+                      <summary>##passwordsubmit.summary##</summary>
+                      <title>##passwordsubmit.help##</title>
+                      <description>##passwordsubmit.description##</description>
+                    </help>
+                  </element>
+
+                  <element type="buttonElement">
+                    <![CDATA[##loginform##]]>
+                    <event type="onclick">
+                      <code><![CDATA[
+function(e)
+{
+  WA.$N('main|single|logintool').showZone('loginform');
+}
+                      ]]></code>
+                    </event>
+                    <help>
+                      <summary>##loginform.summary##</summary>
+                      <title>##loginform.title##</title>
+                      <description>##loginform.description##</description>
+                    </help>
+                  </element>
+
+                </zone>
+
+                <titleinsert><![CDATA[##passwordintro##]]></titleinsert>
+                <alertmessage>##alertmessage##</alertmessage>
+                <servermessage>##servermessage##</servermessage>
+              </container>
+            </zone>
+
+          </container>
+        </zone>
+      </container>
+    </zone>
+  </container>
+
+  <container id="generalmodal" type="simpleContainer" width="90%" height="90%" left="*" top="*">
+    <zone classname="">
+      <container id="containermodal" type="simpleContainer" width="max" height="max">
+        <zone id="contentmodal" classname="simplebox">
+        </zone>
+      </container>
+      <element type="htmlElement" classname="simpleboxappend" width="13" height="15" top="0" left="-7">
+      <![CDATA[X]]>
+        <event type="onclick">
+          <code>function() { stopmodal(); }</code>
+        </event>
+        <help>
+          <summary><![CDATA[<b>Cancelar</b> la captura de estos datos y <b>cerrar</b> la ventana]]></summary>
+        </help>
+      </element>
+    </zone>
+  </container>
+
+  <container id="calendarmodal" type="simpleContainer" width="250" height="160" left="0" top="0" display="none">
+    <zone classname="">
+      <element type="htmlElement" classname="simplebox" width="max" height="max">
+<![CDATA[
+<!-- normal calendar picker -->
+<div id="ds_calendarpicker" style="border: 3px blue; background-color: white; display: none; width: 100%; height: 100%;">
+<table cellpadding="1" cellspacing="3" border="1" bordercolor="#000000" width="100%">
+  <tr>
+    <td id="ds_yearless" width="10%" height="20" style="font-family: Arial; font-size: 12px; text-align: center; font-weight: bold; background-color: #dddddd; cursor: pointer;">&lt;&lt;</td>
+    <td id="ds_monthless" width="10%" height="20" style="font-family: Arial; font-size: 12px; text-align: center; font-weight: bold; background-color: #dddddd; cursor: pointer;">&lt;</td>
+    <td id="ds_monthyear" width="60%" height="20" style="font-family: Arial; font-size: 12px; cursor: move; text-align: center;">Abril 2008</td>
+    <td id="ds_monthmore" width="10%" height="20" style="font-family: Arial; font-size: 12px; text-align: center; font-weight: bold; background-color: #dddddd; cursor: pointer;">&gt;</td>
+    <td id="ds_yearmore" width="10%" height="20" style="font-family: Arial; font-size: 12px; text-align: center; font-weight: bold; background-color: #dddddd; cursor: pointer;">&gt;&gt;</td>
+  </tr>
+</table>
+<table cellpadding="1" cellspacing="3" border="1" bordercolor="#000000" width="100%">
+  <tr>
+    <td id="ds_daytitle0"></td>
+    <td id="ds_daytitle1"></td>
+    <td id="ds_daytitle2"></td>
+    <td id="ds_daytitle3"></td>
+    <td id="ds_daytitle4"></td>
+    <td id="ds_daytitle5"></td>
+    <td id="ds_daytitle6"></td>
+  </tr>
+  <tr>
+    <td id="ds_day0"></td>
+    <td id="ds_day1"></td>
+    <td id="ds_day2"></td>
+    <td id="ds_day3"></td>
+    <td id="ds_day4"></td>
+    <td id="ds_day5"></td>
+    <td id="ds_day6"></td>
+  </tr>
+  <tr>
+    <td id="ds_day7"></td>
+    <td id="ds_day8"></td>
+    <td id="ds_day9"></td>
+    <td id="ds_day10"></td>
+    <td id="ds_day11"></td>
+    <td id="ds_day12"></td>
+    <td id="ds_day13"></td>
+  </tr>
+  <tr>
+    <td id="ds_day14"></td>
+    <td id="ds_day15"></td>
+    <td id="ds_day16"></td>
+    <td id="ds_day17"></td>
+    <td id="ds_day18"></td>
+    <td id="ds_day19"></td>
+    <td id="ds_day20"></td>
+  </tr>
+  <tr>
+    <td id="ds_day21"></td>
+    <td id="ds_day22"></td>
+    <td id="ds_day23"></td>
+    <td id="ds_day24"></td>
+    <td id="ds_day25"></td>
+    <td id="ds_day26"></td>
+    <td id="ds_day27"></td>
+  </tr>
+  <tr>
+    <td id="ds_day28"></td>
+    <td id="ds_day29"></td>
+    <td id="ds_day30"></td>
+    <td id="ds_day31"></td>
+    <td id="ds_day32"></td>
+    <td id="ds_day33"></td>
+    <td id="ds_day34"></td>
+  </tr>
+  <tr id="ds_calendartail">
+    <td id="ds_day35"></td>
+    <td id="ds_day36"></td>
+    <td id="ds_day37"></td>
+    <td id="ds_day38"></td>
+    <td id="ds_day39"></td>
+    <td id="ds_day40"></td>
+    <td id="ds_day41"></td>
+  </tr>
+</table>
+<!-- hora, min, sec -->
+
+<div id="ds_calendartime" style="display: none;">
+<form>
+<table cellpadding="2" cellspacing="2" border="0" bordercolor="#000000">
+<tr>
+<td>Hora: </td>
+<td>
+  <select name="calendarhour" id="ds_calendarhour">
+    <option value="0">00</option>
+    <option value="1">01</option>
+    <option value="2">02</option>
+    <option value="3">03</option>
+    <option value="4">04</option>
+    <option value="5">05</option>
+    <option value="6">06</option>
+    <option value="7">07</option>
+    <option value="8">08</option>
+    <option value="9">09</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
+    <option value="15">15</option>
+    <option value="16">16</option>
+    <option value="17">17</option>
+    <option value="18">18</option>
+    <option value="19">19</option>
+    <option value="20">20</option>
+    <option value="21">21</option>
+    <option value="22">22</option>
+    <option value="23">23</option>
+  </select>
+</td><td>
+  <select name="calendarminute" id="ds_calendarminute">
+    <option value="0">00</option>
+    <option value="5">05</option>
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+    <option value="25">25</option>
+    <option value="30">30</option>
+    <option value="35">35</option>
+    <option value="40">40</option>
+    <option value="45">45</option>
+    <option value="50">50</option>
+    <option value="55">55</option>
+  </select>
+</td>
+</tr>
+</table>
+</form>
+</div>
+
+<!-- <center>
+<div id="ds_calendaractualdate" style="display: none;">
+Fecha actual:<br />
+<div id="ds_calendaractual" style="width: 200px; height: 15px; border: 1px Solid black; background-color: #ccffcc;"></div>
+</div>
+Fecha nueva:<br />
+<div id="ds_calendarselected" style="width: 200px; height: 15px; border: 1px Solid black; background-color: #ccccff; margin-bottom: 5px;"></div>
+<span id="ds_calendarok" style="border: 1px Solid black; background-color: #ccffcc; cursor: pointer; display: none;">OK</span>
+<span id="ds_calendarcancel" style="border: 1px Solid black; background-color: #ffcccc; cursor: pointer;">CANCELAR</span>
+<br />
+</center>
+</div> -->
+<!-- end normal calendar Popup -->
+
+<!-- grafical calendar Popup -->
+<div id="ds_calendargraphical" style="background-color: white; display: none; width: 245px; height: 340px;">
+
+
+
+</div>
+<!-- end RGB color Popup -->
+]]>
+      </element>
+    </zone>
+  </container>
+
+
+  <container id="loadingbackgroundmodal" type="simpleContainer" classname="loadingbackgroundmodal" width="max" height="max" left="*" top="*" display="none">
+    <zone>
+      <element type="htmlElement" classname="loadingbox" left="*" top="*">
+      <![CDATA[##loading##]]>
+      </element>
+    </zone>
+  </container>
+
+  <element type="codeElement"><![CDATA[
+var globalcount = 1;
+
+function showlogin()
+{
+  // we show login
+  WA.$N('main|single|modalbackground').show();
+  WA.$N('main|single|modallogin').show();
+//  WA.Managers.wa4gl.resizeApplication('main', 'single');
+}
+
+function hidelogin()
+{
+  // we hide login
+  WA.$N('main|single|modalbackground').hide();
+  WA.$N('main|single|modallogin').hide();
+}
+
+function startmodal(app, params, feedback)
+{
+  // we show login
+  WA.$N('main|single|modalbackground').show();
+  WA.$N('main|single|generalmodal').show();
+  // load the application and set feedback
+  var xapp = app.split('|');
+  WA.Managers.wa4gl.startApplication('main|single|contentmodal', xapp[0], xapp[1], params, '');
+}
+
+function stopmodal()
+{
+  // we hide login
+  WA.$N('main|single|modalbackground').hide();
+  WA.$N('main|single|generalmodal').hide();
+}
+
+function startcalendar()
+{
+  WA.$N('main|single|calendarmodal').show();
+}
+
+function stopcalendar()
+{
+  WA.$N('main|single|calendarmodal').hide();
+}
+
+function startloading()
+{
+  // we show login
+  WA.$N('main|single|loadingbackgroundmodal').show();
+}
+
+function stoploading()
+{
+  // we hide login
+  WA.$N('main|single|loadingbackgroundmodal').hide();
+}
+
+function addzero(num)
+{
+  if (num < 10)
+    return '0' + num;
+  return num;
+}
+
+function timer()
+{
+  var fecha=new Date();
+  var dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+  WA.browser.setInnerHTML(WA.toDOM('main|single|timer'), dias[fecha.getDay()] + ', ' + fecha.getDate() + ' de ' + meses[fecha.getMonth()] + ' de ' + fecha.getFullYear() + ', ' + addzero(fecha.getHours()) + ':' + addzero(fecha.getMinutes()) + ':' + addzero(fecha.getSeconds()));
+  setTimeout( function() { timer(); }, 1000 );
+}
+
+function alerts(request)
+{
+  var data = JSONDecode(request.responseText);
+  var strmsg = '';
+  if (data.messages > 0)
+    strmsg += data.messages + ' mensaje' + (data.messages>1?'s':'');
+  var stralert = '';
+  if (data.alerts > 0)
+    stralert += data.alerts + ' alerta' + (data.alerts>1?'s':'');
+    if (strmsg || stralert)
+  {
+    WA.browser.setInnerHTML(WA.toDOM('main|single|alerts'), 'Tienes: ' + strmsg + (strmsg&&stralert?' y ':'') + stralert + '.');
+  }
+  else
+    WA.browser.setInnerHTML($('main|single|alerts'), '');
+}
+
+var userkey = {{USERKEY}};
+var alertsr = null;
+function getalerts()
+{
+  if (!userkey)
+  {
+    WA.browser.setInnerHTML($('main|single|alerts'), '');
+    return;
+  }
+  alertsr = WA.Managers.ajax.createPeriodicRequest(10000, 100000000, '/status/alerts.'+userkey+'.json', 'post', null, alerts, true);
+  alertsr.addStateFeedback(function() {}, 0); // ignore errors
+}
+
+function setSound(status)
+{
+  WA.Managers.sound.on = status;
+  if (status)
+    WA.toDOM('main|single|sound_header').className = 'buttonmenusoundon';
+  else
+    WA.toDOM('main|single|sound_header').className = 'buttonmenusoundoff';
+}
+
+function setHelp(status)
+{
+  switch (status)
+  {
+    case 0:
+      WA.Managers.help.switchOff();
+      WA.toDOM('main|single|help_header').className = 'buttonmenuhelpmute';
+      break;
+    case 1:
+      WA.Managers.help.switchAlt();
+      WA.toDOM('main|single|help_header').className = 'buttonmenuhelp';
+      break;
+    case 2:
+      WA.Managers.help.switchOn();
+      WA.toDOM('main|single|help_header').className = 'buttonmenuhelpfull';
+      break;
+  }
+}
+
+function debugconsole()
+{
+  var node = WA.$N('index|single|app_console');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_console',title:'##CONSOLE##',shortcut:'##CONSOLESHORTCUT##',closeable:'yes'}};
+    WA.$N('index|single|application').app.createTree('index|single|application', tree);
+  }
+  WA.$N('index|single|application').activateZone('app_console');
+
+  WA.debug.Console = WA.toDOM('index|single|app_console');
+  WA.debug.Level = 3;
+}
+
+var numajax = 0;
+function ajaxListener(event)
+{
+  if (event == 'start')
+    numajax ++;
+  else if (event == 'stop')
+    numajax --;
+  if (numajax > 0)
+    WA.toDOM('main|single|ajaxflag').className = 'flagred';
+  else
+    WA.toDOM('main|single|ajaxflag').className = 'flaggreen';
+}
+
+function ddListener(event)
+{
+  if (event == 'start')
+    WA.toDOM('main|single|ddflag').className = 'flagred';
+  else if (event == 'move')
+    WA.toDOM('main|single|ddflag').className = 'flagblue';
+  else if (event == 'stop')
+    WA.toDOM('main|single|ddflag').className = 'flaggreen';
+}
+
+]]></element>
+  <event type="start">
+    <code>
+function()
+{
+  stopmodal();
+  var app = {{APPLICATION}};
+  setSound({{SOUND}});
+  setHelp({{HELP}});
+
+  if (app)
+  {
+    hidelogin();
+    // we load the app
+    WA.Managers.wa4gl.startApplication('main|single|workarea', 'index', 'single', '', '');
+//    getalerts();
+  }
+  else
+  {
+    showlogin();
+  }
+  timer();
+  WA.Managers.ajax.setListener(ajaxListener);
+  WA.Managers.dd.setListener(ddListener);
+  WA.toDOM('loading').style.display = 'none';
+}
+    </code>
+  </event>
+  <event type="globallogin">
+    <code>
+function()
+{
+  // we invalid user
+  user = null;
+  // we stop the alerts requests
+  WA.Managers.ajax.destroyRequest(alertsr);
+  alertsr = null;
+  // we show the login
+  showlogin();
+}
+    </code>
+  </event>
+
+</application>

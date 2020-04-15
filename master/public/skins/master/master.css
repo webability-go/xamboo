@@ -33,20 +33,20 @@ a:hover
 }
 
 /* structural elements */
-#mastermain\|single\|
+#main\|single\|
 {
   background-color: #dfe8f6;
   min-width: 840px !important;
   min-height: 480px !important;
 }
 
-#mastermain\|single\|header
+#main\|single\|header
 {
   background-color: #c6d9f1;
   overflow: hidden;
 }
 
-#mastermain\|single\|workarea
+#main\|single\|workarea
 {
   background-color: transparent;
   border: 0px;
@@ -54,14 +54,14 @@ a:hover
   overflow: hidden;
 }
 
-#masterindex\|single\|workarea
+#index\|single\|workarea
 {
   background-color: transparent;
   border: 0px;
   overflow: hidden;
 }
 
-#mastermain\|single\|footer
+#main\|single\|footer
 {
   background-color: #c6d9f1;
 }
@@ -791,4 +791,3 @@ treeexplorer
 {
   background-color: #880000;
 }
-

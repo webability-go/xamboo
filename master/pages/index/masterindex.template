@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="masterindex">
+  <container type="separatorContainer" width="max" height="max" mode="horizontal" auto="no">
+    <zone size="200">
+
+      <container id="menu" type="treeContainer" haslistener="yes">
+
+        <!-- Installation options -->
+        <template name="installation">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##INSTALLATIONMENU##]]>
+            <help>
+              <summary><![CDATA[##installation.summary##]]></summary>
+              <title><![CDATA[##installation.title##]]></title>
+              <description><![CDATA[##installation.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  WA.$N('menu').switchzone('installation');
+}
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-available.png">
+            <help>
+              <summary><![CDATA[##connectortypes.summary##]]></summary>
+              <title><![CDATA[##connectortypes.title##]]></title>
+              <description><![CDATA[##connectortypes.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_databases');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_databases',title:'##DATABASESNAME##',closeable:'yes',shortcut:'##DATABASESSHORTCUT##',application:'masterdatabases|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_databases');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="mainconnector">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORREPOSITORYMENU## - {type}]]>
+            <help>
+              <summary>##connector.repository.summary##</summary>
+              <title>##connector.repository.title##</title>
+              <description>##connector.repository.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_connector_{uid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_connector_{uid}',title:'##CONNECTORNAME## {uid}',closeable:'yes',application:'masterconnector|{uid}',params:'Order=Modif&CONNECTORID={uid}'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_connector_{uid}');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="repository">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##REPOSITORYMENU##]]>
+            <help>
+              <summary>##repository.summary##</summary>
+              <title>##repository.title##</title>
+              <description>##repository.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_repository');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_repository',title:'##REPOSITORYNAME##',closeable:'yes',application:'masterrepository|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_repository');
+}
+              ]]></code>
+            </event>
+
+
+          </element>
+        </template>
+
+        <template name="sites">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##SITESMENU##]]>
+            <help>
+              <summary>##sites.summary##</summary>
+              <title>##sites.title##</title>
+              <description>##sites.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_sites');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_sites',title:'##SITESNAME##',closeable:'yes',application:'mastersites|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_sites');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="application">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##APPLICATIONMENU##]]>
+            <help>
+              <summary>##application.summary##</summary>
+              <title>##application.title##</title>
+              <description>##application.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_application');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_application',title:'##APPLICATIONNAME##',closeable:'yes',application:'masterapplication|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_application');
+}
+              ]]></code>
+            </event>
+
+
+          </element>
+        </template>
+
+        <!-- Modules options -->
+        <template name="modules">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/modules.png"></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##MODULESMENU##]]>
+            <help>
+              <summary><![CDATA[##modules.summary##]]></summary>
+              <title><![CDATA[##modules.title##]]></title>
+              <description><![CDATA[##modules.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var n = WA.$N('menu');
+  n.switchzone('modules');
+}
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/verify-version.png">
+            <help>
+              <summary><![CDATA[##modulesverify.summary##]]></summary>
+              <title><![CDATA[##modulesverify.title##]]></title>
+              <description><![CDATA[##modulesverify.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_modulesverify');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_modulesverify',title:'##MODULESVERIFYNAME##',closeable:'yes',application:'mastermodulesverify|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_modulesverify');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="module">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{icon}"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name} {status}]]>
+            <help>
+              <summary><![CDATA[##module.summary##]]></summary>
+              <title><![CDATA[##module.title##]]></title>
+              <description><![CDATA[##module.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var n = WA.$N('menu');
+  n.switchzone('{id}');
+}
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/module-admin.png">
+            <help>
+              <summary><![CDATA[##module.summary##]]></summary>
+              <title><![CDATA[##module.title##]]></title>
+              <description><![CDATA[##module.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_module_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_module_{modid}',title:'##MODULENAME## {modid}',closeable:'yes',application:'mastermodule|{modid}',params:'Mod={modid}'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_module_{modid}');
+}
+              ]]></code>
+            </event>
+          </element>
+          
+        </template>
+
+        <template name="moduleversion">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/module.png"></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[{name} {status}]]>
+            <help>
+              <summary><![CDATA[##moduleversion.summary##]]></summary>
+              <title><![CDATA[##moduleversion.title##]]></title>
+              <description><![CDATA[##moduleversion.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_module_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_module_{modid}',title:'##MODULENAME## {modid}',closeable:'yes',application:'mastermodule|{modid}',params:'Mod={modid}&Version={versionid}'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_module_{modid}');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+
+        <!-- Tools options -->
+        <template name="sitelink">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/sitelink.png"><![CDATA[##sitelink.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##SITELINKMENU##]]>
+            <help>
+              <summary>##sitelink.summary##</summary>
+              <title>##sitelink.title##</title>
+              <description>##sitelink.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  window.open('/index.php');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="adminlink">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/adminlink.png"><![CDATA[##adminlink.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##ADMINLINKMENU##]]>
+            <help>
+              <summary>##adminlink.summary##</summary>
+              <title>##adminlink.title##</title>
+              <description>##adminlink.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  window.open('/admin.php');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="explorer">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/explorer.png"><![CDATA[##explorer.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##EXPLORERMENU##]]>
+            <help>
+              <summary>##explorer.summary##</summary>
+              <title>##explorer.title##</title>
+              <description>##explorer.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_explorer');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_explorer',title:'##EXPLORERNAME##',shortcut:'##EXPLORERSHORTCUT##',closeable:'yes',application:'masterexplorer|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_explorer');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="config">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/config.png"><![CDATA[##config.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONFIGMENU##]]>
+            <help>
+              <summary>##config.summary##</summary>
+              <title>##config.title##</title>
+              <description>##config.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_config');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_config',title:'##CONFIGNAME##',shortcut:'##CONFIGSHORTCUT##',closeable:'yes',application:'masterconfig|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_config');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="mypage">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/user-me.png"><![CDATA[##mypage.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##MYPAGEMENU##]]>
+            <help>
+              <summary>##mypage.summary##</summary>
+              <title>##mypage.title##</title>
+              <description>##mypage.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_mypage');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_mypage',title:'##MYPAGENAME##',shortcut:'##MYPAGESHORTCUT##',closeable:'yes',application:'mastermypage|single'}};
+    this._4gl.app.createTree('masterindex|single|application', tree);
+  }
+  this._4gl.app.getNode('masterindex|single|application').activateZone('app_mypage');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="console">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/console.png"><![CDATA[##console.summary##]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONSOLEMENU##]]>
+            <help>
+              <summary>##console.summary##</summary>
+              <title>##console.title##</title>
+              <description>##console.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  debugconsole();
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <!-- Connectors options (not light) -->
+        <template name="connectors">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/connectors.png"></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORSMENU##]]>
+            <help>
+              <summary>##connectors.summary##</summary>
+              <title>##connectors.title##</title>
+              <description>##connectors.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var n = WA.$N('menu');
+  n.switchzone('{id}');
+}
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-available.png">
+            <help>
+              <summary>##connectortypes.summary##</summary>
+              <title>##connectortypes.title##</title>
+              <description>##connectortypes.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_databases');
+  if (!node)
+  {
+    self.createTree('application', {tag:'zone',attributes:{id:'app_databases',title:'##DATABASESNAME##',closeable:'yes',shortcut:'##DATABASESSHORTCUT##',application:'masterdatabases|single'}});
+  }
+  self.getNode('application').icontainer.activateZone('app_databases');
+}
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-new.png">
+            <help>
+              <summary>##newconnector.summary##</summary>
+              <title>##newconnector.title##</title>
+              <description>##newconnector.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  if (self.connector == undefined)
+    self.connector = 1;
+  var n = self.createTree('application', {tag:'zone',attributes:{id:'app_connector_new_'+self.connector,title:'##CONNECTORNEW##',closeable:'yes',application:'masterconnector|connector_new_'+self.connector,params:'Order=New'}});
+  self.getNode('application').icontainer.activateZone('app_connector_new_'+self.connector);
+}
+              ]]></code>
+            </event>
+          </element>
+
+        </template>
+
+        <template name="connector">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORREPOSITORYMENU## - {type}]]>
+            <help>
+              <summary>##connector.repository.summary##</summary>
+              <title>##connector.repository.title##</title>
+              <description>##connector.repository.description##</description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_connector_{uid}');
+  if (!node)
+  {
+    self.createTree('application', {tag:'zone',attributes:{id:'app_connector_{uid}',title:'##CONNECTORNAME## {uid}',closeable:'yes',application:'masterconnector|{uid}',params:'Order=Modif&ID={uid}'}});
+  }
+  self.getNode('application').icontainer.activateZone('app_connector_{uid}');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+      </container>
+
+    </zone>
+    <zone id="workarea" size="*">
+      <container id="application" type="tabContainer" width="max" height="max" mode="top">
+        <zone id="controlcenter" title="##CONTROLNAME##" application="mastercontrol|single" shortcut="##CONTROLSHORTCUT##" />
+      </container>
+    </zone>
+  </container>
+</application>

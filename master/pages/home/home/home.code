@@ -1,0 +1,41 @@
+<div id="loading" style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 50000; background-color: white;"><div id="loadingdata" style="position: absolute; left: 40%; top: 40%; border: 2px solid #99bbe8; padding: 10px; font-size: 28px; font-family: Verdana; text-align: center; color: #1663b7; width: 200px; height: 150px; background-color: #dfe8f6;"><img src="/skins/master/application/logo.png" style="vertical-align: middle; margin-top: 10px; margin-bottom: 10px;" /><br /><img src="/skins/master/application/loader.gif" style="vertical-align: middle; margin-top: 10px; margin-bottom: 10px;" /><br />##loading##</div></div>
+
+<div id="wa4glcontainer" style="position: absolute; left: 0px; top: 0px; min-height: 300px; min-width: 800px;"></div>
+
+<script type="text/javascript">
+
+// we set routes for all the managers
+WA.Managers.help.soundshow = '/skins/master/sounds/help-show.mp3';
+WA.Managers.help.soundclose = '/skins/master/sounds/help-close.mp3';
+
+var numcss = 0;
+function cssloaded()
+{
+  numcss++;
+  if (numcss == 3) // we call APP once we have loaded the 3 CSS to avoid a resize
+    WA.Managers.wa4gl.startApplication('wa4glcontainer', 'main', 'single', '', 'full');
+}
+
+window.onload =
+  function()
+  {
+    // debug mode if DEBUG or FIREBUG is in the URL
+    if (window.location.toString().match(/DEBUG$/))
+    {
+      var popupdebug = window.open('', 'debug', 'scrollbars=1,width=800,height=600');
+      popupdebug.moveTo(0,0);
+      WA.debug.Console = popupdebug.document;
+      WA.debug.Level = 1;
+    }
+    if (window.location.toString().match(/FIREBUG$/))
+    {
+      WA.debug.Level = 1;
+    }
+    WA.Managers.wa4gl.setURL('', '/js');
+    WA.Managers.wa4gl.setPath('/', '/', 'code', '/', 'json');
+    // we load the styles sheets with the manager so we can play with dynamic skins reload
+    WA.Managers.ondemand.loadCSS('/skins/master/reset.css', cssloaded, false);
+    WA.Managers.ondemand.loadCSS('/skins/master/4gl.css', cssloaded, false);
+    WA.Managers.ondemand.loadCSS('/skins/master/master.css', cssloaded, false);
+  };
+</script>

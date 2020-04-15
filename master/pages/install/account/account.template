@@ -15,7 +15,7 @@
       </container>
     </zone>
     <zone size="*">
-__FORM__
+{{FORM}}
       <element id="continue" type="buttonElement" action="submit" extra="success" display="none" style="margin-left: 20px;">
 <![CDATA[##continue##]]>
         <event type="click">

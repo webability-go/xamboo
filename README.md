@@ -62,7 +62,9 @@ Version Changes Control
 
 V1.2.0 - 2020-04-09
 -----------------------
-- Master site created (for tools installation, ready to use XModules and contexts, modules and dynamic libraries, security)
+- Master site created (for tools installation, ready to use XModules and contexts, modules and dynamic libraries, security
+- Master installation (template, language, account), main template, login, main index
+- Master APP generated
 - Wajaf JS added into public master code
 - Version enhanced into config.Config object
 

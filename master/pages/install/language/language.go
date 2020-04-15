@@ -27,7 +27,6 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 		"LANGUAGE": ctx.Language,
 		"SELECT":   getSelect(c),
 		"FLAGS":    getCountries(c),
-		"#":        language,
 	}
 
 	return template.Execute(params)
@@ -58,7 +57,7 @@ func getCountries(cfg *xconfig.XConfig) string {
 		idm := cfg.GetConfig(l)
 		name, _ := idm.GetString("name")
 
-		zone := sc.NewZone("")
+		zone := sc.NewZone("", "")
 		zone.SetAttribute("size", "*")
 		zone.SetAttribute("style", "overflow: visible;")
 
@@ -73,7 +72,7 @@ func getCountries(cfg *xconfig.XConfig) string {
 		}
 		for i, iso := range countries {
 			lname := countriesname[i]
-			be := wajaf.NewButtonElement("")
+			be := wajaf.NewButtonElement("", "submit")
 			be.SetAttribute("classname", "flag")
 			be.SetAttribute("style", "background-image: url(\"/skins/master/flags/"+iso+".gif\");")
 			be.AddEvent("click", "function() { calllanguage(self, \""+l+"\", \""+iso+"\"); }")
