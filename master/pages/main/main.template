@@ -266,7 +266,7 @@ function(e)
 
             <zone id="passwordform">
 
-              <container id="form2" type="groupContainer" mode="1" authmodes="1" varorder="order" varmode="mode">
+              <container id="formpassword" type="groupContainer" mode="1" authmodes="1" varorder="order" varmode="mode">
                 <zone type="field">
                   <element id="getusername" type="textfieldElement" minlength="4" maxlength="80" visible="1" info="" disabled="" readonly="" notnull="1" helpmode="1">
                      ##getusername##

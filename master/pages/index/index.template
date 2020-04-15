@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<application id="masterindex">
+<application id="index">
   <container type="separatorContainer" width="max" height="max" mode="horizontal" auto="no">
     <zone size="200">
 
@@ -7,7 +7,7 @@
 
         <!-- Installation options -->
         <template name="installation">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##INSTALLATIONMENU##]]>
             <help>
               <summary><![CDATA[##installation.summary##]]></summary>
@@ -23,7 +23,7 @@ function(e)
               ]]></code>
             </event>
           </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-available.png">
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/connector-available.png">
             <help>
               <summary><![CDATA[##connectortypes.summary##]]></summary>
               <title><![CDATA[##connectortypes.title##]]></title>
@@ -37,9 +37,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_databases',title:'##DATABASESNAME##',closeable:'yes',shortcut:'##DATABASESSHORTCUT##',application:'masterdatabases|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_databases');
+  this._4gl.app.getNode('index|single|application').activateZone('app_databases');
 }
               ]]></code>
             </event>
@@ -47,7 +47,7 @@ function(e)
         </template>
 
         <template name="mainconnector">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORREPOSITORYMENU## - {type}]]>
             <help>
               <summary>##connector.repository.summary##</summary>
@@ -62,9 +62,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_connector_{uid}',title:'##CONNECTORNAME## {uid}',closeable:'yes',application:'masterconnector|{uid}',params:'Order=Modif&CONNECTORID={uid}'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_connector_{uid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_connector_{uid}');
 }
               ]]></code>
             </event>
@@ -72,7 +72,7 @@ function(e)
         </template>
 
         <template name="repository">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##REPOSITORYMENU##]]>
             <help>
               <summary>##repository.summary##</summary>
@@ -87,9 +87,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_repository',title:'##REPOSITORYNAME##',closeable:'yes',application:'masterrepository|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_repository');
+  this._4gl.app.getNode('index|single|application').activateZone('app_repository');
 }
               ]]></code>
             </event>
@@ -99,7 +99,7 @@ function(e)
         </template>
 
         <template name="sites">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##SITESMENU##]]>
             <help>
               <summary>##sites.summary##</summary>
@@ -114,9 +114,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_sites',title:'##SITESNAME##',closeable:'yes',application:'mastersites|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_sites');
+  this._4gl.app.getNode('index|single|application').activateZone('app_sites');
 }
               ]]></code>
             </event>
@@ -124,7 +124,7 @@ function(e)
         </template>
 
         <template name="application">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##APPLICATIONMENU##]]>
             <help>
               <summary>##application.summary##</summary>
@@ -139,9 +139,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_application',title:'##APPLICATIONNAME##',closeable:'yes',application:'masterapplication|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_application');
+  this._4gl.app.getNode('index|single|application').activateZone('app_application');
 }
               ]]></code>
             </event>
@@ -152,7 +152,7 @@ function(e)
 
         <!-- Modules options -->
         <template name="modules">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/modules.png"></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/modules.png"></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##MODULESMENU##]]>
             <help>
               <summary><![CDATA[##modules.summary##]]></summary>
@@ -169,7 +169,7 @@ function(e)
               ]]></code>
             </event>
           </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/verify-version.png">
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/verify-version.png">
             <help>
               <summary><![CDATA[##modulesverify.summary##]]></summary>
               <title><![CDATA[##modulesverify.title##]]></title>
@@ -183,9 +183,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_modulesverify',title:'##MODULESVERIFYNAME##',closeable:'yes',application:'mastermodulesverify|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_modulesverify');
+  this._4gl.app.getNode('index|single|application').activateZone('app_modulesverify');
 }
               ]]></code>
             </event>
@@ -193,7 +193,7 @@ function(e)
         </template>
 
         <template name="module">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{icon}"></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{icon}"></element>
           <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name} {status}]]>
             <help>
               <summary><![CDATA[##module.summary##]]></summary>
@@ -210,7 +210,7 @@ function(e)
               ]]></code>
             </event>
           </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/module-admin.png">
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/module-admin.png">
             <help>
               <summary><![CDATA[##module.summary##]]></summary>
               <title><![CDATA[##module.title##]]></title>
@@ -224,18 +224,18 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_module_{modid}',title:'##MODULENAME## {modid}',closeable:'yes',application:'mastermodule|{modid}',params:'Mod={modid}'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_module_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_module_{modid}');
 }
               ]]></code>
             </event>
           </element>
-          
+
         </template>
 
         <template name="moduleversion">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/module.png"></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/module.png"></element>
           <element type="textElement" classname="textmenulink"><![CDATA[{name} {status}]]>
             <help>
               <summary><![CDATA[##moduleversion.summary##]]></summary>
@@ -250,9 +250,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_module_{modid}',title:'##MODULENAME## {modid}',closeable:'yes',application:'mastermodule|{modid}',params:'Mod={modid}&Version={versionid}'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_module_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_module_{modid}');
 }
               ]]></code>
             </event>
@@ -262,7 +262,7 @@ function(e)
 
         <!-- Tools options -->
         <template name="sitelink">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/sitelink.png"><![CDATA[##sitelink.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/sitelink.png"><![CDATA[##sitelink.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##SITELINKMENU##]]>
             <help>
               <summary>##sitelink.summary##</summary>
@@ -281,7 +281,7 @@ function(e)
         </template>
 
         <template name="adminlink">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/adminlink.png"><![CDATA[##adminlink.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/adminlink.png"><![CDATA[##adminlink.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##ADMINLINKMENU##]]>
             <help>
               <summary>##adminlink.summary##</summary>
@@ -300,7 +300,7 @@ function(e)
         </template>
 
         <template name="explorer">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/explorer.png"><![CDATA[##explorer.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/explorer.png"><![CDATA[##explorer.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##EXPLORERMENU##]]>
             <help>
               <summary>##explorer.summary##</summary>
@@ -315,9 +315,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_explorer',title:'##EXPLORERNAME##',shortcut:'##EXPLORERSHORTCUT##',closeable:'yes',application:'masterexplorer|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_explorer');
+  this._4gl.app.getNode('index|single|application').activateZone('app_explorer');
 }
               ]]></code>
             </event>
@@ -325,7 +325,7 @@ function(e)
         </template>
 
         <template name="config">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/config.png"><![CDATA[##config.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/config.png"><![CDATA[##config.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##CONFIGMENU##]]>
             <help>
               <summary>##config.summary##</summary>
@@ -340,9 +340,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_config',title:'##CONFIGNAME##',shortcut:'##CONFIGSHORTCUT##',closeable:'yes',application:'masterconfig|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_config');
+  this._4gl.app.getNode('index|single|application').activateZone('app_config');
 }
               ]]></code>
             </event>
@@ -350,7 +350,7 @@ function(e)
         </template>
 
         <template name="mypage">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/user-me.png"><![CDATA[##mypage.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/user-me.png"><![CDATA[##mypage.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##MYPAGEMENU##]]>
             <help>
               <summary>##mypage.summary##</summary>
@@ -365,9 +365,9 @@ function(e)
   if (!node)
   {
     var tree = {tag:'zone',attributes:{id:'app_mypage',title:'##MYPAGENAME##',shortcut:'##MYPAGESHORTCUT##',closeable:'yes',application:'mastermypage|single'}};
-    this._4gl.app.createTree('masterindex|single|application', tree);
+    this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('masterindex|single|application').activateZone('app_mypage');
+  this._4gl.app.getNode('index|single|application').activateZone('app_mypage');
 }
               ]]></code>
             </event>
@@ -375,7 +375,7 @@ function(e)
         </template>
 
         <template name="console">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/console.png"><![CDATA[##console.summary##]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/console.png"><![CDATA[##console.summary##]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##CONSOLEMENU##]]>
             <help>
               <summary>##console.summary##</summary>
@@ -395,7 +395,7 @@ function(e)
 
         <!-- Connectors options (not light) -->
         <template name="connectors">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/connectors.png"></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/connectors.png"></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORSMENU##]]>
             <help>
               <summary>##connectors.summary##</summary>
@@ -412,7 +412,7 @@ function(e)
               ]]></code>
             </event>
           </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-available.png">
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/connector-available.png">
             <help>
               <summary>##connectortypes.summary##</summary>
               <title>##connectortypes.title##</title>
@@ -432,7 +432,7 @@ function(e)
               ]]></code>
             </event>
           </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/__SKIN__/icons/connector-new.png">
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/connector-new.png">
             <help>
               <summary>##newconnector.summary##</summary>
               <title>##newconnector.title##</title>
@@ -454,7 +454,7 @@ function(e)
         </template>
 
         <template name="connector">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/__SKIN__/icons/{image}"><![CDATA[{title}]]></element>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{image}"><![CDATA[{title}]]></element>
           <element type="textElement" classname="textmenulink"><![CDATA[##CONNECTORREPOSITORYMENU## - {type}]]>
             <help>
               <summary>##connector.repository.summary##</summary>
@@ -482,7 +482,7 @@ function(e)
     </zone>
     <zone id="workarea" size="*">
       <container id="application" type="tabContainer" width="max" height="max" mode="top">
-        <zone id="controlcenter" title="##CONTROLNAME##" application="mastercontrol|single" shortcut="##CONTROLSHORTCUT##" />
+        <zone id="controlcenter" title="##CONTROLNAME##" application="control|single" shortcut="##CONTROLSHORTCUT##" />
       </container>
     </zone>
   </container>

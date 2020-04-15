@@ -66,18 +66,18 @@
   <entry id="modules.title"><![CDATA[Módulos:]]></entry>
   <entry id="modules.summary"><![CDATA[Click aquí para abrir o cerrar la lista de módulos disponibles en el sistema.]]></entry>
   <entry id="modules.description"><![CDATA[Esta lista permite visualizar todos los módulos disponibles en el sistema. Un click permite abrir o cerrar la lista de módulos.]]></entry>
-  
+
   <entry id="MODULESVERIFYNAME"><![CDATA[Actualización de Módulos]]></entry>
   <entry id="modulesverify.title"><![CDATA[Actualización:]]></entry>
   <entry id="modulesverify.summary"><![CDATA[Click aquí para abrir el administrador de actualización de todos los módulos del sistema.]]></entry>
   <entry id="modulesverify.description"><![CDATA[En esta lista podrás visualizar todos los módulos instalados, displnibles y que se pueden actualizar.]]></entry>
-  
+
   <entry id="module.title"><![CDATA[Módulo:]]></entry>
   <entry id="module.summary"><![CDATA[Click aquí para abrir o cerrar la lista de versiones del módulo disponibles en el sistema.]]></entry>
   <entry id="module.description"><![CDATA[Esta lista permite visualizar todas las versiones disponibles del módulo en el sistema. Un click permite abrir o cerrar la lista de versiones.]]></entry>
   <entry id="module.available"><![CDATA[Disponible]]></entry>
   <entry id="module.missing"><![CDATA[Faltan componentes]]></entry>
-  
+
   <entry id="moduleversion.title"><![CDATA[Versión del módulo:]]></entry>
   <entry id="moduleversion.summary"><![CDATA[Click aquí para administrar el módulo.]]></entry>
   <entry id="moduleversion.description"><![CDATA[Esta opción permite administrar el módulo, es decir ver su estatus, instalarlo, modificarlo, actualizarlo o desinstalarlo.]]></entry>

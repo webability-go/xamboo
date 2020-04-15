@@ -1,4 +1,76 @@
-<?php
+package main
+
+import (
+	"github.com/webability-go/xcore/v2"
+
+	"github.com/webability-go/xamboo/master/app/bridge"
+	"github.com/webability-go/xamboo/server/assets"
+)
+
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+
+	// If config already done, CANNOT call this page (error)
+	installed, _ := ctx.Sysparams.GetBool("installed")
+	if !installed {
+		return "Error: system not yet installed"
+	}
+
+	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
+	myappdata, ok := ctx.Plugins["app"]
+	if !ok {
+		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+	}
+
+	bridge.Start(myappdata)
+	bridge.VerifyLogin(ctx)
+
+	sessionid, _ := ctx.Sessionparams.GetString("sessionid")
+	if sessionid == "" {
+		return "ERROR: THE USER IS NOT LOGGED IN"
+	}
+
+	//	bridge.EntityLog_LogStat(ctx)
+	params := &xcore.XDataset{}
+
+	return template.Execute(params)
+}
+
+func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+
+	Order := ctx.Request.Form.Get("Order")
+
+	if Order == "get" {
+		return getMenu()
+	}
+	if Order == "openclose" {
+
+		//    $id = $this->base->HTTPRequest->getParameter('id');
+		//    $status = $this->base->HTTPRequest->getParameter('status');
+		//    $this->base->security->setParameter('mastertree', $id, $status=='true'?1:0);
+	}
+
+	return map[string]string{
+		"status": "OK",
+	}
+}
+
+func getMenu() map[string]interface{} {
+
+	opt := map[string]interface{}{
+		"id":        "sitelink",
+		"template":  "sitelink",
+		"loadable":  false,
+		"closeable": false,
+	}
+
+	return map[string]interface{}{
+		"row": []interface{}{
+			opt,
+		},
+	}
+}
+
+/*
 
 class masterindex extends \common\WAApplication
 {
@@ -178,7 +250,7 @@ class masterindex extends \common\WAApplication
     $modules = $this->baseModuleEntity->getLocalModulesList();
     foreach($modules as $mod => $cart)
     {
-      // installed ? 
+      // installed ?
       // to upgrade ?
       // another needed ?
       $status = '';
@@ -209,7 +281,7 @@ class masterindex extends \common\WAApplication
       }
       else
       {
-        // can be installed ? 
+        // can be installed ?
         $installparty = false;
         foreach($cart as $num => $c)
         {
@@ -219,11 +291,11 @@ class masterindex extends \common\WAApplication
         $icon = $installparty?'module-installable.png':'module-noaction.png';
         $color = 'grey';
       }
-      
+
 //      $closed = $this->base->user->getParameter('mastertree', 'module-' . $mod);
 //      if ($closed === null) $closed = true;
       $full[] = array('id' => $mod, 'uid' => $mod, 'modid' => $mod, 'template' => 'module', 'father' => 'modules', 'name' => $mod, 'icon' => $icon, 'color' => $color, 'status' => $status, 'loadable' => false, 'closeable' => false); //, 'closed' => $closed);
-      /*
+      / *
       foreach($cart as $num => $c)
       {
         if (isset($modulesinstalled[$mod]) && $modulesinstalled[$mod]->version == $num)
@@ -243,10 +315,10 @@ class masterindex extends \common\WAApplication
             $status = $installable?'['.$this->language['moduleversion.install'].']':'['.$this->language['moduleversion.missing'].']';
           }
         }
-        
+
         $full[] = array('id' => $mod.'.'.$num, 'uid' => $mod.'.'.$num, 'modid' => $mod, 'versionid' => $num, 'status' => $status, 'template' => 'moduleversion', 'father' => $mod, 'name' => $num, 'loadable' => false, 'closeable' => false);
       }
-      */
+      * /
     }
     return $full;
   }
@@ -260,7 +332,7 @@ class masterindex extends \common\WAApplication
     {
       if (!$module)
         continue;
-      
+
       // verify this one is installed or not
       $xparts = explode('.', $module);
       if (isset($modulesinstalled[$xparts[0]]))
@@ -274,8 +346,8 @@ class masterindex extends \common\WAApplication
     }
     return true;
   }
-  
-  
+
+
   // open/close listener
   public function menu()
   {
@@ -296,4 +368,4 @@ class masterindex extends \common\WAApplication
 
 }
 
-?>
+*/
