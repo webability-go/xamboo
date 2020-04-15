@@ -1,0 +1,793 @@
+/* Native XHTML elements */
+body
+{
+  color: black;
+  background-color: white;
+  font-family: Arial, Helvetica;
+  font-size: 12px;
+  line-height: 1.2em;
+}
+
+a:link
+{
+  color: #0000aa;
+  text-decoration: none;
+}
+
+a:active
+{
+  color: #0000ff;
+  text-decoration: underline;
+}
+
+a:visited
+{
+  color: #0000aa;
+  text-decoration: underline;
+}
+
+a:hover
+{
+  color: #ff0000;
+  text-decoration: underline;
+}
+
+/* structural elements */
+#main\|single\|
+{
+  background-color: #dfe8f6;
+  min-width: 840px !important;
+  min-height: 480px !important;
+}
+
+#main\|single\|header
+{
+  background-color: #c6d9f1;
+  overflow: hidden;
+}
+
+#main\|single\|workarea
+{
+  background-color: transparent;
+  border: 0px;
+  -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none;
+  overflow: hidden;
+}
+
+#index\|single\|workarea
+{
+  background-color: transparent;
+  border: 0px;
+  overflow: hidden;
+}
+
+#main\|single\|footer
+{
+  background-color: #c6d9f1;
+}
+
+/* used standart classes */
+.flaggreen
+{
+  background-color: #6f6;
+  border: 1px solid blue;
+}
+
+.flagred
+{
+  background-color: #f66;
+  border: 1px solid blue;
+}
+
+.flagyellow
+{
+  background-color: yellow;
+  border: 1px solid blue;
+  cursor: pointer;
+}
+
+.flagblue
+{
+  background-color: #66f;
+  border: 1px solid blue;
+}
+
+.maintitle
+{
+  font-size: 14px;
+  font-weight: bold;
+  color: #000088;
+  padding: 10px;
+}
+
+.alttitle
+{
+  color: #dd0000;
+  font-size: 14px;
+}
+
+.usertitle
+{
+  color: #333333;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.alerttitle
+{
+  color: #dd0000;
+  font-size: 10px;
+}
+
+.generaltitle
+{
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.timertitle
+{
+  color: #333333;
+  font-size: 12px;
+  text-align: right;
+}
+
+.footertitle
+{
+  font-size: 12px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
+.imagemenu
+{
+  border: 0px;
+  margin-left: 1px;
+  margin-right: 1px;
+  vertical-align: middle;
+}
+
+.buttonmenuconfig
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/config.png');
+}
+
+.buttonmenuuser
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/user-me.png');
+}
+
+.buttonmenuhelp
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-tip.png');
+}
+
+.buttonmenuhelpfull
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-full.png');
+}
+
+.buttonmenuhelpmute
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/help-off.png');
+}
+
+.buttonmenusoundon
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/sound-on.png');
+}
+
+.buttonmenusoundoff
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/sound-off.png');
+}
+
+.buttonmenudisconnect
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  background-image: url('/skins/master/icons/disconnect.png');
+}
+
+.modalbackground
+{
+  background-color: orange;
+  opacity: .6;
+  filter: alpha(opacity: 60);
+}
+
+.modallogin
+{
+  background-color: white;
+  border: 2px Solid #880000;
+}
+
+.fondomodal
+{
+  background-color: red;
+  opacity: .5;
+  filter: alpha(opacity: 50);
+}
+
+.loginmodal
+{
+  background-color: white;
+  border: 2px black solid;
+}
+
+.simplebox
+{
+  background-color: white;
+  border: 10px Solid #aa0000;
+}
+
+.buttonmenu
+{
+  border: 0px;
+  cursor: pointer;
+  margin-left: 1px;
+  margin-right: 1px;
+  vertical-align: middle;
+}
+
+.introcenter
+{
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000088;
+  margin: 10px;
+}
+
+.blocktitle
+{
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  background-color: #dddddd;
+  vertical-align: middle;
+  padding-top: 5px;
+  height: 20px;
+  border: 1px solid #888888;
+}
+
+/* login error */
+
+.loginerror { background-color: red; border: 1px solid #880000; height: 20px; color: white; text-align: left; font-size: 14px; font-weight: bold; vertical-align: middle; padding-left: 10px; padding-top: 5px; }
+
+.hidden
+{
+  display: none;
+}
+
+.visible
+{
+}
+
+.textmenu
+{
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.textmenulink
+{
+  margin-left: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.textmenulink:hover { background-color: #eeeeee; }
+
+/* index tree */
+
+.treeclickable
+{
+  cursor: pointer;
+  padding: 3px;
+  white-space: nowrap;
+}
+
+.treeclickable:hover
+{
+  background-color: #ccccff;
+}
+
+.treedata
+{
+  white-space: nowrap;
+}
+
+treeexplorer
+{
+  list-style: none;
+  cursor: pointer;
+}
+
+.treesettings
+{
+  list-style: none;
+  cursor: pointer;
+}
+
+.treeverify
+{
+  list-style: none;
+  cursor: pointer;
+}
+
+.treeskin
+{
+  list-style: none;
+  cursor: pointer;
+}
+
+/* Main Installer in dash board */
+
+.installer_connector_no
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_connector_ok
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_connector_error
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_repository_no
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_repository_ok
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_repository_update
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_site_no
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_site_ok
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+.installer_site_update
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+}
+
+/* Repository installation */
+
+/* SIMPLECONTAINER ON CONTENT */
+/* the container is by default always full size, unless specified with another class */
+.simplecontent { }
+/* the simple zone always takes all the container available, no need to calculate size */
+.simplecontent>.zone { }
+
+
+.repositorystatus_1
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.repositorystatus_2, .repositorystatus_3, .repositorystatus_5
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.repositorystatus_4
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.masterrepository_loading
+{
+  opacity: .6;
+  filter: alpha(opacity: 60);
+  background-color: #dfe8f6;
+  background-image: url('/skins/master/4gl/dommask-loader.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+}
+
+.masterrepository_fillme
+{
+  margin: 1px;
+  border: 1px solid #99bbe8;
+  padding: 10px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+/* Sites installation */
+
+.sitesstatus_1
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.sitesstatus_2
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.sitesstatus_3
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.mastersites_loading
+{
+  opacity: .6;
+  filter: alpha(opacity: 60);
+  background-color: #dfe8f6;
+  background-image: url('/skins/master/4gl/dommask-loader.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+}
+
+.mastersites_fillme
+{
+  margin: 1px;
+  border: 1px solid #99bbe8;
+  padding: 10px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.repositorystatus_1
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.repositorystatus_2, .repositorystatus_3, .repositorystatus_5
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.repositorystatus_4
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.masterrepository_loading
+{
+  opacity: .6;
+  filter: alpha(opacity: 60);
+  background-color: #dfe8f6;
+  background-image: url('/skins/master/4gl/dommask-loader.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+}
+
+.masterrepository_fillme
+{
+  margin: 1px;
+  border: 1px solid #99bbe8;
+  padding: 10px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+/* MODULES INSTALLATION */
+
+.modulestatus_1, .moduleavailablestatus_1
+{
+  border: 2px solid green;
+  background-color: #eeffee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.modulestatus_2, .moduleavailablestatus_2
+{
+  border: 2px solid #ffcc00;
+  background-color: #ffeedd;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.modulestatus_3, .moduleavailablestatus_3
+{
+  border: 2px solid red;
+  background-color: #ffeeee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.moduleavailablestatus_1
+{
+  border: 1px solid green;
+}
+
+.moduleavailablestatus_2
+{
+  border: 1px solid #ffcc00;
+}
+
+.moduleavailablestatus_3
+{
+  border: 1px solid red;
+}
+
+.moduleavailablestatus_4, .moduleneutral
+{
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.moduleavailablestatus_4
+{
+  color: #bbb;
+}
+
+.modulelog
+{
+  border: 1px solid #aaa;
+  background-color: #eee;
+  padding: 5px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.mastermodule_loading
+{
+  opacity: .6;
+  filter: alpha(opacity: 60);
+  background-color: #dfe8f6;
+  background-image: url('/skins/master/4gl/dommask-loader.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1000;
+}
+
+.mastermodule_fillme
+{
+  margin: 1px;
+  border: 1px solid #99bbe8;
+  padding: 10px;
+  border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.moduleavailablestatus_1 .modulemissing, .moduleavailablestatus_2 .modulemissing, .moduleavailablestatus_3 .modulemissing, .moduleavailablestatus_4 .modulemissing
+{
+  font-weight: bold;
+  color: red;
+}
+
+.modulestatus_1 .moduleversion, .modulestatus_2 .moduleversion, .modulestatus_3 .moduleversion,
+.moduleavailablestatus_1 .moduleversion, .moduleavailablestatus_2 .moduleversion, .moduleavailablestatus_3 .moduleversion, .moduleavailablestatus_4 .moduleversion
+{
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* BOX EDITOR */
+
+.boxeditor
+{
+  margin: 2px;
+  border: 1px solid black;
+  overflow: auto;
+}
+
+.boxeditorcontent
+{
+}
+
+.boxmain
+{
+  border: 1px solid blue;
+}
+
+.boxmainselected
+{
+  border: 1px solid blue;
+  background-color: orange;
+}
+
+.boxtitle
+{
+  border-bottom: 1px dotted blue;
+  cursor: move;
+}
+
+.boxdestroy
+{
+  border: 1px dotted blue;
+  cursor: pointer;
+}
+
+.boxresize
+{
+  cursor: se-resize;
+  border: 1px dotted blue;
+}
+
+.boxinput
+{
+  background-color: blue;
+  cursor: crosshair;
+}
+
+.boxoutput
+{
+  background-color: blue;
+  cursor: crosshair;
+}
+
+.boxparam
+{
+  background-color: blue;
+  cursor: crosshair;
+}
+
+.boxline
+{
+  background-color: #880000;
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="install/account">
+
+  <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes" classname="separatorinvisiblevertical">
+    <zone size="60">
+      <container type="simpleContainer" width="max" height="max">
+        <zone>
+          <element id="titleform" type="htmlElement" classname="introcenter">
+<![CDATA[<br />##accounttitle##]]>
+          </element>
+          <element id="titleconfirmation" type="htmlElement" classname="introcenter" display="none">
+<![CDATA[<br />##accountconfirmation##]]>
+          </element>
+        </zone>
+      </container>
+    </zone>
+    <zone size="*">
+{{FORM}}
+      <element id="continue" type="buttonElement" action="submit" extra="success" display="none" style="margin-left: 20px;">
+<![CDATA[##continue##]]>
+        <event type="click">
+          <code><![CDATA[
+function()
+{
+  // we realod all
+  window.location = '/';
+}
+]]></code>
+        </event>
+      </element>
+
+
+    </zone>
+  </container>
+
+  <event type="start">
+    <code>
+function()
+{
+  WA.toDOM('install|single|step1').className = 'installstep1done';
+  WA.toDOM('install|single|step1').onclick = backtolanguage;
+  WA.toDOM('install|single|step2').className = 'installstepactual';
+//  WA.Managers.wa4gl.resizeApplication('install/account', 'single');
+}
+    </code>
+  </event>
+</application>

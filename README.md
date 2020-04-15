@@ -32,12 +32,17 @@ Edit start.sh and change the config file path.
 
 You can copy the example directory and change anything you need.
 
+Install the master site and install contexts with XModules for any site you need
+
 You can compile xamboo to an executable with
 go build xamboo.go
 Copy the xamboo executable where you want to.
 Just call it like in the start.sh
+You need to keep the original code to be able to compile pages and libraries
 
 ./xamboo --config=/path/to/configFile
+
+You may attach the xamboo as a OS/service
 
 
 TO DO
@@ -59,6 +64,14 @@ Extras:
 
 Version Changes Control
 =======================
+
+V1.2.0 - 2020-04-09
+-----------------------
+- Master site created (for tools installation, ready to use XModules and contexts, modules and dynamic libraries, security
+- Master installation (template, language, account), main template, login, main index
+- Master APP generated
+- Wajaf JS added into public master code
+- Version enhanced into config.Config object
 
 V1.1.1 - 2020-03-29
 -----------------------

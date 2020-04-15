@@ -1,0 +1,460 @@
+/* 4GL CONTAINER CLASSES */
+
+/* 1. CONTAINERS */
+
+/* APLICATION */
+/* application always take the maximum available */
+.application { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+
+/* SIMPLECONTAINER */
+/* the container is by default always full size, unless specified with another class */
+.simple { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+/* the simple zone always takes all the container available, no need to calculate size */
+.simple>.zone { }
+
+/* SEPARATOR CONTAINER */
+/* the container take care to use relative or absolute and metrics, based on width, height, top, left, right, bottom */
+.separatorhorizontal { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+.separatorhorizontal>.sizer { background-color: #dfe8f6; cursor: e-resize; cursor: col-resize; width: 10px; background-image: url('/skins/master/4gl/separator-sizer.png'); background-position: center center; background-repeat: no-repeat; position: absolute; top: 0px; bottom: 0px; }
+.separatorhorizontal>.zone { margin: 2px; border: 1px solid #99bbe8; background-color: white; overflow: auto; position: absolute; top: 0px; bottom: 0px; -moz-box-shadow: 2px 2px 2px #79c; -webkit-box-shadow: 2px 2px 2px #79c; box-shadow: 2px 2px 2px #79c; }
+
+.separatorvertical { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+.separatorvertical>.sizer { background-color: #dfe8f6; cursor: s-resize; cursor: row-resize; height: 10px; background-image: url('/skins/master/4gl/separator-sizer.png'); background-position: center center; background-repeat: no-repeat; position: absolute; left: 0px; right: 0px; }
+.separatorvertical>.zone { margin: 2px; border: 1px solid #99bbe8; background-color: white;  overflow: auto; position: absolute; left: 0px; right: 0px; -moz-box-shadow: 2px 2px 2px #79c; -webkit-box-shadow: 2px 2px 2px #79c; box-shadow: 2px 2px 2px #79c; }
+
+/* invisible (zones no border/bg) separator classes, use separatorinvisible as classname */
+.separatorinvisiblehorizontal { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+.separatorinvisiblehorizontal>.sizer { background-color: #dfe8f6; cursor: e-resize; cursor: col-resize; width: 10px; background-image: url('/skins/master/4gl/separator-sizer.png'); background-position: center center; background-repeat: no-repeat; position: absolute; top: 0px; bottom: 0px; }
+.separatorinvisiblehorizontal>.zone { position: absolute; top: 0px; bottom: 0px; }
+
+.separatorinvisiblevertical { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: auto; }
+.separatorinvisiblevertical>.sizer { background-color: #dfe8f6; cursor: s-resize; cursor: row-resize; height: 10px; background-image: url('/skins/master/4gl/separator-sizer.png'); background-position: center center; background-repeat: no-repeat; position: absolute; left: 0px; right: 0px; }
+.separatorinvisiblevertical>.zone { position: absolute; left: 0px; right: 0px; }
+
+
+/* tab CONTAINER CLASSES */
+
+.tab { position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; overflow: none; }
+
+.tab>.selector { height: 22px; position: absolute; top: 0px; left: 0px; right: 0px; border-bottom: 1px solid #99bbe8; }
+.tab>.selector>.selectorcontainer { height: 22px; overflow: hidden; position: absolute; left: 0px; right: 16px; }
+.tab>.selector>.left { position: absolute; right: 28px; top: 0px; width: 8px; height: 20px; background-color: #def; background-image: url('/skins/master/4gl/tab-selector-left.png'); border: 1px Solid #77a; }
+.tab>.selector>.left:hover { background-color: #ffc; }
+.tab>.selector>.right { position: absolute; right: 18px; top: 0px; width: 8px; height: 20px; background-color: #def; background-image: url('/skins/master/4gl/tab-selector-right.png'); border: 1px Solid #77a; }
+.tab>.selector>.right:hover { background-color: #ffc; }
+.tab>.selector>.select { position: absolute; right: 0px; top: 0px; width: 16px; height: 20px; background-color: #def; background-image: url('/skins/master/4gl/tab-selector-select.png'); border: 1px Solid #77a; }
+.tab>.selector>.select:hover { background-color: #ffc; }
+
+.tab>.selector>.selectorcontainer>div>.taboff { float: left; cursor: pointer; height: 21px; cursor: pointer; border: 1px solid #99bbe8; white-space: nowrap; -webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0; border-radius: 4px 4px 0 0; background-color: #def; padding: 3px; font-weight: bold; color: #999; position: absolute; padding-right: 3px;}
+.tab>.selector>.selectorcontainer>div>.taboff:hover { background-color: #79d; color: #006; }
+.tab>.selector>.selectorcontainer>div>.taboff>.tabclose { margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-close.png'); }
+.tab>.selector>.selectorcontainer>div>.taboff>.tabmove { cursor: w-resize; margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-move.png'); }
+
+.tab>.selector>.selectorcontainer>div>.tabon { float: left; cursor: pointer; height: 21px; cursor: pointer; border: 1px solid #99bbe8; white-space: nowrap; -webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0; border-radius: 4px 4px 0 0; background-color: #fff; padding: 3px; font-weight: bold; color: black; position: absolute; padding-right: 3px; }
+.tab>.selector>.selectorcontainer>div>.tabon:hover { color: #79d; }
+.tab>.selector>.selectorcontainer>div>.tabon>.tabclose { margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-close.png'); }
+.tab>.selector>.selectorcontainer>div>.tabon>.tabmove { cursor: w-resize; margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-move.png'); }
+
+.tab>.selector>.selectorcontainer>div>.tabdisable { cursor: pointer; height: 21px; cursor: pointer; border: 1px solid #99bbe8; white-space: nowrap; -webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0; border-radius: 4px 4px 0 0; background-color: #aaa; padding: 3px; position: absolute; padding-right: 15px; }
+.tab>.selector>.selectorcontainer>div>.tabdisable>.tabclose { margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-close.png'); }
+.tab>.selector>.selectorcontainer>div>.tabdisable>.tabmove { cursor: w-resize; margin-top: 3px; margin-left: 3px; width: 10px; height: 10px; background-image: url('/skins/master/4gl/tab-move.png'); }
+
+.tab>.list { border: 1px solid #99bbe8; background-color: #eef; z-index: 2; right: 0px; max-height: 300px; min-width: 200px; position: absolute; top: 22px; overflow: auto; }
+
+.tab>.list>.listelement { border-botton: 1px dotted #99bbe8; padding: 2px; cursor: pointer; }
+.tab>.list>.listelement:hover { background-color: #ccf; }
+.tab>.list>.listelementselect { border-botton: 1px dotted #99bbe8; padding: 2px; cursor: pointer; font-weight: bold; }
+.tab>.list>.listelementselect:hover { background-color: #99f; }
+
+.tab>.zones { position: absolute; left: 0px; right: 0px; top: 23px; bottom: 0px; }
+.tab>.zones>.zone { background-color: white; border-left: 1px solid #99bbe8; border-bottom: 1px solid #99bbe8; border-right: 1px solid #99bbe8; padding: 4px; overflow: auto; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; }
+
+/* tree CONTAINER CLASSES */
+
+.tree { margin-top: 3px; min-width: 180px; }
+.tree>.zone { list-style: none; }
+.treeclosed { width: 15px; height: 15px; cursor: pointer; background-image: url('/skins/master/4gl/tree-closed.png'); }
+.treeopened { width: 15px; height: 15px; cursor: pointer; background-image: url('/skins/master/4gl/tree-opened.png'); }
+.treeleave { }
+.treedata { height: 1.8em; }
+.treechildren { }
+.treechildren>.zone { list-style: none; }
+
+/* group CONTAINER CLASSES */
+
+.group { margin: 0 0 18px; display: block; }
+.group.ok { background-image: url('/skins/master/4gl/group-ok.png'); background-repeat: no-repeat; background-position: 10px 10px; }
+.group.error { background-image: url('/skins/master/4gl/group-error.png'); background-repeat: no-repeat; background-position: 10px 10px; }
+
+/* 3 types of zones: title, field, control */
+.group>fieldset>.loading { position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; background-color: #fed; opacity:0.8; filter:alpha(opacity=80); z-index: 10; background-image: url('/skins/master/4gl/loader.gif'); background-position: 50% 50%; background-repeat:  no-repeat; }
+
+.group>fieldset>.title { font-size: 14px; font-weight: bold; color: #008; padding: 10px; padding-left: 30px; margin-bottom: 5px; border-bottom: 1px solid #ddf; }
+.group>fieldset>.message { color: black; font-size: 13px; font-weight: bold; margin: 5px; padding: 5px; padding-left: 25px; margin-left: 20px; margin-right: 10px; cursor: pointer; background-image: url('/skins/master/4gl/button-cancel.png'); background-repeat: no-repeat; background-position: 5px 5px; }
+.group>fieldset>.message.success { border: 2px solid green; background-color: #ccffcc; }
+.group>fieldset>.message.failure { border: 2px solid red; background-color: #ffcccc; }
+
+.group>fieldset>.field { margin-bottom: 5px; border-bottom: 1px solid #ddf; border-left: 3px solid transparent;  }
+.group>fieldset>.field::before { display: table; content: ""; }
+.group>fieldset>.field::after { display: table; content: ""; clear: both; }
+
+.group>fieldset>.field.modified { border-left: 3px solid blue; }
+.group>fieldset>.field.error { background-color: #fee; border-left: 3px solid red; }
+.group>fieldset>.field.edition { background-color: #dff; border-left: 3px solid cyan; }
+
+.group>fieldset>.control { padding: 17px 20px 18px; padding-left: 160px; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #ddf; }
+
+
+/* grid CONTAINER CLASSES */
+
+.grid { margin: 0; display: block; }
+
+/* 3 types of zones: title, field, control */
+.grid .grid-header { position: absolute; left: 0px; right: 0px; top: 0px; height: 20px; background-color: #eee; border-bottom: 1px solid #ccc; overflow: hidden; }
+.grid .grid-header-content { position: relative; }
+.grid .grid-header-column { float: left; }
+.grid .grid-header-column-title { background-color: white; height: 16px; padding-top: 3px; padding-left: 5px; border-bottom: 1px solid #999; border-right: 1px solid #999; }
+.grid .grid-header-column-sizer { float: right; background-color: green; width: 3px; height: 20px; cursor: col-resize; }
+
+
+.grid .grid-body { position: absolute; left: 0px; right: 0px; top: 21px; bottom: 21px; background-color: #eee; overflow: auto; }
+.grid .grid-body-content { position: relative; }
+.grid .grid-body-column { position: relative; float: left; }
+.grid .grid-body-cell { background-color: white; border-bottom: 1px dotted #666; border-right: 1px dotted #666; padding: 3px; height: 13px; overflow: hidden; }
+
+.grid .grid-footer { position: absolute; left: 0px; right: 0px; height: 20px; bottom: 0px; background-color: #ddd; border-top: 1px solid black; }
+
+.grid .grid-footer .quantity-title { float: left; }
+.grid .grid-footer .quantity { float: left; }
+
+
+
+/* 1. SIMPLE ELEMENTS */
+
+/* htmlElement default class */
+
+.html {}
+
+/* textElement default class */
+
+.text {}
+
+/* linkElement default class */
+
+.link { color: #0000aa; text-decoration: none; cursor: pointer; }
+a.link:link { color: #0000aa; text-decoration: none; cursor: pointer; }
+a.link:active { color: #0000ff; text-decoration: underline; cursor: pointer; }
+a.link:visited { color: #0000aa; text-decoration: underline; cursor: pointer; }
+a.link:hover { color: #aa0000; text-decoration: underline; cursor: pointer; }
+
+/* imageElement default class */
+
+.image { vertical-align: middle; }
+
+/* codeElement default class */
+/* There is no class for the code container */
+
+/* 2. GROUP (FORM) ELEMENTS */
+
+/* buttonElement default class */
+
+.button { display:inline-block; margin: 2px; border: 1px solid #57c; background-color: #57c; color: white; font-weight: bold; font-size: 12px; padding: 3px; cursor: pointer; text-decoration: none; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; }
+.button:focus { text-decoration: underline; border-color: black; }
+.button:hover { background-color: #DFF4FF; color: #57c; text-decoration: none; }
+.button:active { background-color: #a6b9f6; color: #57c; text-decoration: none; }
+.button.disabled { border: 1px solid #a6b9f6; background-color: #eeeeee; color: #aaaaaa; cursor: not-allowed; }
+
+.button.success { border: 1px solid #51A351; background-color: #51A351; color: white; }
+.button.success:hover { background-color: #b8e8b8; color: #006600; text-decoration: none; }
+.button.success:active { background-color: #98e898; color: #006600; text-decoration: none; }
+.button.success.disabled { border: 1px solid #b8e8b8; background-color: #eeeeee; color: #aaaaaa; }
+.button.success:focus { text-decoration: underline; border-color: black; }
+
+.button.warning { border: 1px solid #F89406; background-color: #F89406; color: white; }
+.button.warning:hover { background-color: #fdb; color: #f90; text-decoration: none; }
+.button.warning:active { background-color: #fca; color: #f90; text-decoration: none; }
+.button.warning.disabled { border: 1px solid #e8b8b8; background-color: #eeeeee; color: #aaaaaa; }
+.button.warning:focus { text-decoration: underline; border-color: black; }
+
+.button.danger { border: 1px solid #BD362F; background-color: #BD362F; color: white; }
+.button.danger:hover { background-color: #e8b8b8; color: #aa0000; text-decoration: none; }
+.button.danger:active { background-color: #e89898; color: #aa0000; text-decoration: none; }
+.button.danger.disabled { border: 1px solid #e8b8b8; background-color: #eeeeee; color: #aaaaaa; }
+.button.danger:focus { text-decoration: underline; border-color: black; }
+
+.button.confirm { background-image: url('/skins/master/4gl/button-confirm.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.cancel { background-image: url('/skins/master/4gl/button-cancel.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.info { background-image: url('/skins/master/4gl/button-info.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.insert { background-image: url('/skins/master/4gl/button-insert.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.update { background-image: url('/skins/master/4gl/button-update.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.delete { background-image: url('/skins/master/4gl/button-delete.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.view { background-image: url('/skins/master/4gl/button-view.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.clear { background-image: url('/skins/master/4gl/button-clear.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.reset { background-image: url('/skins/master/4gl/button-reset.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.submit { background-image: url('/skins/master/4gl/button-submit.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.previous { background-image: url('/skins/master/4gl/button-previous.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.next { background-image: url('/skins/master/4gl/button-next.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.first { background-image: url('/skins/master/4gl/button-first.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+.button.last { background-image: url('/skins/master/4gl/button-last.png'); background-repeat: no-repeat; padding-left: 20px; background-position: 2px 2px; }
+
+/* textfield */
+
+/* we force tiny until we liberate responsive design */
+.textfieldlabel { float: left; width: 140px; padding-top: 1px; text-align: right; display: block; color: #333; font-size: 12px; font-weight: bold; line-height: 18px;
+width: auto; float: none; text-align: left; padding-left: 20px; }
+.textfieldlabel.error { color: red; }
+.textfield { margin-left: 140px; padding-left: 20px; background-repeat: no-repeat; background-position: 2px 4px; position: relative;
+margin-left: 0px; }
+.textfield.ok { background-image: url('/skins/master/4gl/field-ok.png'); }
+.textfield.error { background-image: url('/skins/master/4gl/field-error.png'); }
+.textfield.edition { background-image: url('/skins/master/4gl/field-edition.png'); }
+.textfield>.count { color: #999; font-size: 10px; padding-top: 3px; }
+.textfield>.value {  }
+.textfield>.field { width: 270px; border: 0px; padding: 2px; height: 15px; border-left: 1px solid #aaa; border-bottom: 1px solid #aaa; background-color: #eee; }
+.textfield.ok>.field { border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; }
+.textfield.error>.field { border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; }
+.textfield.edition>.field { border-left: 1px solid #8888ff; border-bottom: 1px solid #8888ff; background-color: #eeeeff; }
+
+.textfield>.help { display: block; padding: 5px; color: #999; float: right; width: 400px; }
+.textfield>.error { display: block; padding: 5px; color: #f00; float: right; width: 400px; }
+
+.textfieldlabel.medium { }
+
+.textfieldlabel.tiny { width: auto; float: none; text-align: left; padding-left: 20px; }
+.textfield.tiny { margin-left: 0px; }
+
+.dommasktextfield.maskreadonly .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+.dommasktextfield.maskdisabled .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+
+/* textareafield */
+
+/* we force tiny until we liberate responsive design */
+.textareafieldlabel { float: left; width: 140px; padding-top: 1px; text-align: right; display: block; color: #333; font-size: 12px; font-weight: bold; line-height: 18px;
+width: auto; float: none; text-align: left; padding-left: 20px; }
+.textareafieldlabel.error { color: red; }
+.textareafield { margin-left: 140px; padding-left: 20px; background-repeat: no-repeat; background-position: 2px 4px; position: relative;
+margin-left: 0px; }
+.textareafield.ok { background-image: url('/skins/master/4gl/field-ok.png'); }
+.textareafield.error { background-image: url('/skins/master/4gl/field-error.png'); }
+.textareafield.edition { background-image: url('/skins/master/4gl/field-edition.png'); }
+.textareafield>.count { color: #999; font-size: 10px; padding-top: 3px; }
+.textareafield>.value {  }
+.textareafield>.field { width: 270px; border: 0px; padding: 2px; height: 15px; border-left: 1px solid #aaa; border-bottom: 1px solid #aaa; background-color: #eee; }
+.textareafield.ok>.field { border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; }
+.textareafield.error>.field { border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; }
+.textareafield.edition>.field { border-left: 1px solid #8888ff; border-bottom: 1px solid #8888ff; background-color: #eeeeff; }
+
+.textareafield>.help { display: block; padding: 5px; color: #999; float: right; width: 400px; }
+.textareafield>.error { display: block; padding: 5px; color: #f00; float: right; width: 400px; }
+
+.textareafieldlabel.medium { }
+
+.textareafieldlabel.tiny { width: auto; float: none; text-align: left; padding-left: 20px; }
+.textareafield.tiny { margin-left: 0px; }
+
+.dommasktextareafield.maskreadonly .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 60px; }
+.dommasktextareafield.maskdisabled .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 60px; }
+
+/* lovfield */
+
+/* we force tiny until we liberate responsive design */
+.lovfieldlabel { float: left; width: 140px; padding-top: 1px; lov-align: right; display: block; color: #333; font-size: 12px; font-weight: bold; line-height: 18px;
+width: auto; float: none; lov-align: left; padding-left: 20px; }
+.lovfieldlabel.error { color: red; }
+.lovfield { margin-left: 140px; padding-left: 20px; background-repeat: no-repeat; background-position: 2px 4px; position: relative;
+margin-left: 0px; }
+.lovfield.ok { background-image: url('/skins/master/4gl/field-ok.png'); }
+.lovfield.error { background-image: url('/skins/master/4gl/field-error.png'); }
+.lovfield.edition { background-image: url('/skins/master/4gl/field-edition.png'); }
+.lovfield>.count { color: #999; font-size: 10px; padding-top: 3px; }
+.lovfield>.value {  }
+.lovfield>.field { width: 270px; border: 0px; height: 20px; border-left: 1px solid #aaa; border-bottom: 1px solid #aaa; background-color: #eee; }
+.lovfield.ok>.field { border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; }
+.lovfield.error>.field { border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; }
+.lovfield.edition>.field { border-left: 1px solid #8888ff; border-bottom: 1px solid #8888ff; background-color: #eeeeff; }
+
+.lovfield>.help { display: block; padding: 5px; color: #999; float: right; width: 400px; }
+.lovfield>.error { display: block; padding: 5px; color: #f00; float: right; width: 400px; }
+
+.lovfieldlabel.medium { }
+
+.lovfieldlabel.tiny { width: auto; float: none; lov-align: left; padding-left: 20px; }
+.lovfield.tiny { margin-left: 0px; }
+
+.dommasklovfield.maskreadonly .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+.dommasklovfield.maskdisabled .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+
+
+
+
+
+
+
+/* DOMMASKLOVFIELF entry */
+
+.dommasklovfield { border-left: 3px solid transparent; border-bottom: 1px solid #ccccff; border-right: 10px solid transparent; padding: 2px; min-width: 600px; }
+
+.dommasklovfield.maskok { }
+.dommasklovfield.maskerror { border-left: 3px solid red; }
+.dommasklovfield.maskeditionwait { border-left: 3px solid blue; background-color: #ddffff; }
+.dommasklovfield.maskeditionok { border-left: 3px solid blue; background-color: #ddffff; }
+.dommasklovfield.maskeditionerror { border-left: 3px solid blue; background-color: #ddffff; }
+.dommasklovfield.maskdisabled { }
+.dommasklovfield.maskreadonly { }
+
+.dommasklovfield.maskmodified { border-right: 10px solid #ff00ff; }
+
+.dommasklovfield td { vertical-align: top; }
+
+.dommasklovfield .entrytitle { font-weight: bold; color: black; }
+.dommasklovfield .entryvalue { }
+.dommasklovfield .entrystatus { width: 19px; background-repeat: no-repeat; background-position: center 13px; }
+.dommasklovfield .entryfield { }
+.dommasklovfield .entrycount { vertical-align: bottom; font-size: 8px; color: #555555; }
+.dommasklovfield .entryhelp { color: #666666; }
+.dommasklovfield .entrymessage { color: red; }
+
+.dommasklovfield.maskerror .entrytitle { font-weight: bold; color: red; }
+.dommasklovfield.maskok .entrystatus { background-image: url('../skins/4gl/domentry-ok.png'); }
+.dommasklovfield.maskerror .entrystatus { background-image: url('../skins/4gl/domentry-error.png'); }
+.dommasklovfield.maskeditionok .entrystatus { background-image: url('../skins/4gl/domentry-editionok.png'); }
+.dommasklovfield.maskeditionerror .entrystatus { background-image: url('../skins/4gl/domentry-editionerror.png'); }
+.dommasklovfield.maskeditionwait .entrystatus { background-image: url('../skins/4gl/domentry-editionwait.png'); }
+
+.dommasklovfield.maskok .entryinput { border: 0px; border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; padding: 2px; height: 15px; }
+.dommasklovfield.maskerror .entryinput { border: 0px; border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; padding: 2px; height: 15px; }
+.dommasklovfield.maskeditionwait .entryinput { border: 0px; border-left: 1px solid #8888ff; border-bottom: 1px solid #8888ff; background-color: #eeeeff; padding: 2px; height: 15px; }
+.dommasklovfield.maskeditionok .entryinput { border: 0px; border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; padding: 2px; height: 15px; }
+.dommasklovfield.maskeditionerror .entryinput { border: 0px; border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; padding: 2px; height: 15px; }
+.dommasklovfield.maskreadonly .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+.dommasklovfield.maskdisabled .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+
+/* colorfield */
+
+/* we force tiny until we liberate responsive design */
+.colorfieldlabel { float: left; width: 140px; padding-top: 1px; color-align: right; display: block; color: #333; font-size: 12px; font-weight: bold; line-height: 18px;
+width: auto; float: none; color-align: left; padding-left: 20px; }
+.colorfieldlabel.error { color: red; }
+.colorfield { margin-left: 140px; padding-left: 20px; background-repeat: no-repeat; background-position: 2px 4px; position: relative;
+margin-left: 0px; }
+.colorfield.ok { background-image: url('/skins/master/4gl/field-ok.png'); }
+.colorfield.error { background-image: url('/skins/master/4gl/field-error.png'); }
+.colorfield.edition { background-image: url('/skins/master/4gl/field-edition.png'); }
+.colorfield>.color { width: 30px; height: 20px; border: 1px solid black; cursor: pointer; display: inline-block; margin-top: 5px; }
+.colorfield>.selector { display: none; width: 300px; height: 250px; border: 1px solid black; top: 30px; left: 200px; position: absolute; z-index: 1; background-color: red; }
+.colorfield>.value {  }
+.colorfield>.field { width: 230px; border: 0px; padding: 2px; height: 15px; border-left: 1px solid #aaa; border-bottom: 1px solid #aaa; background-color: #eee; }
+.colorfield.ok>.field { border-left: 1px solid #44aa44; border-bottom: 1px solid #44aa44; background-color: #eef8cc; }
+.colorfield.error>.field { border-left: 1px solid #cc8800; border-bottom: 1px solid #cc8800; background-color: #ffeeee; }
+.colorfield.edition>.field { border-left: 1px solid #8888ff; border-bottom: 1px solid #8888ff; background-color: #eeeeff; }
+
+.colorfield>.help { display: block; padding: 5px; color: #999; float: right; width: 400px; }
+.colorfield>.error { display: block; padding: 5px; color: #f00; float: right; width: 400px; }
+
+.colorfieldlabel.medium { }
+
+.colorfieldlabel.tiny { width: auto; float: none; color-align: left; padding-left: 20px; }
+.colorfield.tiny { margin-left: 0px; }
+
+.dommaskcolorfield.maskreadonly .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+.dommaskcolorfield.maskdisabled .entryinput { border: 0px; background-color: #eeeeee; padding: 2px; height: 15px; }
+
+
+
+
+
+
+
+
+
+/* 3. CONTAINERS */
+
+
+/* widgetContainer default class */
+
+.widget { }
+.widget .zones { min-height: 50px; overflow: auto; background-color: #dfe8f6;}
+.widget .column { margin-left: 5px; margin-right: 5px; border: 1px dotted black; #dfe8f6; padding: 2px; }
+
+/* each box contains a header and a zone */
+.widget .box { margin-bottom: 10px; overflow: hidden; border: 1px solid #99bbe8; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; }
+
+.widgetzone { }
+.widgetzone .header { overflow: hidden; height: 21px; border-bottom: 1px solid #99bbe8; background-color: #c6d9f1; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; }
+.widgetzone .opened { height: 21px; width: 20px; border-right: 1px solid #99bbe8; cursor: pointer; background-image: url('/skins/master/4gl/widget-opened.png'); background-repeat: no-repeat; background-position: 2px 2px; }
+.widgetzone .closed { height: 21px; width: 20px; border-right: 1px solid #99bbe8; cursor: pointer; background-image: url('/skins/master/4gl/widget-closed.png'); background-repeat: no-repeat; background-position: 2px 2px; }
+.widgetzone .title { cursor: move; padding-left: 5px; }
+.widgetzone .close { height: 21px; width: 20px; border-left: 1px solid #99bbe8; cursor: pointer; background-image: url('/skins/master/4gl/widget-close.png'); background-repeat: no-repeat; background-position: 2px 2px; }
+.widgetzone .editorclosed { height: 21px; width: 20px; border-left: 1px solid #99bbe8; cursor: pointer; background-image: url('/skins/master/4gl/widget-editorclosed.png'); background-repeat: no-repeat; background-position: 2px 2px; }
+.widgetzone .editoropened { height: 21px; width: 20px; border-left: 1px solid #99bbe8; cursor: pointer; background-image: url('/skins/master/4gl/widget-editoropened.png'); background-repeat: no-repeat; background-position: 2px 2px; }
+.widgetzone .zone { overflow: auto; max-height: 300px; min-height: 50px; background-color: white; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; }
+.widgetzoneghost { margin-bottom: 10px; border: 1px dotted red; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; }
+
+
+
+
+
+
+
+
+/* helpManager */
+.helpalt { background-color: yellow; border: 2px solid red; padding: 5px; }
+
+.helpfull { }
+
+.helpfull .box { width: 300px; height: 300px; position: absolute; }
+
+.helpfull .blt { left: 123px; top: 0px; }
+.helpfull .brt { left: 0px; top: 0px; }
+.helpfull .blb { left: 123px; top: 0px; }
+.helpfull .brb { left: 0px; top: 0px; }
+
+.helpfull .tl { width: 25px; height: 25px; position: absolute; left: 0px; top: 0px; background-position: 0px 0px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .t { width: 250px; height: 25px; position: absolute; left: 25px; top: 0px; background-position: -25px 0px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .tr { width: 25px; height: 25px; position: absolute; right: 0px; top: 0px; background-position: -675px 0px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .l { width: 25px; height: 250px; position: absolute; left: 0px; top: 25px; background-position: 0px -25px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .r { width: 25px; height: 250px; position: absolute; right: 0px; top: 25px; background-position: -675px -25px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .bl { width: 25px; height: 25px; position: absolute; left: 0px; bottom: 0px; background-position: 0px -675px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .b { width: 250px; height: 25px; position: absolute; left: 25px; bottom: 0px; background-position: -25px -675px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .br { width: 25px; height: 25px; position: absolute; right: 0px; bottom: 0px; background-position: -675px -675px; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .previous { cursor: pointer; width: 16px; height: 16px; position: absolute; right: 60px; top: 5px; background-image: url('/skins/master/4gl/help-previous.png'); }
+.helpfull .next { cursor: pointer; width: 16px; height: 16px; position: absolute; right: 40px; top: 5px; background-image: url('/skins/master/4gl/help-next.png'); }
+.helpfull .close { cursor: pointer; width: 16px; height: 16px; position: absolute; right: 20px; top: 5px; background-image: url('/skins/master/4gl/help-close.png'); }
+.helpfull .text { width: 250px; height: 250px; position: absolute; left: 25px; top: 25px; background-color: white; overflow: auto; }
+
+.helpfull .circle { width: 100px; height: 50px; position: absolute; background-image: url('/skins/master/4gl/help-circle.png'); }
+.helpfull .clt { left: 0px; top: 0px; }
+.helpfull .crt { left: 325px; top: 0px; }
+.helpfull .clb { left: 0px; top: 250px; }
+.helpfull .crb { left: 325px; top: 250px; }
+
+.helpfull .pointer { width: 25px; height: 33px; position: absolute; background-image: url('/skins/master/4gl/help-box.png'); }
+.helpfull .plt { left: 100px; top: 30px; background-position: -350px -700px; }
+.helpfull .prt { left: 299px; top: 30px; background-position: -200px -700px; }
+.helpfull .plb { left: 100px; top: 240px; background-position: -300px -700px; }
+.helpfull .prb { left: 299px; top: 240px; background-position: -250px -700px; }
+
+
+
+
+
+
+/* CLASSES BELOW THIS LINE ARE NOT YET BEEN RELEASED OR VERIFIED */
+/* =======================================================================================*/
+
+/* expandableContainer default class */
+
+.expandable { overflow: auto; }
+.expandableselector.open { height: 20px; font-weight: bold; background-color: #ffffcc; background-image: url('/skins/master/4gl/expandable-open.png'); background-position: 10px 5px; background-repeat: no-repeat; border: 1px solid #ffdd99; cursor: pointer; padding: 0; padding-left: 30px; padding-top: 5px; }
+.expandableselector.open:hover { background-color: #ffeebb; }
+.expandableselector.close { height: 20px; font-weight: bold; background-color: #dfe8f6; background-image: url('/skins/master/4gl/expandable-close.png'); background-position: 10px 5px; background-repeat: no-repeat; border: 1px solid #99bbe8; cursor: pointer; padding: 0; padding-left: 30px; padding-top: 5px; }
+.expandableselector.close:hover { background-color: #c6d9f1; }
+.expandablezone { overflow: auto; padding: 10px; background-color: white; }
+
+
+
+
+
+/* ELEMENTS CLASSES */
+/* TEXT FIELD ELEMENT */
+

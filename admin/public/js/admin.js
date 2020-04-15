@@ -20,7 +20,7 @@ function onLoad()
 
   XB.openWS();
   XB.paintfilter();
-  
+
   document.getElementById("flag-alive").state = true;
 }
 
@@ -83,12 +83,12 @@ XB.wsclose = function(evt)
 XB.wsmessage = function(evt)
 {
   XB.SwitchFlagAlive();
-  
+
   if (evt.data && evt.data)
   {
     code = JSON.parse(evt.data)
   }
-  
+
   if (code.cpu)
   {
     document.getElementById("cpu").innerHTML = code.cpu;
@@ -105,22 +105,22 @@ XB.wsmessage = function(evt)
   // calculate uptime
   n = new Date();
   document.getElementById("online").innerHTML = XB.FormatTime(n - XB.timestart);
-  
+
   if (code.lastrequests)
     XB.ParseRequests(code.lastrequests);
-  
+
   var sum = 0;
   for (var i in XB.stat)
     sum += XB.stat[i];
-  
+
 //  console.log(XB.stat, XB.statlastreceived-1, XB.stat[XB.statlastreceived-1])
   if (XB.stat[XB.statlastreceived-1])
     document.getElementById("servedrequests").innerHTML = XB.stat[XB.statlastreceived-1] + " req/s " + sum + " req/2min";
   else
     document.getElementById("servedrequests").innerHTML = sum + " req/2min";
-  
+
   document.getElementById("uniqueip").innerHTML =  XB.CountObject(XB.statip) + " ip/2min";
-  
+
 }
 
 XB.wserror = function(evt)
@@ -148,9 +148,9 @@ XB.SetOneRequest = function()
 {
   if (XB.pointer >= XB.xcode.length)
     return;
-  
+
   code = XB.xcode[XB.pointer++];
-  
+
   var p = XB.getDomNode("lastrequests")
 
   var color = "white";
@@ -160,7 +160,7 @@ XB.SetOneRequest = function()
     color = "#aaaaff";
   if (code.Code >= 400)
     color = "#ffaaaa";
-  
+
   var str = "";
   str += "<td>" + code.IP + ":" + code.Port + '</td><td style="text-align: right;">' + XB.FormatTime((code.Duration/1000000).toFixed(2)) + '</td><td style="background-color: '+color+';">' + code.Code + "</td><td>" + code.Method + "</td><td>" + code.Protocol + "</td><td>" + code.Request + "</td><td>" + XB.FormatUnit(code.Length) + "</td>";
 
@@ -186,7 +186,7 @@ XB.SetOneRequest = function()
 
   n.innerHTML = str;
   n.date = new Date(code.Time);
-  
+
   // purge old requests ( keep 20 last only, newest )
   var reqsnodes = p.childNodes;
   if (reqsnodes.length > 20)
@@ -200,7 +200,7 @@ XB.SetOneRequest = function()
         continue;
       reqs.push([ reqsnodes[i].id, reqsnodes[i].date ]);
     }
-    // order 
+    // order
     reqs.sort(function(a,b){ return b[1] - a[1]; });
     for (i = 20; i < reqs.length; i++)
     {
@@ -259,20 +259,20 @@ XB.ParseRequests = function(code)
     // WSS: no count
     if (code[i].Protocol == "WSS")
       continue;
-    
+
     ip = code[i].IP;
 
     if (XB.stat[d])
       XB.stat[d]++;
     else
       XB.stat[d] = 1;
-    
+
     if (XB.statip[ip])
       XB.statip[ip].push(d);
     else
       XB.statip[ip] = [d];
   }
-  
+
   // reorder XB.xcode: requests with Code=0 always at the end, ordered y ID
   XB.xcode = XB.ReorderCode(code);
   XB.pointer = 0;
@@ -281,12 +281,12 @@ XB.ParseRequests = function(code)
   {
     start = code.length-20;
   }
-  
+
 //  for (i=0; i<code.length; i++)
 //  {
 //    XB.MakeStat(code[i]);
 //  }
-  
+
   // the server pushes data every second (1000 ms)
   // put new requests slowly
   for (i=start; i<code.length; i++)
@@ -375,11 +375,11 @@ XB.FormatTime = function(fnumber)
 
 XB.FormatDate = function(d)
 {
-  return ("00" + (d.getMonth() + 1)).slice(-2) + "/" + 
-    ("00" + d.getDate()).slice(-2) + "/" + 
-    d.getFullYear() + " " + 
-    ("00" + d.getHours()).slice(-2) + ":" + 
-    ("00" + d.getMinutes()).slice(-2) // + ":" + 
+  return ("00" + (d.getMonth() + 1)).slice(-2) + "/" +
+    ("00" + d.getDate()).slice(-2) + "/" +
+    d.getFullYear() + " " +
+    ("00" + d.getHours()).slice(-2) + ":" +
+    ("00" + d.getMinutes()).slice(-2) // + ":" +
 //    ("00" + d.getSeconds()).slice(-2)
     ;
 }
@@ -390,4 +390,9 @@ XB.CountObject = function(o)
   for (var i in o)
     c++;
   return c;
+}
+
+XB.Page = function(page)
+{
+  window.location = page;
 }

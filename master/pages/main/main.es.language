@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="install" lang="es">
+
+    <!-- ENTORNO -->
+    <entry id="loading"><![CDATA[Cargando...]]></entry>
+    <entry id="xamboo"><![CDATA[Xamboo&reg; v1]]></entry>
+    <entry id="logo"><![CDATA[Wamboo&reg; v1]]></entry>
+    <entry id="mastersite">Sitio Maestro</entry>
+    <entry id="FREE">Light</entry>
+    <entry id="MONOSITE">Monositio</entry>
+    <entry id="ENTERPRISE">Enterprise</entry>
+    <entry id="RUNTIME">Runtime</entry>
+    <entry id="version">v</entry>
+    <entry id="footer"><![CDATA[Xamboo&reg; v1 &copy; 2000-2020 - Master Engine]]></entry>
+
+    <entry id="config.summary"><![CDATA[Click para ir a los parámetros de configuración del sitio Maestro.]]></entry>
+    <entry id="config.title"><![CDATA[Parámetros de configuración:]]></entry>
+    <entry id="config.description"><![CDATA[Este ícono permite acceder a los parámetros de configuración del sitio Maestro, incluyendo skins, pais, idiomas, el manejo de errores, entre otros.
+    ]]></entry>
+    <entry id="CONFIG"><![CDATA[C<u>o</u>nfiguración]]></entry>
+    <entry id="CONFIGSHORTCUT"><![CDATA[alt+o]]></entry>
+
+    <entry id="mypage.summary"><![CDATA[Click para ir a 'Mi página'.]]></entry>
+    <entry id="mypage.title"><![CDATA[Mi página:]]></entry>
+    <entry id="mypage.description"><![CDATA[Este ícono permite acceder a 'Mi página' en donde podrá modificar su nombre de usuario, contraseña, y ver su bitácora de actividades.]]></entry>
+    <entry id="MYPAGE"><![CDATA[Mi <u>p</u>ágina]]></entry>
+    <entry id="MYPAGESHORTCUT"><![CDATA[alt+p]]></entry>
+
+    <entry id="CONSOLE"><![CDATA[Co<u>n</u>sola]]></entry>
+    <entry id="CONSOLESHORTCUT"><![CDATA[alt+n]]></entry>
+
+    <entry id="soundonoff.summary"><![CDATA[Clic para cambiar el estatus del sónido on/off.]]></entry>
+    <entry id="soundonoff.title"><![CDATA[Sónido on/off:]]></entry>
+    <entry id="soundonoff.description"><![CDATA[Esta opción permite prender o apagar el sonido en el sistema.&lt;br /&gt;
+    La bocina con rayitas &lt;img src="/skins/master/icons/sound-on.png" alt="Bocina prendida" title="Bocina prendida" style="vertical-align: middle;" /&gt; indica que el sónido esta prendido.&lt;br /&gt;
+    La bocina tachada &lt;img src="/skins/master/icons/sound-off.png" alt="Bocina apagada" title="Bocina apagada" style="vertical-align: middle;" /&gt; indica que el sónido esta apagado.&lt;br /&gt;
+    Un clic sobre la bocina cambia el estatus.&lt;br /&gt;
+    ]]></entry>
+    <entry id="helponoff.summary"><![CDATA[Clic para cambiar el nivel de ayuda interactiva. Esperar 4 segundos para obtener más información en modo Ayuda completa.]]></entry>
+    <entry id="helponoff.title"><![CDATA[Ayuda interactiva:]]></entry>
+    <entry id="helponoff.description"><![CDATA[Esta opción permite prender o apagar la ayuda interactiva en el sistema.&lt;br /&gt;
+    El signo de interogación &lt;img src="/skins/master/icons/help-tip.png" alt="Ayuda resumida" title="Ayuda resumida" style="vertical-align: middle;" /&gt; indica el modo de Ayuda resumida.&lt;br /&gt;
+    El salvavidas &lt;img src="/skins/master/icons/help-full.png" alt="Ayuda completa" title="Ayuda completa" style="vertical-align: middle;" /&gt; indica el modo de Ayuda Completa.&lt;br /&gt;
+    El punto rojo &lt;img src="/skins/master/icons/help-off.png" alt="Ayuda apagada" title="Ayuda apagada" style="vertical-align: middle;" /&gt; indica que la ayuda esta apagada.&lt;br /&gt;
+    Cuando la ayuda completa esta prendida, esperar unos 3 a 4 segundos sobre un elemento permite acceder a una ayuda interactiva más amplia relacionada con la zona seleccionada.&lt;br /&gt;
+    Un clic sobre el ícono cambia el estatus.&lt;br /&gt;]]></entry>
+
+    <entry id="disconnect.summary"><![CDATA[Click para desconectarse]]></entry>
+    <entry id="disconnect.title"><![CDATA[Desconectarse:]]></entry>
+    <entry id="disconnect.description"><![CDATA[Esta opción permite cerrar la sesión del usuario conectado. Se recomienda siempre desconectarse por su propia seguridad cuando termina la sesión o incluso cuando se levanta de su asiento.]]></entry>
+
+    <!-- LOGIN -->
+    <entry id="welcometitle"><![CDATA[Xamboo&reg; v]]></entry>
+    <entry id="intro1title"><![CDATA[Sitio Maestro - Instalación y mantenimiento de la herramienta]]></entry>
+    <entry id="intro2title"><![CDATA[Forma de identificación del usuario]]></entry>
+    <entry id="intro"><![CDATA[Favor de capturar sus datos de conexión:]]></entry>
+
+    <entry id="username"><![CDATA[Usuario: ]]></entry>
+    <entry id="username.description"><![CDATA[Tiene que capturar en este campo el nombre de la cuenta del usuario para firmarse en el sistema.&lt;br /&gt;De 4 hasta 80 carácteres, obligatorio.]]></entry>
+    <entry id="username.notnull"><![CDATA[El campo no puede ser vacio.]]></entry>
+    <entry id="username.tooshort"><![CDATA[Capture mínimo 4 carácteres.]]></entry>
+
+    <entry id="password"><![CDATA[Contraseña: ]]></entry>
+    <entry id="password.description"><![CDATA[Tiene que capturar en este campo la contraseña correspondiente a la cuenta del usuario para firmarse en el sistema.&lt;br /&gt;De 4 hasta 80 carácteres, escondido, obligatorio.]]></entry>
+    <entry id="password.notnull"><![CDATA[El campo no puede ser vacio.]]></entry>
+    <entry id="password.tooshort"><![CDATA[Capture mínimo 4 carácteres.]]></entry>
+
+    <entry id="submit"><![CDATA[Continuar]]></entry>
+    <entry id="submit.summary"><![CDATA[Clic para conectarse al sistema cuando esta activado el botón.]]></entry>
+    <entry id="submit.title"><![CDATA[Continuar:]]></entry>
+    <entry id="submit.description"><![CDATA[Una vez que se hayan capturados el usuario y la contraseña, se tiene que enviar la información al servidor para comprobarla y conectarse al sistema.]]></entry>
+
+    <entry id="reset"><![CDATA[Limpiar]]></entry>
+    <entry id="reset.summary"><![CDATA[Clic para limpiar la forma.]]></entry>
+    <entry id="reset.title"><![CDATA[Limpiar:]]></entry>
+    <entry id="reset.description"><![CDATA[Si quiere borrar los campos y capturar de nuevo los datos puede vaciar la forma.]]></entry>
+
+    <entry id="error.alert"><![CDATA[Falta capturar o verificar campos antes de enviar la información al servidor. Verifique los campos en rojo.]]></entry>
+    <entry id="login.wrong"><![CDATA[Credenciales erróneas.]]></entry>
+
+    <entry id="lostpassword"><![CDATA[¿Contraseña perdida?]]></entry>
+    <entry id="lostpassword.summary"><![CDATA[Si llega a no recordarse de su contraseña, siempre se puede enviar a su correo electrónico para recuperarla. Tendrá que proporcionarnos su cuenta de usuario o su correo electrónico, que tiene que existir en nuestra base de datos y le enviaremos el recordatorio.]]></entry>
+    <entry id="lostpassword.title"><![CDATA[para recuperar la contraseña olvidada]]></entry>
+    <entry id="lostpassword.description"><![CDATA[Si llega a no recordarse de su contraseña, siempre se puede enviar a su correo electrónico para recuperarla. Tendrá que proporcionarnos su cuenta de usuario o su correo electrónico, que tiene que existir en nuestra base de datos y le enviaremos el recordatorio.]]></entry>
+
+    <!-- PASSWORD -->
+    <entry id="passwordintro"><![CDATA[Recuperación de la contraseña:]]></entry>
+    <entry id="getusername"><![CDATA[Usuario o correo electrónico: ]]></entry>
+    <entry id="getusername.description"><![CDATA[Tiene que capturar en este campo el nombre de la cuenta del usuario o el correo electrónico.&lt;br /&gt;De 4 hasta 80 carácteres, obligatorio. Su contraseña será enviada al correo electrónico del administrador registrado.]]></entry>
+    <entry id="getusername.notnull"><![CDATA[El campo no puede ser vacio.]]></entry>
+    <entry id="getusername.tooshort"><![CDATA[Capture mínimo 4 carácteres.]]></entry>
+
+    <entry id="passwordsubmit"><![CDATA[Continuar]]></entry>
+    <entry id="passwordsubmit.summary"><![CDATA[Una vez que se haya capturado el usuario o su correo, el sistema le enviará un correo con la contraseña adentro, o un método para cambiarla, según las opciones de seguridad puestas.]]></entry>
+    <entry id="passwordsubmit.title"><![CDATA[Para enviar la información de conexión]]></entry>
+    <entry id="passwordsubmit.description"><![CDATA[Una vez que se hayan capturados el usuario o su correo, el sistema le enviará un correo con la contraseña adentro, o un método para cambiarla, según las opciones de seguridad puestas.]]></entry>
+
+    <entry id="loginform"><![CDATA[Regresar a la conexión]]></entry>
+    <entry id="loginform.summary"><![CDATA[Si ya se recordó su contraseña, puede regresar a la forma para firmarse en el sistema.]]></entry>
+    <entry id="loginform.title"><![CDATA[Para conectarse]]></entry>
+    <entry id="loginform.description"><![CDATA[Si ya se recordó su contraseña, puede regresar a la forma para firmarse en el sistema.]]></entry>
+
+    <entry id="alertmessage"><![CDATA[Favor de capturar todos los datos antes de enviar la información al servidor. Verifique los campos en rojo.]]></entry>
+    <entry id="servermessage"><![CDATA[Error, el servidor tiene un error desconocido.]]></entry>
+
+    <!-- General messages -->
+    <entry id="sunday"><![CDATA[Domingo]]></entry>
+    <entry id="monday"><![CDATA[Lunes]]></entry>
+    <entry id="tuesday"><![CDATA[Martes]]></entry>
+    <entry id="wednesday"><![CDATA[Miércoles]]></entry>
+    <entry id="thursday"><![CDATA[Jueves]]></entry>
+    <entry id="friday"><![CDATA[Viernes]]></entry>
+    <entry id="saturday"><![CDATA[Sábado]]></entry>
+
+    <entry id="january"><![CDATA[Enero]]></entry>
+    <entry id="february"><![CDATA[Febrero]]></entry>
+    <entry id="march"><![CDATA[Marzo]]></entry>
+    <entry id="april"><![CDATA[Abril]]></entry>
+    <entry id="may"><![CDATA[Mayo]]></entry>
+    <entry id="june"><![CDATA[Junio]]></entry>
+    <entry id="july"><![CDATA[Julio]]></entry>
+    <entry id="august"><![CDATA[Agosto]]></entry>
+    <entry id="september"><![CDATA[Septiembre]]></entry>
+    <entry id="octuber"><![CDATA[Octubre]]></entry>
+    <entry id="november"><![CDATA[Noviembre]]></entry>
+    <entry id="december"><![CDATA[Diciembre]]></entry>
+
+</language>

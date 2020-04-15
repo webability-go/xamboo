@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="install" lang="en">
+  <entry id="loading"><![CDATA[Loading...]]></entry>
+  <entry id="xamboo"><![CDATA[Xamboo&reg; v1]]></entry>
+  <entry id="xamboologo"><![CDATA[Xamboo&reg; v1 logo]]></entry>
+  <entry id="installation">Installation</entry>
+  <entry id="mastersite">Master site</entry>
+  <entry id="version">v</entry>
+
+  <entry id="steps">Wizard:</entry>
+  <entry id="step1">Language</entry>
+  <entry id="step2">Account</entry>
+  <entry id="step3">Confirmation</entry>
+  <entry id="step4">Login</entry>
+  <entry id="footer"><![CDATA[Xamboo&reg; v1 &copy; 2000-2020 - Master Engine]]></entry>
+  <entry id="soundonoff.summary"><![CDATA[Click to change the sound status On or Off.]]></entry>
+  <entry id="soundonoff.title"><![CDATA[Sound on/off:]]></entry>
+  <entry id="soundonoff.description"><![CDATA[This option let you turn the sound of the system on or off.&lt;br /&gt;
+  The icon &lt;img src="/skins/master/icons/sound.png" alt="Sound On" title="Sound On" style="vertical-align: middle;" /&gt; is shown when the sound is working.&lt;br /&gt;
+  The icon &lt;img src="/skins/master/icons/sound_mute.png" alt="Sound Off" title="Sound Off" style="vertical-align: middle;" /&gt; is shown when the sound is turned off.&lt;br /&gt;
+  Click on the icon to switch the sound on or off.&lt;br /&gt;
+  ]]></entry>
+  <entry id="helponoff.summary"><![CDATA[Click to change the help status. Wait on the icon to get more information if the help is turned on full status.]]></entry>
+  <entry id="helponoff.title"><![CDATA[Help level:]]></entry>
+  <entry id="helponoff.description"><![CDATA[This option let you change the interactive help status of the system.&lt;br /&gt;
+  The icon &lt;img src="/skins/master/icons/help.png" alt="Over help" title="Over help" style="vertical-align: middle;" /&gt; is shown when the help is only showing a hint on the element.&lt;br /&gt;
+  The icon &lt;img src="/skins/master/icons/help_full.png" alt="Full help" title="Full help" style="vertical-align: middle;" /&gt; is shown when the interactive help is in full mode. In this case, put the mouse over an element first show a rapid hint, and waiting 4 seconds will pop a help window that can be navigated.&lt;br /&gt;
+  The icon &lt;img src="/skins/master/icons/help_mute.png" alt="No help" title="No help" style="vertical-align: middle;" /&gt; desactivates all the help.&lt;br /&gt;
+  Click on the icon to switch the interactive help mode to hint/full/none.&lt;br /&gt;]]></entry>
+  <entry id="helpstep1.summary"><![CDATA[Click to select the language and country.]]></entry>
+  <entry id="helpstep1.title"><![CDATA[Language and country selection:]]></entry>
+  <entry id="helpstep1.description"><![CDATA[This button permits to go back to the language and country selection screen for the system administrator. If you need another combination of the ones shown, you will be able to select individual countries and languages on the Account screen.]]></entry>
+
+  <entry id="helpstep2.summary"><![CDATA[Account capture screen.]]></entry>
+  <entry id="helpstep2.title"><![CDATA[Account:]]></entry>
+  <entry id="helpstep2.description"><![CDATA[This screen let you capture all the main system administrator data.]]></entry>
+
+  <entry id="helpstep3.summary"><![CDATA[Confirmation screen.]]></entry>
+  <entry id="helpstep3.title"><![CDATA[Confirmation:]]></entry>
+  <entry id="helpstep3.description"><![CDATA[This screen is the confirmation status of the system administration data capture.]]></entry>
+
+  <entry id="helpstep4.summary"><![CDATA[Login screen.]]></entry>
+  <entry id="helpstep4.title"><![CDATA[Login:]]></entry>
+  <entry id="helpstep4.description"><![CDATA[When the account data are all correct you will be able to connect to the system to administrate.]]></entry>
+
+  <entry id="sunday"><![CDATA[Sunday]]></entry>
+  <entry id="monday"><![CDATA[Monday]]></entry>
+  <entry id="tuesday"><![CDATA[Tuesday]]></entry>
+  <entry id="wednesday"><![CDATA[Wednesday]]></entry>
+  <entry id="thursday"><![CDATA[Thursday]]></entry>
+  <entry id="friday"><![CDATA[Friday]]></entry>
+  <entry id="saturday"><![CDATA[Saturday]]></entry>
+
+  <entry id="january"><![CDATA[January]]></entry>
+  <entry id="february"><![CDATA[February]]></entry>
+  <entry id="march"><![CDATA[March]]></entry>
+  <entry id="april"><![CDATA[April]]></entry>
+  <entry id="may"><![CDATA[May]]></entry>
+  <entry id="june"><![CDATA[June]]></entry>
+  <entry id="july"><![CDATA[July]]></entry>
+  <entry id="august"><![CDATA[August]]></entry>
+  <entry id="september"><![CDATA[September]]></entry>
+  <entry id="october"><![CDATA[October]]></entry>
+  <entry id="november"><![CDATA[November]]></entry>
+  <entry id="december"><![CDATA[December]]></entry>
+
+</language>

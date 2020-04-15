@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="language" lang="fr">
+  <entry id="language"><![CDATA[Langue:]]></entry>
+  <entry id="country"><![CDATA[pays:]]></entry>
+  <entry id="flag.title"><![CDATA[Seleccioner le pays:]]></entry>
+  <entry id="flag.description"><![CDATA[Clic sur le drapeau du pays désiré pour le sélectioner. Si la langue du pays choisi est différent de la langue du système, il sera rechargé avec la langue correcte.]]></entry>
+</language>

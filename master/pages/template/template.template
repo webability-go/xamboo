@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{LANGUAGE}}" lang="{{LANGUAGE}}">
+
+<head>
+  <title>Xamboo Master</title>
+  <meta name="Generator" content="Xamboo(r) v1 - www.webability.info - (c) 1999-2020, Ing. Philippe Thomassigny C." />
+  <meta name="Component" content="Master Engine" />
+  <meta http-equiv="PRAGMA" content="NO-CACHE" />
+  <meta http-equiv="Expires" content="-1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+{{JS}}
+</head>
+
+<body>
+
+[[CONTENT]]
+
+</body>
+
+</html>

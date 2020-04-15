@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="account" lang="es">
+  <!-- into the xml application -->
+  <entry id="accounttitle"><![CDATA[Configuración de los datos de conexión del sitio maestro:]]></entry>
+  <entry id="accountconfirmation"><![CDATA[Validación de los datos de conexión:]]></entry>
+  <entry id="continue"><![CDATA[Continuar con la instalación (tendrá que conectarse)]]></entry>
+
+  <!-- into the lib php application -->
+  <entry id="mask.errormessage"><![CDATA[Los datos aún no son bien capturados. Por favor, verifique los mensajes y los campos en rojo antes de enviar la información.]]></entry>
+  <entry id="mask.servermessage"><![CDATA[Error: Los datos del registro tienen un error desconocido reportado por el servidor.]]></entry>
+  <entry id="mask.titleinsert"><![CDATA[Capturar los datos de conexión:]]></entry>
+  <entry id="mask.titleview"><![CDATA[Validación de los datos capturados:]]></entry>
+
+  <entry id="serial.title"><![CDATA[Número de serie:]]></entry>
+  <entry id="serial.help.summary"><![CDATA[Capturar el número de serie de su producto]]></entry>
+  <entry id="serial.help.title"><![CDATA[Número de serie]]></entry>
+  <entry id="serial.help.description"><![CDATA[El número de série contiene 20 veces la cifra cero para la versión Light de Xamboo. Este número será usado cada vez que quieres conectarte al sitio oficial, solicitar soporte o acceder al servidor de versiones. No cambie este número si no consta de una licencia comercial. Puede también obtener un número de serie gratís personalizado en el sitio oficial &lt;a href="http://www.webability.info" target="_blank">http://www.webability.info&lt;/a>]]></entry>
+  <entry id="serial.status.notnull"><![CDATA[El número de serie no puede ser vacio.]]></entry>
+  <entry id="serial.status.badformat"><![CDATA[El número de serie esta mal escrito. 20 carácteres alfanuméricos sin espacios.]]></entry>
+
+  <entry id="username.title"><![CDATA[Usuario administrador:]]></entry>
+  <entry id="username.help.summary"><![CDATA[Capturar el usuario para poder conectarse al sitio maestro]]></entry>
+  <entry id="username.help.title"><![CDATA[Usuario administrador]]></entry>
+  <entry id="username.help.description"><![CDATA[Tiene que capturar el usuario para poder conectarse al sitio maestro. Este usuario puede contener cualquier carácter, desde 4 hasta 80 letras.]]></entry>
+  <entry id="username.status.notnull"><![CDATA[El usuario no puede ser vacio.]]></entry>
+  <entry id="username.status.tooshort"><![CDATA[El usuario debe contener un mínimo de 4 carácteres.]]></entry>
+
+  <entry id="password.title"><![CDATA[Contraseña del administrador:]]></entry>
+  <entry id="password.help.summary"><![CDATA[Capturar la contraseña para poder conectarse al sitio maestro]]></entry>
+  <entry id="password.help.title"><![CDATA[Contraseña del administrador]]></entry>
+  <entry id="password.help.description"><![CDATA[Tiene que capturar la contraseña para poder conectarse al sitio maestro. Esta contraseña puede contener cualquier carácter, desde 4 hasta 80 letras.]]></entry>
+  <entry id="password.status.notnull"><![CDATA[La contraseña no puede ser vacia.]]></entry>
+  <entry id="password.status.tooshort"><![CDATA[la contraseña debe contener un mínimo de 4 carácteres.]]></entry>
+
+  <entry id="email.title"><![CDATA[Correo electrónico del administrador:]]></entry>
+  <entry id="email.help.summary"><![CDATA[Capturar el correo electrónico del administrador en caso de perdida de la contraseña o para notificaciones importantes.]]></entry>
+  <entry id="email.help.title"><![CDATA[Correo electrónico del administrador]]></entry>
+  <entry id="email.help.description"><![CDATA[Tiene que capturar el correo electrónico del administrador. En caso de perdida de la contraseña, se enviará el procedimiento para recuperarla a este correo. También el sistema puede enviar notificaciones importantes a este correo.]]></entry>
+  <entry id="email.status.notnull"><![CDATA[El correo no puede ser vacio.]]></entry>
+
+  <entry id="form.continue"><![CDATA[Enviar la información]]></entry>
+  <entry id="form.reset"><![CDATA[Limpiar la forma]]></entry>
+  <entry id="success"><![CDATA[Información grabada con éxito. Por favor conectese para seguir.]]></entry>
+  <entry id="connect"><![CDATA[Clic aquí para conectarse]]></entry>
+  <entry id="error.serial.wrong"><![CDATA[El número de serie tiene un formato erroneo.]]></entry>
+  <entry id="error.username.missing"><![CDATA[Falta el nombre de usuario.]]></entry>
+  <entry id="error.password.missing"><![CDATA[Falta la contraseña.]]></entry>
+  <entry id="error.password.different"><![CDATA[La contraseña no esta escrita dos veces igual.]]></entry>
+  <entry id="error.password.same"><![CDATA[La contraseña no puede ser la misma que el usuario.]]></entry>
+</language>

@@ -202,7 +202,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Run(file string) error {
+func Run(file string, version string) error {
 
 	// Link the engines
 	assets.EngineWrapper = wrapper
@@ -214,6 +214,7 @@ func Run(file string) error {
 		fmt.Println("ERROR EN CONFIG FILE: ", file, err.Error())
 		return err
 	}
+	config.Config.Version = version
 
 	logger.Start()
 

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="install">
+
+  <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes">
+    <zone id="header" size="45">
+
+      <element id="ajaxflag" type="htmlElement" classname="flaggreen" width="16" height="10" right="50" top="5">
+        <help>
+          <summary><![CDATA[Ajax Status flag]]></summary>
+          <title><![CDATA[Ajax Status flag]]></title>
+          <description><![CDATA[The flag is green when there is no AJAX request.<br />If there is an AJAX request on the go, the flag turns red during the request.<br />]]></description>
+        </help>
+      </element>
+
+      <element id="ddflag" type="htmlElement" classname="flaggreen" width="16" height="10" right="30" top="5">
+        <help>
+          <summary><![CDATA[Drag&Drop Status flag]]></summary>
+          <title><![CDATA[Drag&Drop Status flag]]></title>
+          <description><![CDATA[The flag is green when there is no D&D movement.<br />If there is a D&D movement on the go, the flag turns red during the dragging.<br />]]></description>
+        </help>
+      </element>
+
+      <element id="debugbutton" type="htmlElement" classname="flagyellow" width="16" height="10" right="10" top="5">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  var popupdebug = window.open('', 'debug', 'scrollbars=1,width=400,height=600');
+  popupdebug.moveTo(0,0);
+  WA.debug.Console = popupdebug.document;
+  WA.debug.Level = 1;
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary><![CDATA[Click to open the debug console]]></summary>
+          <title><![CDATA[Debug console]]></title>
+          <description><![CDATA[You can click on this button to open the debug console.<br />The debug console is a popup window. Be sure the popups are authorized in your browser to let it appear.]]></description>
+        </help>
+      </element>
+
+      <element id="header_content" type="htmlElement" classname="maintitle" left="0" top="*" height="28"><![CDATA[
+        <img src="/skins/master/application/wa5.gif" style="vertical-align: middle; height: 27px; margin-right: 10px;" alt="##xamboologo##" title="##xamboologo##" />
+        ##xamboo## - <span class="alttitle">##version##{{VERSION}} - ##installation##</span> - ##mastersite##.]]>
+      </element>
+
+      <element id="timer" type="htmlElement" classname="timertitle" width="300" height="20" right="50" top="26"></element>
+
+      <element id="help_header" type="htmlElement" classname="buttonmenuhelpfull" width="16" height="16" right="30" top="25">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  if (WA.Managers.help.mode == 2)
+  {
+    WA.Managers.help.switchOff();
+    WA.toDOM('help_header').className = 'buttonmenuhelpmute';
+  }
+  else if (WA.Managers.help.mode == 1)
+  {
+    WA.Managers.help.switchOn();
+    WA.toDOM('help_header').className = 'buttonmenuhelpfull';
+  }
+  else
+  {
+    WA.Managers.help.switchAlt();
+    WA.toDOM('help_header').className = 'buttonmenuhelp';
+  }
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##helponoff.summary##</summary>
+          <title>##helponoff.title##</title>
+          <description>##helponoff.description##</description>
+        </help>
+      </element>
+      <element id="sound_header" type="htmlElement" classname="buttonmenusoundon" width="16" height="16" right="10" top="25">
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  WA.Managers.sound.on = !WA.Managers.sound.on;
+  if (WA.Managers.sound.on)
+    WA.toDOM('sound_header').className = 'buttonmenusoundon';
+  else
+    WA.toDOM('sound_header').className = 'buttonmenusoundoff';
+}
+          ]]></code>
+        </event>
+        <help>
+          <summary>##soundonoff.summary##</summary>
+          <title>##soundonoff.title##</title>
+          <description>##soundonoff.description##</description>
+        </help>
+      </element>
+
+    </zone>
+    <zone id="workarea" size="*">
+      <container type="separatorContainer" mode="horizontal" width="max" height="max" auto="yes">
+        <zone id="step" size="200">
+          <element type="htmlElement" left="*" top="30">
+            ##steps##
+          </element>
+          <element id="step1" type="htmlElement" classname="installstep" left="*" top="60">
+            ##step1##
+            <help>
+              <summary>##helpstep1.summary##</summary>
+              <title>##helpstep1.title##</title>
+              <description>##helpstep1.description##</description>
+            </help>
+          </element>
+          <element id="step2" type="htmlElement" classname="installstep" left="*" top="90">
+            ##step2##
+            <help>
+              <summary>##helpstep2.summary##</summary>
+              <title>##helpstep2.title##</title>
+              <description>##helpstep2.description##</description>
+            </help>
+          </element>
+          <element id="step3" type="htmlElement" classname="installstep" left="*" top="120">
+            ##step3##
+            <help>
+              <summary>##helpstep3.summary##</summary>
+              <title>##helpstep3.title##</title>
+              <description>##helpstep3.description##</description>
+            </help>
+          </element>
+          <element id="step4" type="htmlElement" classname="installstep" left="*" top="150">
+            ##step4##
+            <help>
+              <summary>##helpstep4.summary##</summary>
+              <title>##helpstep4.title##</title>
+              <description>##helpstep4.description##</description>
+            </help>
+          </element>
+        </zone>
+        <zone id="wizard" size="*">
+        </zone>
+      </container>
+    </zone>
+    <zone id="footer" size="30">
+      <element id="footer_content" type="htmlElement" classname="footertitle" left="0" top="*"><![CDATA[##footer##]]>
+      </element>
+    </zone>
+  </container>
+  <element id="code1" type="codeElement"><![CDATA[
+
+function backtolanguage()
+{
+  WA.toDOM('install|single|step1').onclick = null;
+  WA.toDOM('install|single|step2').className = 'installstep';
+  WA.toDOM('install|single|step1').className = 'installstepactual';
+  // we HAVE to call from manager since the node is completly destroyed while we call the new application
+  WA.Managers.wa4gl.startApplication('install|single|wizard', 'install/language', 'single', '', '');
+}
+
+function addzero(num)
+{
+  if (num < 10)
+    return '0' + num;
+  return num;
+}
+
+function timer()
+{
+  var fecha=new Date();
+  var dias = ["##sunday##", "##monday##", "##tuesday##", "##wednesday##", "##thursday##", "##friday##", "##saturday##"];
+  var meses = ["##january##", "##february##", "##march##", "##april##", "##may##", "##june##", "##july##", "##august##", "##september##", "##october##", "##november##", "##december##"];
+
+  if ('{{LANGUAGE}}' == 'es')
+  {
+    WA.browser.setInnerHTML(WA.toDOM('install|single|timer'), dias[fecha.getDay()] + ', ' + fecha.getDate() + ' de ' + meses[fecha.getMonth()] + ' de ' + fecha.getFullYear() + ', ' + addzero(fecha.getHours()) + ':' + addzero(fecha.getMinutes()) + ':' + addzero(fecha.getSeconds()));
+  }
+  else
+  {
+    WA.browser.setInnerHTML(WA.toDOM('install|single|timer'), dias[fecha.getDay()] + ', ' + fecha.getDate() + ' ' + meses[fecha.getMonth()] + ' ' + fecha.getFullYear() + ', ' + addzero(fecha.getHours()) + ':' + addzero(fecha.getMinutes()) + ':' + addzero(fecha.getSeconds()));
+  }
+  setTimeout( function() { timer(); }, 1000 );
+}
+
+var numajax = 0;
+function ajaxListener(event)
+{
+  if (event == 'start')
+    numajax ++;
+  else if (event == 'stop')
+    numajax --;
+  if (numajax > 0)
+    WA.toDOM('install|single|ajaxflag').className = 'flagred';
+  else
+    WA.toDOM('install|single|ajaxflag').className = 'flaggreen';
+}
+
+function ddListener(event)
+{
+  if (event == 'start')
+    WA.toDOM('install|single|ddflag').className = 'flagred';
+  else if (event == 'move')
+    WA.toDOM('install|single|ddflag').className = 'flagblue';
+  else if (event == 'stop')
+    WA.toDOM('install|single|ddflag').className = 'flaggreen';
+}
+
+
+]]></element>
+
+  <event type="start">
+    <code><![CDATA[
+function()
+{
+  WA.Managers.help.switchOn();
+  WA.Managers.sound.on = true;
+
+  WA.Managers.wa4gl.startApplication('install|single|wizard', '{{PAGE}}', 'single', 'LANGUAGE={{LANGUAGE}}&COUNTRY={{COUNTRY}}', '');
+
+  timer();
+  WA.Managers.ajax.setListener(ajaxListener);
+  WA.Managers.dd.setListener(ddListener);
+
+  WA.toDOM('loading').style.display = 'none';
+}
+    ]]></code>
+  </event>
+</application>

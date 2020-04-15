@@ -28,6 +28,7 @@ import (
 	"github.com/webability-go/xamboo/server/engines/redirect"
 	"github.com/webability-go/xamboo/server/engines/simple"
 	"github.com/webability-go/xamboo/server/engines/template"
+	"github.com/webability-go/xamboo/server/engines/wajafapp"
 	"github.com/webability-go/xamboo/server/utils"
 )
 
@@ -40,6 +41,7 @@ func LinkEngines(engines []config.Engine) {
 	Engines["language"] = language.Engine
 	Engines["template"] = template.Engine
 	Engines["library"] = library.Engine
+	Engines["wajafapp"] = wajafapp.Engine
 	for _, engine := range engines {
 		if engine.Source == "built-in" {
 			continue
@@ -202,7 +204,6 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 		}
 		fullpath = true
 	}
-
 	var xParams []string
 	if P != page {
 		if app, _ := pagedata.GetBool("acceptpathparameters"); !app {

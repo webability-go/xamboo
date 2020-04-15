@@ -8,7 +8,7 @@ import (
 )
 
 // VERSION oficial of the xamboo
-const VERSION = "1.1.1"
+const VERSION = "1.2.0"
 
 func main() {
 	// *** system Language !!! preload
@@ -22,7 +22,7 @@ func main() {
 		return
 	}
 
-	err := server.Run(file)
+	err := server.Run(file, VERSION)
 	if err != nil {
 		fmt.Println(err)
 	}

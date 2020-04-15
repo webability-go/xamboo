@@ -1,0 +1,2 @@
+ERROR [[PARAM,code]]L The block does not exists:<br />
+Page: [[PARAM,page]] ** Code: [[PARAM,code]] ** Message: [[PARAM,message]]<br />
