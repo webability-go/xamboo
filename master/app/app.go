@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -26,6 +27,12 @@ func init() {
 func Start(h config.Host) {
 }
 
+func GetMD5Hash(text string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
 func VerifyLogin(ctx *assets.Context) {
 
 	// Any sent session ?
@@ -40,13 +47,13 @@ func VerifyLogin(ctx *assets.Context) {
 
 	// verify username, password, OrderSecurity connect/disconnect
 	order := ctx.Request.Form.Get("OrderSecurity")
+
 	switch order {
 	case "Connect":
 		username := ctx.Request.Form.Get("username")
 		password := ctx.Request.Form.Get("password")
 		// verify against config data
-		bmd5password := md5.Sum([]byte(password))
-		md5password := fmt.Sprint(bmd5password)
+		md5password := GetMD5Hash(password)
 
 		sysusername, _ := ctx.Sysparams.GetString("username")
 		syspassword, _ := ctx.Sysparams.GetString("password")

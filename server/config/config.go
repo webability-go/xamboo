@@ -96,29 +96,96 @@ type Engine struct {
 	Library string `json:"library"`
 }
 
+type Engines []Engine
+type Hosts []Host
+type Listeners []Listener
+
+type WEngines []Engine
+type WHosts []Host
+type WListeners []Listener
+
 type ConfigDef struct {
 	Version   string
 	File      string
-	Listeners []Listener `json:"listeners"`
-	Hosts     []Host     `json:"hosts"`
-	Engines   []Engine   `json:"engines"`
-	Log       Log        `json:"log"`
+	Listeners Listeners `json:"listeners"`
+	Hosts     Hosts     `json:"hosts"`
+	Engines   Engines   `json:"engines"`
+	Log       Log       `json:"log"`
+	Include   []string  `json:"include"`
 }
 
 var Config = &ConfigDef{}
+
+func EngineExists(ds []Engine, e Engine) bool {
+	for _, dse := range ds {
+		if dse.Name == e.Name {
+			return true
+		}
+	}
+	return false
+}
+
+func (cont *Engines) UnmarshalJSON(buf []byte) error {
+	fmt.Println("Unmarshal Engines")
+	ar := WEngines{}
+	json.Unmarshal(buf, &ar)
+	for _, x := range ar {
+		if !EngineExists(*cont, x) {
+			*cont = append(*cont, x)
+		}
+	}
+	return nil
+}
+
+func HostExists(ds []Host, e Host) bool {
+	for _, dse := range ds {
+		if dse.Name == e.Name {
+			return true
+		}
+	}
+	return false
+}
+
+func (cont *Hosts) UnmarshalJSON(buf []byte) error {
+	fmt.Println("Unmarshal Hosts")
+	ar := WHosts{}
+	json.Unmarshal(buf, &ar)
+	for _, x := range ar {
+		if !HostExists(*cont, x) {
+			*cont = append(*cont, x)
+		}
+	}
+	return nil
+}
+
+func ListenerExists(ds []Listener, e Listener) bool {
+	for _, dse := range ds {
+		if dse.Name == e.Name {
+			return true
+		}
+	}
+	return false
+}
+
+func (cont *Listeners) UnmarshalJSON(buf []byte) error {
+	fmt.Println("Unmarshal Listeners")
+	ar := WListeners{}
+	json.Unmarshal(buf, &ar)
+	for _, x := range ar {
+		if !ListenerExists(*cont, x) {
+			*cont = append(*cont, x)
+		}
+	}
+	return nil
+}
 
 // Then main xamboo runner
 func (c *ConfigDef) Load(file string) error {
 
 	c.File = file
-	configFile, err := os.Open(file)
-	defer configFile.Close()
+	err := c.SysLoad(file)
 	if err != nil {
-		return err
-	}
-
-	jsonParser := json.NewDecoder(configFile)
-	if err = jsonParser.Decode(c); err != nil {
+		fmt.Println("ERROR LOADING CONFIG", err)
 		return err
 	}
 
@@ -162,8 +229,33 @@ func (c *ConfigDef) Load(file string) error {
 		}
 	}
 
-	// Load the configuration file
-	fmt.Println("Config loaded " + c.File)
+	return nil
+}
+
+func (c *ConfigDef) SysLoad(file string) error {
+
+	configFile, err := os.Open(file)
+	defer configFile.Close()
+	if err != nil {
+		return err
+	}
+
+	jsonParser := json.NewDecoder(configFile)
+	if err = jsonParser.Decode(c); err != nil {
+		return err
+	}
+
+	// Inludes ?
+	if c.Include != nil && len(c.Include) > 0 {
+		list := c.Include
+		c.Include = nil
+		for _, inc := range list {
+			err := c.SysLoad(inc)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

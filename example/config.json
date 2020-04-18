@@ -6,25 +6,7 @@
     "rotate": "1d",
     "compress": true
   },
-
-  "listeners":
-  [
-    {
-      "name": "admin",
-      "ip": "",
-      "port": "81",
-      "protocol": "https",
-      "readtimeout": 120,
-      "writetimeout": 120,
-      "headersize": 65536,
-
-      "log": {
-        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, errors, protocol listener, etc)",
-        "sys": "file:./example/logs/listener-admin-sys.log",
-        "rotate": "1d",
-        "compress": true
-      }
-    },
+  "listeners": [
     {
       "name": "http",
       "ip": "",
@@ -33,7 +15,6 @@
       "readtimeout": 120,
       "writetimeout": 120,
       "headersize": 65536,
-
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
         "sys": "file:./example/logs/listener-http-sys.log",
@@ -49,7 +30,6 @@
       "readtimeout": 120,
       "writetimeout": 120,
       "headersize": 65536,
-
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
         "sys": "file:./example/logs/listener-https-sys.log",
@@ -58,31 +38,41 @@
       }
     }
   ],
-
-  "hosts":
-  [
+  "hosts": [
     {
       "name": "developers",
-      "listeners": ["http","https"],
-      "hostnames": ["developers.webability.info"],
-      "config": ["./example/application/config/example.conf"],
+      "listeners": [
+        "http",
+        "https"
+      ],
+      "hostnames": [
+        "developers.webability.info"
+      ],
+      "config": [
+        "./example/application/config/example.conf"
+      ],
       "cert": "./example/ssl/cert.pem",
       "key": "./example/ssl/privkey.pem",
       "static": "./example/repository/public/static",
-
       "browser": {
         "useragent": {
           "enabled": true,
           "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
         }
       },
-
       "gzip": {
         "enabled": true,
-        "mimes": ["text/html", "text/css"],
-        "files": ["*.ico", "*.css", "*.js", "*.html"]
+        "mimes": [
+          "text/html",
+          "text/css"
+        ],
+        "files": [
+          "*.ico",
+          "*.css",
+          "*.js",
+          "*.html"
+        ]
       },
-
       "minify": {
         "enabled": true,
         "html": true,
@@ -92,11 +82,9 @@
         "svg": true,
         "xml": true
       },
-
       "auth": {
         "enabled": false
       },
-
       "log": {
         "enabled": true,
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard: or call:. the sys log is used for deep code log (like debug, pages code log, etc)",
@@ -110,23 +98,33 @@
     },
     {
       "name": "devapi-for-cors-api",
-      "listeners": ["https"],
-      "hostnames": ["devapi.webability.info"],
-      "config": ["./example/application/config/example.conf"],
+      "listeners": [
+        "https"
+      ],
+      "hostnames": [
+        "devapi.webability.info"
+      ],
+      "config": [
+        "./example/application/config/example.conf"
+      ],
       "cert": "./example/ssl/cert.pem",
       "key": "./example/ssl/privkey.pem",
       "static": "./example/repository/public/static",
-
       "gzip": {
         "enabled": true,
-        "mimes": ["text/html", ""],
-        "files": ["*.ico", "*.css", "*.js"]
+        "mimes": [
+          "text/html",
+          ""
+        ],
+        "files": [
+          "*.ico",
+          "*.css",
+          "*.js"
+        ]
       },
-
       "auth": {
         "enabled": false
       },
-
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
         "pages": "file:./example/logs/developers.log",
@@ -136,90 +134,57 @@
         "rotate": "1d",
         "compress": true
       },
-
       "origin": {
-        "maindomains": ["webability.info", "webability.org"],
+        "maindomains": [
+          "webability.info",
+          "webability.org"
+        ],
         "default": "https://developers.webability.info",
-        "methods": ["GET", "POST", "OPTIONS"],
-        "headers": ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Origin", "X-Requested-With", "Method"],
+        "methods": [
+          "GET",
+          "POST",
+          "OPTIONS"
+        ],
+        "headers": [
+          "Accept",
+          "Content-Type",
+          "Content-Length",
+          "Accept-Encoding",
+          "X-CSRF-Token",
+          "Authorization",
+          "Origin",
+          "X-Requested-With",
+          "Method"
+        ],
         "credentials": true
       }
-    },
-    {
-      "name": "admin",
-      "listeners": ["admin"],
-      "hostnames": ["developers.webability.info"],
-      "config": ["./admin/admin.conf"],
-      "cert": "./example/ssl/cert.pem",
-      "key": "./example/ssl/privkey.pem",
-      "static": "./admin/public",
-
-      "gzip": {
-        "enabled": false,
-        "mimes": ["text/html", ""],
-        "files": ["*.ico", "*.css", "*.js"]
-      },
-
-      "auth": {
-        "enabled": true,
-        "realm": "Xamboo admin console",
-        "user": "admin",
-        "pass": "manager"
-      },
-
-      "log": {
-        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
-        "pages": "file:./example/logs/xamboo-admin.log",
-        "errors": "file:./example/logs/xambo-admin-error.log",
-        "sys": "file:./example/logs/xamboo-admin-sys.log",
-        "stats": "discard",
-        "rotate": "1d",
-        "compress": true
-      }
-
-    },
-    {
-      "name": "master",
-      "listeners": ["admin"],
-      "hostnames": ["master.webability.info"],
-      "config": ["./master/master.conf", "./master/resources/local.conf"],
-      "cert": "./example/ssl/cert.pem",
-      "key": "./example/ssl/privkey.pem",
-      "static": "./master/public",
-
-      "gzip": {
-        "enabled": false,
-        "mimes": ["text/html", ""],
-        "files": ["*.ico", "*.css", "*.js"]
-      },
-
-      "auth": {
-        "enabled": true,
-        "realm": "Xamboo master console",
-        "user": "master",
-        "pass": "manager"
-      },
-
-      "log": {
-        "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
-        "pages": "file:./example/logs/xamboo-master.log",
-        "errors": "file:./example/logs/xambo-master-error.log",
-        "sys": "file:./example/logs/xamboo-master-sys.log",
-        "stats": "discard",
-        "rotate": "1d",
-        "compress": true
-      }
-
     }
   ],
-
-  "engines":
-  [
-    { "name": "simple", "source": "built-in" },
-    { "name": "library", "source": "built-in" },
-    { "name": "template", "source": "built-in" },
-    { "name": "language", "source": "built-in" },
-    { "name": "wajafapp", "source": "built-in" },
-    { "name": "box", "source": "extern", "library": "./example/engines/box/box.so" }
+  "engines": [
+    {
+      "name": "simple",
+      "source": "built-in"
+    },
+    {
+      "name": "library",
+      "source": "built-in"
+    },
+    {
+      "name": "template",
+      "source": "built-in"
+    },
+    {
+      "name": "language",
+      "source": "built-in"
+    },
+    {
+      "name": "wajafapp",
+      "source": "built-in"
+    },
+    {
+      "name": "box",
+      "source": "extern",
+      "library": "./example/engines/box/box.so"
+    }
   ]
 }

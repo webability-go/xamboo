@@ -122,7 +122,8 @@ function(e)
           <code><![CDATA[
 function(e)
 {
-  window.location.href = '/?OrderSecurity=Disconnect';
+  // call disconnect service
+  WA.Managers.ajax.createRequest('/main/disconnect/json', 'post', 'OrderSecurity=Disconnect', function(request) { window.location.href = '/'; }, true);
 }
           ]]></code>
         </event>

@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -188,9 +189,15 @@ func Formaccount(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 	}
 }
 
+func GetMD5Hash(text string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
 func generateConfig(ctx *assets.Context, L string, C string, serial string, username string, password string, email string) {
 
-	md5password := fmt.Sprint(md5.Sum([]byte(password)))
+	md5password := GetMD5Hash(password)
 
 	local := "username=" + username + "\n"
 	local += "password=" + md5password + "\n"
@@ -201,7 +208,8 @@ func generateConfig(ctx *assets.Context, L string, C string, serial string, user
 	local += "installed=yes\n"
 
 	// write local
-	path := "./master/resources/local.conf"
+	resourcesdir, _ := ctx.Sysparams.GetString("resourcesdir")
+	path := resourcesdir + "/local.conf"
 	ioutil.WriteFile(path, []byte(local), 0644)
 
 	// inject into Host.config
