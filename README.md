@@ -65,6 +65,11 @@ Extras:
 Version Changes Control
 =======================
 
+V1.2.1 - 2020-04-18
+-----------------------
+- Added keyword "include": ["",""...] into config.json to merge various config files. Hosts, Listeners and Engines will be merged only with a different name of already loaded
+- Master login/logout enhanced, password is md5 encoded
+
 V1.2.0 - 2020-04-09
 -----------------------
 - Master site created (for tools installation, ready to use XModules and contexts, modules and dynamic libraries, security

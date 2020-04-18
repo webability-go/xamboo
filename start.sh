@@ -24,6 +24,6 @@ go build --buildmode=plugin box.go
 cd ../../..
 
 echo "Run the xamboo"
-go run xamboo.go --config=example/config.json
+go run xamboo.go --config=mainconfig.json
 # once compiled, use this:
 # ./xamboo --config=example/config.json
