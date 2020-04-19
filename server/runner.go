@@ -186,11 +186,13 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// SPLIT URI - QUERY to call the engine
+		pagesdir, _ := hostdef.Config.GetString("pagesdir")
 		server := &Server{
 			Method:        r.Method,
 			Page:          r.URL.Path,
 			Listener:      listenerdef,
 			Host:          hostdef,
+			PagesDir:      pagesdir,
 			Code:          http.StatusOK,
 			Recursivity:   map[string]int{},
 			GZipCandidate: gzipcandidate,

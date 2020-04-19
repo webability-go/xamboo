@@ -126,7 +126,6 @@ func EngineExists(ds []Engine, e Engine) bool {
 }
 
 func (cont *Engines) UnmarshalJSON(buf []byte) error {
-	fmt.Println("Unmarshal Engines")
 	ar := WEngines{}
 	json.Unmarshal(buf, &ar)
 	for _, x := range ar {
@@ -147,7 +146,6 @@ func HostExists(ds []Host, e Host) bool {
 }
 
 func (cont *Hosts) UnmarshalJSON(buf []byte) error {
-	fmt.Println("Unmarshal Hosts")
 	ar := WHosts{}
 	json.Unmarshal(buf, &ar)
 	for _, x := range ar {
@@ -168,7 +166,6 @@ func ListenerExists(ds []Listener, e Listener) bool {
 }
 
 func (cont *Listeners) UnmarshalJSON(buf []byte) error {
-	fmt.Println("Unmarshal Listeners")
 	ar := WListeners{}
 	json.Unmarshal(buf, &ar)
 	for _, x := range ar {
