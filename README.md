@@ -65,6 +65,10 @@ Extras:
 Version Changes Control
 =======================
 
+V1.2.2 - 2020-04-18
+-----------------------
+- Added attribute PagesDir to server and support for base directory change for engines
+
 V1.2.1 - 2020-04-18
 -----------------------
 - Added keyword "include": ["",""...] into config.json to merge various config files. Hosts, Listeners and Engines will be merged only with a different name of already loaded

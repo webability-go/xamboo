@@ -71,6 +71,7 @@ type Server struct {
 	Listener *config.Listener
 	Host     *config.Host
 
+	PagesDir      string
 	Code          int
 	MainContext   *assets.Context
 	Recursivity   map[string]int
@@ -169,10 +170,9 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	// ==========================================================
 	// Chapter 1: Search the correct .page
 	// ==========================================================
-	pagesdir, _ := s.Host.Config.GetString("pagesdir")
 	acceptpathparameters, _ := s.Host.Config.GetBool("acceptpathparameters")
 	pageserver := &engines.Page{
-		PagesDir:             pagesdir,
+		PagesDir:             s.PagesDir,
 		AcceptPathParameters: acceptpathparameters,
 	}
 
@@ -310,7 +310,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	instanceserver := &engines.Instance{
-		PagesDir: pagesdir,
+		PagesDir: s.PagesDir,
 	}
 
 	var instancedata *xconfig.XConfig
@@ -340,7 +340,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	// ==========================================================
 	var engineinstance assets.EngineInstance
 	for _, n := range identities {
-		engineinstance = engine.GetInstance(s.Host.Name, pagesdir, P, n)
+		engineinstance = engine.GetInstance(s.Host.Name, s.PagesDir, P, n)
 		if engineinstance != nil {
 			break
 		}
@@ -354,7 +354,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	var languagedata *xcore.XLanguage = nil
 	if engineinstance.NeedLanguage() {
 		for _, n := range identities {
-			languageinstance := Engines["language"].GetInstance(s.Host.Name, pagesdir, P, n)
+			languageinstance := Engines["language"].GetInstance(s.Host.Name, s.PagesDir, P, n)
 			if languageinstance != nil {
 				lang := languageinstance.Run(ctx, nil, nil, s)
 				if lang != nil {
@@ -366,7 +366,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 	if engineinstance.NeedTemplate() {
 		for _, n := range identities {
-			templateinstance := Engines["template"].GetInstance(s.Host.Name, pagesdir, P, n)
+			templateinstance := Engines["template"].GetInstance(s.Host.Name, s.PagesDir, P, n)
 			if templateinstance != nil {
 				temp := templateinstance.Run(ctx, nil, nil, s)
 				if temp != nil {
