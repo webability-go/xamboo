@@ -27,6 +27,7 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 		"LANGUAGE": ctx.Language,
 		"SELECT":   getSelect(c),
 		"FLAGS":    getCountries(c),
+		"#":        language,
 	}
 
 	return template.Execute(params)

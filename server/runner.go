@@ -6,6 +6,7 @@ import (
 	"crypto/subtle"
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -15,7 +16,6 @@ import (
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/compiler"
 	"github.com/webability-go/xamboo/server/config"
-	//	"github.com/webability-go/xamboo/server/engines"
 	"github.com/webability-go/xamboo/server/logger"
 	"github.com/webability-go/xamboo/server/stat"
 	"github.com/webability-go/xamboo/server/utils"
@@ -71,7 +71,7 @@ func (cw *CoreWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if hj, ok := cw.ResponseWriter.(http.Hijacker); ok {
 		return hj.Hijack()
 	}
-	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported")
+	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported") // should not happen
 }
 
 func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
@@ -94,10 +94,6 @@ func StatLoggerWrapper(handler http.HandlerFunc) http.HandlerFunc {
 
 // certificados desde la config
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-
-	//  fmt.Printf("Req: %s %s %s\n", r.RequestURI , r.Host, r.URL.Path)
-	//  fmt.Println(r.Header)
-	//  fmt.Printf("Remote IP: %s\n", r.RemoteAddr)
 
 	// CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
 	// 1. http, https, ftp, ftps, ws, wss ?
@@ -122,6 +118,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		host, port, _ = net.SplitHostPort(r.Host)
 	}
 	hostdef, listenerdef := config.Config.GetListener(host, port, secure)
+	w.(*CoreWriter).RequestStat.Hostname = hostdef.Name
 
 	if listenerdef != nil {
 
@@ -213,13 +210,13 @@ func Run(file string, version string) error {
 	// Load the config
 	err := config.Config.Load(file)
 	if err != nil {
-		fmt.Println("ERROR EN CONFIG FILE: ", file, err.Error())
+		log.Println("Error parsing Config File: ", file)
 		return err
 	}
 	config.Config.Version = version
 
 	logger.Start()
-
+	stat.Start()
 	compiler.Start()
 	LinkEngines(config.Config.Engines)
 
@@ -228,13 +225,14 @@ func Run(file string, version string) error {
 	finish := make(chan bool)
 
 	// build the different servers
+	xlogger := logger.GetCoreLogger("sys")
 	for _, l := range config.Config.Listeners {
-		fmt.Println("Scanning Listener: L[" + l.Name + "]")
+		xlogger.Println("Scanning Listener: L[" + l.Name + "]")
 		go func(listener config.Listener) {
 
-			llogger := logger.GetListenerLogger(listener.Name)
+			llogger := logger.GetListenerLogger(listener.Name, "sys")
 
-			fmt.Println("Launching Listener: L[" + listener.Name + "]")
+			xlogger.Println("Launching Listener: L[" + listener.Name + "]")
 			server := &http.Server{
 				Addr:              ":" + listener.Port,
 				ErrorLog:          llogger,
@@ -294,7 +292,7 @@ func Run(file string, version string) error {
 						if certerror != nil {
 							llogger.Fatal(certerror)
 						}
-						fmt.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
+						xlogger.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
 						i += 1
 					}
 				}

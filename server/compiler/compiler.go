@@ -2,9 +2,10 @@ package compiler
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"os/exec"
 
+	"github.com/webability-go/xamboo/server/logger"
 	"github.com/webability-go/xamboo/server/utils"
 )
 
@@ -32,35 +33,35 @@ type Pile struct {
 
 var CPile Pile
 
-func (p *Pile) CreateCompiler(path string, plugin string, version int) *Worker {
+func (p *Pile) CreateCompiler(path string, plugin string, version int, logger *log.Logger) *Worker {
 
 	// we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
-	//  fmt.Println("Creating the compiler for " + path)
-
 	w := &Worker{ready: make(chan bool), version: version}
 	p.Workers[path] = w
-	go w.Compile(path, plugin, version)
+	go w.Compile(path, plugin, version, logger)
 	return w
 }
 
-func (w *Worker) Compile(path string, plugin string, version int) {
+func (w *Worker) Compile(path string, plugin string, version int, logger *log.Logger) {
 
 	if version > 0 {
 		plugin = plugin + fmt.Sprintf(".%d", version)
 	}
 
+	logger.Println("Recompiling:", path, version)
+
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin, path)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = logger.Writer()
+	cmd.Stderr = logger.Writer()
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error running go build:", err)
+		logger.Println("Error running go build:", err)
 	}
 	w.ready <- true
 	w.Broadcast()
 }
 
-func PleaseCompile(path string, plugin string, version int) (int, error) {
+func PleaseCompile(path string, plugin string, version int, logger *log.Logger) (int, error) {
 
 	newversion := 0
 	if worker, ok := CPile.Workers[path]; ok {
@@ -70,8 +71,7 @@ func PleaseCompile(path string, plugin string, version int) (int, error) {
 	} else {
 		// 1. Creates a channel, send message to supervisor, wait for response
 		newversion = searchNextFreeVersion(plugin, version)
-		fmt.Println("Recompiling:", path, newversion)
-		worker := CPile.CreateCompiler(path, plugin, newversion)
+		worker := CPile.CreateCompiler(path, plugin, newversion, logger)
 		<-worker.ready
 		// destroys the Worker
 		delete(CPile.Workers, path)
@@ -84,7 +84,7 @@ func searchNextFreeVersion(plugin string, version int) int {
 	// search if version, version+1, version+2.... exists, return next available version
 	var newversion int
 	var newfile string
-	for newversion = version; true; newversion += 1 {
+	for newversion = version; true; newversion++ {
 		if newversion > 0 {
 			newfile = plugin + fmt.Sprintf(".%d", newversion)
 		} else {
@@ -101,7 +101,8 @@ func Supervisor() {
 
 	CPile.Workers = make(map[string]*Worker)
 
-	fmt.Println("Launching the compilation supervisor.")
+	slogger := logger.GetCoreLogger("sys")
+	slogger.Println("Launching the compilation supervisor.")
 
 	// put order in any .go and .so.xx,
 

@@ -88,9 +88,9 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 		if invalid {
 			// get back version number && error
-			version, err := compiler.PleaseCompile(p.FilePath, p.FilePlugin, 0)
+			version, err := compiler.PleaseCompile(p.FilePath, p.FilePlugin, 0, ctx.LoggerError)
 			if err != nil {
-				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
+				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
 				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE, Error: " + fmt.Sprint(err)
 			}
 
@@ -102,7 +102,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 			lib, err = plugin.Open(p.FilePlugin)
 			if err != nil {
-				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
+				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
 				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD, Error: " + fmt.Sprint(err)
 			}
 		}
@@ -111,7 +111,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 	fct, err := lib.Lookup("Run")
 	if err != nil {
-		fmt.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
+		ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
 		return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION, Error: " + fmt.Sprint(err)
 	}
 

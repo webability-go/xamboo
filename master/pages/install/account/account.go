@@ -1,15 +1,13 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/webability-go/xcore/v2"
 	"github.com/webability-go/xdommask"
 
+	"github.com/webability-go/xamboo/master/app/bridge"
 	"github.com/webability-go/xamboo/server/assets"
 )
 
@@ -31,12 +29,8 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 	xmlmask, _ := xml.Marshal(mask)
 	params := &xcore.XDataset{
 		"FORM": string(xmlmask),
-
-		"#": language,
+		"#":    language,
 	}
-
-	fmt.Println("FORM:", params)
-
 	return template.Execute(params)
 }
 
@@ -147,6 +141,20 @@ WA.toDOM('install|single|step3').className = 'installstepactual';
 
 func Formaccount(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
+	// If config already done, CANNOT call this page (error)
+	installed, _ := ctx.Sysparams.GetBool("installed")
+	if installed {
+		return "Error: system already installed"
+	}
+
+	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
+	myappdata, ok := ctx.Plugins["app"]
+	if !ok {
+		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+	}
+
+	bridge.Start(myappdata)
+
 	L := ctx.Request.Form.Get("LANGUAGE")
 	C := ctx.Request.Form.Get("COUNTRY")
 	serial := ctx.Request.Form.Get("serial")
@@ -189,15 +197,9 @@ func Formaccount(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 	}
 }
 
-func GetMD5Hash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
-
 func generateConfig(ctx *assets.Context, L string, C string, serial string, username string, password string, email string) {
 
-	md5password := GetMD5Hash(password)
+	md5password := bridge.GetMD5Hash(password)
 
 	local := "username=" + username + "\n"
 	local += "password=" + md5password + "\n"
@@ -213,7 +215,7 @@ func generateConfig(ctx *assets.Context, L string, C string, serial string, user
 	ioutil.WriteFile(path, []byte(local), 0644)
 
 	// inject into Host.config
-	ctx.Sysparams.MergeString(local)
+	ctx.Sysparams.LoadString(local)
 }
 
 /*

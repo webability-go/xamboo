@@ -1,6 +1,7 @@
 package assets
 
 import (
+	"log"
 	"net/http"
 	"plugin"
 
@@ -20,6 +21,7 @@ type Context struct {
 	LocalPage           string                    // The local page called (same as Main if called from outside)
 	LocalPageUsed       string                    // The local real page to use (valid page found)
 	LocalURLparams      []string                  // The local URL params based on local page, if any
+	LoggerError         *log.Logger               // The logger to log errors
 	Sysparams           *xconfig.XConfig          // mandatory, site system params
 	Sessionparams       *xconfig.XConfig          // Optional, for the programer to add any session data he needs.
 	MainPageparams      *xconfig.XConfig          // Original page params (real original .page file)

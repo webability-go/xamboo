@@ -320,7 +320,7 @@ func (c *CodeData) Inject(ctx *assets.Context, language *xcore.XLanguage, e inte
 			outerdata := assets.EngineWrapperString(e, v.data1, nil, "", "", "")
 			injected = append(injected, strings.Replace(outerdata, "[[CONTENT]]", innerdata, -1))
 		default:
-			injected = append(injected, "THE METALANGUAGE FROM OUTERSPACE IS NOT SUPPORTED: "+fmt.Sprint(v.paramtype))
+			injected = append(injected, "THE METALANGUAGE FROM OUTERSPACE IS NOT SUPPORTED: "+fmt.Sprint(v.paramtype)) // should NEVER happen
 		}
 	}
 	// return the page string

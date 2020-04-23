@@ -34,6 +34,5 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 		"PAGE":     page,
 		"#":        language,
 	}
-
 	return template.Execute(params)
 }

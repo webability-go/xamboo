@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-	//  "flag"
 	"encoding/json"
 	"os"
 	"plugin"
@@ -182,7 +180,6 @@ func (c *ConfigDef) Load(file string) error {
 	c.File = file
 	err := c.SysLoad(file)
 	if err != nil {
-		fmt.Println("ERROR LOADING CONFIG", err)
 		return err
 	}
 
@@ -210,7 +207,6 @@ func (c *ConfigDef) Load(file string) error {
 							p1, _ := c_plugindata.GetString("library")
 							lib, err := plugin.Open(p1)
 							if err != nil {
-								fmt.Println("ERROR: USER PLUGIN APPLICATION COULD NOT LOAD: " + app)
 								return err
 							} else {
 								c.Hosts[i].Plugins[app] = lib

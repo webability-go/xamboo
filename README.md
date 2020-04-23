@@ -16,33 +16,43 @@ Xamboo works on sites currently distributing more than **60 millions web pages m
 
 INSTALATION AND COMPILATION
 =============================
-Xamboo needs:
-- github.com/gorilla/websockets
-- github.com/tdewolff/minify
 
-With a:
-go get -u github.com/webability-go/xamboo
-you should grab all what you need to make it work.
+Create a new directory for Xamboo, for instance /home/sites/xamboo
 
-Start the example server with
-./start.sh
+$ mkdir /home/sites/xamboo
+
+Go in xamboo directory
+create a git:
+$ git init
+
+Pull the last verion of Xamboo
+
+$ git pull https://github.com/webability-go/xamboo.git
+
+You need to edit each .json files to adapt it to your own IP and ports
+
+Set the Listeners IP and Port so the service will work on your machine.
+Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
+
+Run the xamboo with master and examples
+
+$ start.sh
+
 
 To build your own server:
-Edit start.sh and change the config file path.
+Edit start.sh, json config files and change the config file path.
 
 You can copy the example directory and change anything you need.
 
-Install the master site and install contexts with XModules for any site you need
+The master site is not necessary to make the CMS work. It's a helpfull tool to configure and install anything easier.
+Install the master site and install contexts with XModules for any site you need.
 
 You can compile xamboo to an executable with
 go build xamboo.go
-Copy the xamboo executable where you want to.
-Just call it like in the start.sh
-You need to keep the original code to be able to compile pages and libraries
+You do not need to recompile any app and page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity.
+You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo.
 
-./xamboo --config=/path/to/configFile
-
-You may attach the xamboo as a OS/service
+You may attach the xamboo as a OS/service, calling the start.sh
 
 
 TO DO
@@ -58,12 +68,20 @@ TO DO
 - Stats module
 - Errors manager and Logs managers
 - implement call stat function(context)
+- Distribute messages and data to logs as they should be
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 
 Version Changes Control
 =======================
+
+V1.2.3 - 2020-04-23
+-----------------------
+- Enhanced Master and Master app to work better (installation, use, index, bridged functions).
+- Improvement in loggers, all logger now logs what they are supposed to log
+- Stats are registering in stat logs correctly based on correct Host
+
 
 V1.2.2 - 2020-04-18
 -----------------------
