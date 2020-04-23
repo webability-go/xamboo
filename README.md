@@ -80,6 +80,8 @@ V1.2.3 - 2020-04-
 -----------------------
 - Enhanced Master and Master app to work better (installation, use, index, bridged functions).
 - Improvement in loggers, all logger now logs what they are supposed to log
+- Stats are registering in stat logs correctly based on correct Host
+
 
 V1.2.2 - 2020-04-18
 -----------------------
