@@ -92,9 +92,9 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 		if invalid {
 			// get back version number && error
-			version, err := compiler.PleaseCompile(p.FilePath, p.FilePlugin, 0)
+			version, err := compiler.PleaseCompile(p.FilePath, p.FilePlugin, 0, ctx.LoggerError)
 			if err != nil {
-				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
+				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
 				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE, Error: " + fmt.Sprint(err)
 			}
 
@@ -106,7 +106,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 			lib, err = plugin.Open(p.FilePlugin)
 			if err != nil {
-				fmt.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
+				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
 				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD, Error: " + fmt.Sprint(err)
 			}
 		}
@@ -128,6 +128,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 	fct, err := lib.Lookup(fctname)
 	if err != nil {
+		ctx.LoggerError.Println("ERROR: WAJAF LIBRARY DOES NOT CONTAIN FUNCTION "+fctname+", Error: ", err)
 		return "ERROR: WAJAF LIBRARY DOES NOT CONTAIN FUNCTION " + fctname + ", Error: " + fmt.Sprint(err)
 	}
 
@@ -151,10 +152,12 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 				app := wajaf.NewApplication("")
 				err := xml.Unmarshal([]byte(strcode), app)
 				if err != nil {
+					ctx.LoggerError.Println("ERROR: UNMARSHALLING XML LIBRARY, Error: ", err)
 					return "ERROR: UNMARSHALLING XML LIBRARY, Error: " + fmt.Sprint(err)
 				}
 				json, err := json.Marshal(app)
 				if err != nil {
+					ctx.LoggerError.Println("ERROR: MARSHALLING JSON LIBRARY, Error: ", err)
 					return "ERROR: MARSHALLING JSON LIBRARY, Error: " + fmt.Sprint(err)
 				}
 				return string(json)
@@ -169,6 +172,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			}
 			json, err := json.Marshal(data)
 			if err != nil {
+				ctx.LoggerError.Println("ERROR: MARSHALLING JSON DATA, Error: ", err)
 				return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
 			}
 			return string(json)
@@ -176,6 +180,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		// anything else: we just JSONify
 		json, err := json.Marshal(x1)
 		if err != nil {
+			ctx.LoggerError.Println("ERROR: MARSHALLING JSON DATA, Error: ", err)
 			return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
 		}
 		return string(json)

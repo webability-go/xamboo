@@ -241,6 +241,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 		LocalPage:           page,
 		LocalPageUsed:       P,
 		LocalURLparams:      xParams,
+		LoggerError:         logger.GetHostLogger(s.Host.Name, "errors"),
 		Sysparams:           s.Host.Config,
 		LocalPageparams:     pagedata,
 		LocalInstanceparams: nil,
@@ -456,18 +457,25 @@ func wrapperstring(s interface{}, page string, params interface{}, version strin
 
 func (s *Server) launchError(page string, code int, innerpage bool, message string) interface{} {
 	// error page or error block?
+	// WE LOG THIS ERROR: this is some programmation error normally
+	elogger := logger.GetHostLogger(s.Host.Name, "errors")
+
 	errpage := ""
 	if innerpage {
 		errpage, _ = s.Host.Config.GetString("errorblock")
 		if errpage == "" || errpage == page {
-			return "The config parameter errorblock is pointing to a non existing page. Please verify"
+			msg := "The config parameter errorblock is pointing to a non existing page. Please verify"
+			elogger.Println(msg, code, page, message)
+			return msg
 		}
 	} else {
 		s.Code = code
 		errpage, _ = s.Host.Config.GetString("errorpage")
 		if errpage == "" || errpage == page {
 			s.writer.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			return "The config parameter errorpage is pointing to a non existing page. Please verify"
+			msg := "The config parameter errorpage is pointing to a non existing page. Please verify"
+			elogger.Println(msg, code, page, message)
+			return msg
 		}
 	}
 	data := map[string]interface{}{
@@ -475,6 +483,7 @@ func (s *Server) launchError(page string, code int, innerpage bool, message stri
 		"code":    code,
 		"message": message,
 	}
+	elogger.Println(code, page, message)
 	return s.Run(errpage, innerpage, data, "", "", "")
 }
 

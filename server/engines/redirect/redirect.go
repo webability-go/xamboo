@@ -32,5 +32,6 @@ func (re *RedirectEngine) Run(ctx *assets.Context, s interface{}) interface{} {
 			return ""
 		}
 	}
+	ctx.LoggerError.Println("Please specify redirecturl and redirectcode in .page")
 	return "Please specify redirecturl and redirectcode in .page"
 }

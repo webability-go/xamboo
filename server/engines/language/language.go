@@ -1,7 +1,6 @@
 package language
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/webability-go/xcore/v2"
@@ -68,7 +67,7 @@ func (p *LanguageEngineInstance) Run(ctx *assets.Context, template *xcore.XTempl
 		// load the language data
 		data, err := xcore.NewXLanguageFromXMLFile(p.FilePath)
 		if err != nil {
-			fmt.Println("Error loading language:", err)
+			ctx.LoggerError.Println("Error loading language:", err)
 			return nil
 		}
 
