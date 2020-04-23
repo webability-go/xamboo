@@ -76,7 +76,7 @@ Extras:
 Version Changes Control
 =======================
 
-V1.2.3 - 2020-04-
+V1.2.3 - 2020-04-23
 -----------------------
 - Enhanced Master and Master app to work better (installation, use, index, bridged functions).
 - Improvement in loggers, all logger now logs what they are supposed to log
