@@ -31,6 +31,7 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 
 	//	bridge.EntityLog_LogStat(ctx)
 	params := &xcore.XDataset{}
+	params = nil
 
 	return template.Execute(params)
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"plugin"
 	"regexp"
+	"runtime/debug"
 	"strconv"
 	"strings"
 
@@ -29,19 +30,22 @@ import (
 	"github.com/webability-go/xamboo/server/engines/simple"
 	"github.com/webability-go/xamboo/server/engines/template"
 	"github.com/webability-go/xamboo/server/engines/wajafapp"
+	"github.com/webability-go/xamboo/server/logger"
 	"github.com/webability-go/xamboo/server/utils"
 )
 
 var Engines = map[string]assets.Engine{}
 
 func LinkEngines(engines []config.Engine) {
-	fmt.Println("Build Engines Containers native and external")
+	xlogger := logger.GetCoreLogger("sys")
+	xlogger.Println("Build Engines Containers native and external")
 	Engines["redirect"] = redirect.Engine
 	Engines["simple"] = simple.Engine
 	Engines["language"] = language.Engine
 	Engines["template"] = template.Engine
 	Engines["library"] = library.Engine
 	Engines["wajafapp"] = wajafapp.Engine
+	xloggererror := logger.GetCoreLogger("errors")
 	for _, engine := range engines {
 		if engine.Source == "built-in" {
 			continue
@@ -49,17 +53,22 @@ func LinkEngines(engines []config.Engine) {
 
 		lib, err := plugin.Open(engine.Library)
 		if err != nil {
-			fmt.Println(err)
+			xloggererror.Println("Error loading engine library:", engine.Library, err)
 			continue
 		}
 
 		enginelink, err := lib.Lookup("Engine")
 		if err != nil {
-			fmt.Println(err)
+			xloggererror.Println("Error linking engine main funcion Engine:", err)
 			continue
 		}
 
-		Engines[engine.Name] = enginelink.(assets.Engine)
+		fct, ok := enginelink.(assets.Engine)
+		if !ok {
+			xloggererror.Println("Error linking engine main funcion Engine, is not of type assets.Engine.")
+			continue
+		}
+		Engines[engine.Name] = fct
 	}
 }
 
@@ -79,6 +88,15 @@ type Server struct {
 }
 
 func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			hlogger := logger.GetHostLogger(s.Host.Name, "errors")
+			hlogger.Println("Recovered in Server.Start", r, string(debug.Stack()))
+			w.(*CoreWriter).RequestStat.Code = http.StatusInternalServerError
+		}
+	}()
+
 	s.writer = w
 	s.reader = r
 
@@ -137,7 +155,8 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 		}
 		newcode, err := m.String(contenttype, scode)
 		if err != nil {
-			fmt.Println(err)
+			elogger := logger.GetHostLogger(s.Host.Name, "errors")
+			elogger.Println(err)
 		} else {
 			scode = newcode
 		}

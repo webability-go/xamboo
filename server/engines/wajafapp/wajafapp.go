@@ -138,6 +138,9 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		// inject language
 		strcode, ok := x1.(string)
 		if ok {
+			if strcode == "" {
+				return ""
+			}
 			if language != nil {
 				for id, lg := range language.GetEntries() {
 					strcode = strings.ReplaceAll(strcode, "##"+id+"##", lg)

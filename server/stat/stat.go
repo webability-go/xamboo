@@ -1,12 +1,12 @@
 package stat
 
 import (
-	"fmt"
 	"net"
 	"time"
 
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/config"
+	"github.com/webability-go/xamboo/server/logger"
 )
 
 /*
@@ -17,6 +17,7 @@ type RequestStat struct {
 	Id        uint64
 	StartTime time.Time
 	Time      time.Time
+	Hostname  string
 	Request   string
 	Protocol  string
 	Method    string
@@ -46,7 +47,7 @@ type Stat struct {
 	SitesStat map[string]*SiteStat // Every site stat. referenced by ID (from config)
 }
 
-var SystemStat = CreateStat()
+var SystemStat *Stat
 var RequestCounter uint64
 
 func CreateStat() *Stat {
@@ -69,9 +70,14 @@ func CreateStat() *Stat {
 	return s
 }
 
+func Start() {
+	SystemStat = CreateStat()
+}
+
 func (s *Stat) Clean() {
 	// 1. clean Requests from stat
-	fmt.Println("Stats cleaner launched. Clean every minute.")
+	slogger := logger.GetCoreLogger("sys")
+	slogger.Println("Stats cleaner launched. Clean every minute.")
 	for {
 		n := time.Now()
 		// we keep 2 minutes
@@ -137,6 +143,20 @@ func (r *RequestStat) UpdateProtocol(protocol string) {
 func (r *RequestStat) End() {
 
 	// Call stats ? (code entry)
+	// log the stat in pages and stat loggers
+	if r.Hostname == "" {
+		xlogger := logger.GetCoreLogger("errors")
+		xlogger.Println("Stat without hostname:", r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+	} else {
+		hlogger := logger.GetHostLogger(r.Hostname, "pages")
+		slogger := logger.GetHostLogger(r.Hostname, "stats")
+		if hlogger != nil {
+			hlogger.Println(r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+		}
+		if slogger != nil {
+			slogger.Println(r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+		}
+	}
 
 	// closed case
 	r.Alive = false

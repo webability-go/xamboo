@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/webability-go/xamboo/server/logger"
 	"github.com/webability-go/xamboo/server/utils"
 )
 
@@ -35,8 +36,6 @@ var CPile Pile
 func (p *Pile) CreateCompiler(path string, plugin string, version int) *Worker {
 
 	// we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
-	//  fmt.Println("Creating the compiler for " + path)
-
 	w := &Worker{ready: make(chan bool), version: version}
 	p.Workers[path] = w
 	go w.Compile(path, plugin, version)
@@ -101,7 +100,8 @@ func Supervisor() {
 
 	CPile.Workers = make(map[string]*Worker)
 
-	fmt.Println("Launching the compilation supervisor.")
+	slogger := logger.GetCoreLogger("sys")
+	slogger.Println("Launching the compilation supervisor.")
 
 	// put order in any .go and .so.xx,
 

@@ -7,21 +7,15 @@ find . -name "*.so*" -exec rm {} \;
 
 # 2. recompile master/app so the master works
 echo "Rebuild master/app/app.so (application for master)"
-cd master/app
-go build --buildmode=plugin app.go
-cd ../..
+go build --buildmode=plugin -o master/app/app.so master/app/*.go
 
 # 3. recompile example/app example library
 echo "Rebuild app.so (user application for site)"
-cd example/app
-go build --buildmode=plugin app.go
-cd ../..
+go build --buildmode=plugin -o example/app/app.so example/app/*.go
 
 # 4. recompile example/engines/box example library
 echo "Rebuild box.so (user engine)"
-cd example/engines/box
-go build --buildmode=plugin box.go
-cd ../../..
+go build --buildmode=plugin -o example/engines/box/box.so example/engines/box/*.go
 
 echo "Run the xamboo"
 go run xamboo.go --config=mainconfig.json

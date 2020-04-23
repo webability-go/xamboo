@@ -1,11 +1,4 @@
 {
-  "log": {
-    "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc). Is is recommended to let sys to stdout and log by operating system with >> ",
-    "sys": "stdout:",
-    "errors": "file:./example/logs/xamboo-error.log",
-    "rotate": "1d",
-    "compress": true
-  },
   "listeners": [
     {
       "name": "admin",
@@ -58,8 +51,8 @@
       },
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
-        "pages": "file:./example/logs/xamboo-admin.log",
-        "errors": "file:./example/logs/xambo-admin-error.log",
+        "pages": "file:./example/logs/xamboo-admin-pages.log",
+        "errors": "file:./example/logs/xamboo-admin-errors.log",
         "sys": "file:./example/logs/xamboo-admin-sys.log",
         "stats": "discard",
         "rotate": "1d",
@@ -101,35 +94,13 @@
       },
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
-        "pages": "file:./example/logs/xamboo-master.log",
-        "errors": "file:./example/logs/xambo-master-error.log",
+        "pages": "file:./example/logs/xamboo-master-pages.log",
+        "errors": "file:./example/logs/xamboo-master-errors.log",
         "sys": "file:./example/logs/xamboo-master-sys.log",
         "stats": "discard",
         "rotate": "1d",
         "compress": true
       }
-    }
-  ],
-  "engines": [
-    {
-      "name": "simple",
-      "source": "built-in"
-    },
-    {
-      "name": "library",
-      "source": "built-in"
-    },
-    {
-      "name": "template",
-      "source": "built-in"
-    },
-    {
-      "name": "language",
-      "source": "built-in"
-    },
-    {
-      "name": "wajafapp",
-      "source": "built-in"
     }
   ]
 }

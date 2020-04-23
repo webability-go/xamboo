@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 
 	"github.com/webability-go/xamboo/server"
 )
 
 // VERSION oficial of the xamboo
-const VERSION = "1.2.2"
+const VERSION = "1.2.3"
 
 func main() {
 	// *** system Language !!! preload
@@ -18,12 +18,12 @@ func main() {
 	flag.Parse()
 
 	if file == "" {
-		fmt.Println("The configuration file is missing as argument --config=file")
+		log.Fatalln("The configuration file is missing as argument --config=file")
 		return
 	}
 
 	err := server.Run(file, VERSION)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
