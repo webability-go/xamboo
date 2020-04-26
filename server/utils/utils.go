@@ -17,6 +17,7 @@ func SearchInArray(x string, array []string) bool {
 }
 
 func FileExists(path string) bool {
+
 	_, err := os.Stat(path) // exists AND readable, no perms problems, etc
 	if err == nil {
 		return true

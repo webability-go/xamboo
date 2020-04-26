@@ -12,15 +12,16 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 	// JS: core mandatory load for every page
 	jss := []string{
 		// WAJAF
-		"/js/system/core.js",
-		"/js/managers/eventManager.js",
-		"/js/managers/ajaxManager.js",
-		"/js/managers/ondemandManager.js",
-		"/js/managers/ddManager.js",
-		"/js/managers/soundManager.js",
-		"/js/managers/animManager.js",
-		"/js/managers/helpManager.js",
-		"/js/managers/wa4glManager.js",
+		"/js?js=core.js",
+		"/js?js=corebrowser.js",
+		"/js?js=eventManager.js",
+		"/js?js=ajaxManager.js",
+		"/js?js=ondemandManager.js",
+		"/js?js=ddManager.js",
+		"/js?js=soundManager.js",
+		"/js?js=animManager.js",
+		"/js?js=helpManager.js",
+		"/js?js=wa4glManager.js",
 	}
 	jsdata := ""
 	for _, file := range jss {

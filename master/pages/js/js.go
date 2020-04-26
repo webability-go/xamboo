@@ -2,11 +2,13 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
 
+	"github.com/webability-go/wajaf/resources"
 	"github.com/webability-go/xcore/v2"
 
 	"github.com/webability-go/xamboo/server/assets"
@@ -56,15 +58,21 @@ func (js *WJS) Load(filename string) ([]byte, error) {
 
 	// Directories
 	dirs := []string{
-		js.Dir + "system/",
-		js.Dir + "managers/",
-		js.Dir + "containers/",
-		js.Dir + "elements/",
+		"system/",
+		"managers/",
+		"containers/",
+		"elements/",
 	}
 
 	for _, d := range dirs {
-		if fileExists(d + filename) {
-			data, _ := ioutil.ReadFile(d + filename)
+		fmt.Println("Searching", d+filename)
+		data := resources.ResourcesContainer.Get(d + filename)
+		if data != nil {
+			return data, nil
+		}
+
+		if fileExists(js.Dir + d + filename) {
+			data, _ := ioutil.ReadFile(js.Dir + d + filename)
 			return data, nil
 		}
 	}

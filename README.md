@@ -76,12 +76,15 @@ Extras:
 Version Changes Control
 =======================
 
+V1.2.4 - 2020-04-26
+-----------------------
+- New wajaf version, with JS embedded in code, remove JS from master public
+
 V1.2.3 - 2020-04-23
 -----------------------
 - Enhanced Master and Master app to work better (installation, use, index, bridged functions).
 - Improvement in loggers, all logger now logs what they are supposed to log
 - Stats are registering in stat logs correctly based on correct Host
-
 
 V1.2.2 - 2020-04-18
 -----------------------
