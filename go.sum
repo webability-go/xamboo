@@ -18,6 +18,8 @@ github.com/webability-go/wajaf v0.0.13 h1:aLUPBMkaU/u+zNyuWUTFTus/wM8QPNc4tH7SDL
 github.com/webability-go/wajaf v0.0.13/go.mod h1:aBwEQGUjwMbMrrQiJcSuVU76JfTDK2/hWepZym89PyY=
 github.com/webability-go/wajaf v0.0.14 h1:/sLpKJTmSYD575ExwW0PSFirFw8eVOBgkvlHaNmpDCU=
 github.com/webability-go/wajaf v0.0.14/go.mod h1:aBwEQGUjwMbMrrQiJcSuVU76JfTDK2/hWepZym89PyY=
+github.com/webability-go/wajaf v0.0.15 h1:JRisIUAQf3DNXKiQPKQM6fGna/8NFMqI0WSlXEMQkhI=
+github.com/webability-go/wajaf v0.0.15/go.mod h1:aBwEQGUjwMbMrrQiJcSuVU76JfTDK2/hWepZym89PyY=
 github.com/webability-go/xconfig v0.4.0 h1:avwYQ8y1d3EJY6x5Yu4rjWd8I85prCYHuFvH20Y4Zzw=
 github.com/webability-go/xconfig v0.4.0/go.mod h1:rOt/+lXMz7zAxkzLXzTjJNGUB85+L8PxUPUFCctpC9I=
 github.com/webability-go/xcore v1.1.0 h1:mvlNUDeleKdx+3MbbsiF6wpfQUgXOFg4YabImZBttMw=

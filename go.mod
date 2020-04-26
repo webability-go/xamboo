@@ -7,7 +7,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
-	github.com/webability-go/wajaf v0.0.14
+	github.com/webability-go/wajaf v0.0.15
 	github.com/webability-go/xconfig v0.4.0
 	github.com/webability-go/xcore/v2 v2.0.4
 	github.com/webability-go/xdommask v0.0.6 // indirect
