@@ -3,27 +3,18 @@ package main
 import (
 	"github.com/webability-go/xcore/v2"
 
-	"github.com/webability-go/xamboo/master/app/bridge"
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/config"
+
+	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
 func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if !installed {
-		return "Error: system not yet installed"
-	}
-
-	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
-	myappdata, ok := ctx.Plugins["app"]
+	ok := bridge.Setup(ctx, bridge.ANY)
 	if !ok {
-		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+		return ""
 	}
-
-	bridge.Start(myappdata)
-	bridge.VerifyLogin(ctx)
 
 	application := "true"
 	userkey, _ := ctx.Sessionparams.GetString("userkey")
@@ -49,20 +40,10 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 
 func Formlogin(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if !installed {
-		return "Error: system not yet installed"
-	}
-
-	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
-	myappdata, ok := ctx.Plugins["app"]
+	ok := bridge.Setup(ctx, bridge.ANY)
 	if !ok {
-		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+		return ""
 	}
-
-	bridge.Start(myappdata)
-	bridge.VerifyLogin(ctx)
 
 	sessionid, _ := ctx.Sessionparams.GetString("sessionid")
 	userkey, _ := ctx.Sessionparams.GetString("userkey")
@@ -90,20 +71,10 @@ func Formlogin(ctx *assets.Context, template *xcore.XTemplate, language *xcore.X
 
 func Formpassword(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if !installed {
-		return "Error: system not yet installed"
-	}
-
-	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
-	myappdata, ok := ctx.Plugins["app"]
+	ok := bridge.Setup(ctx, bridge.ANY)
 	if !ok {
-		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+		return ""
 	}
-
-	bridge.Start(myappdata)
-	bridge.VerifyLogin(ctx)
 
 	// send random id
 	// ask for rid
@@ -113,20 +84,10 @@ func Formpassword(ctx *assets.Context, template *xcore.XTemplate, language *xcor
 
 func Disconnect(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if !installed {
-		return "Error: system not yet installed"
-	}
-
-	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
-	myappdata, ok := ctx.Plugins["app"]
+	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
-		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
+		return ""
 	}
-
-	bridge.Start(myappdata)
-	bridge.VerifyLogin(ctx)
 
 	// send random id
 	// ask for rid

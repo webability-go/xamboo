@@ -1,129 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<language id="masterindex" lang="es">
-  <entry id="INSTALLATIONMENU"><![CDATA[Instalación]]></entry>
-  <entry id="installation.error"><![CDATA[Hay un error en los componentes de la instalación básica.]]></entry>
-  <entry id="installation.ok"><![CDATA[Todo funciona bien]]></entry>
-  <entry id="installation.summary"><![CDATA[Click aquí para abrir o cerrar la lista de componentes de instalación básica.]]></entry>
-  <entry id="installation.title"><![CDATA[Instalación:]]></entry>
-  <entry id="installation.description"><![CDATA[Esta lista permite visualizar todos los componentes básicos para el buen funcionamiento del sistema. Mientras hay un elemento en rojo, el sistema no funciona bien y tiene que ser arreglado para seguir usando el sistema.]]></entry>
-  <entry id="connectortypes.summary"><![CDATA[Enseña todos los conectores disponibles en esta instalación del WebAbility.]]></entry>
-  <entry id="connectortypes.title"><![CDATA[Conectores disponibles:]]></entry>
-  <entry id="connectortypes.description"><![CDATA[Esta opción permite ver un cuadro con todos los conectores conocidos, y su disponibilidad por cada tipo: nativo, ODBC, PDO y ODBC por PDO.]]></entry>
+<language id="index" lang="es">
 
-  <entry id="CONNECTORREPOSITORYMENU"><![CDATA[Connector]]></entry>
-  <entry id="connector.repository.no"><![CDATA[Faltante: El conector principal del repositorio es ausente. Necesita crearlo.]]></entry>
-  <entry id="connector.repository.error"><![CDATA[Error: El conector del repositorio no funciona. Necesita modificarlo.]]></entry>
-  <entry id="connector.repository.ok"><![CDATA[Listo: El conector del repositorio de datos funciona bien.]]></entry>
-  <entry id="connector.repository.missing"><![CDATA[Faltante]]></entry>
+  <entry id="CONTAINERSMENU"><![CDATA[Contenedores de Contextos]]></entry>
+  <entry id="containers.summary"><![CDATA[Click aquí para abrir o cerrar la lista de contenedores de contextos instalados.]]></entry>
+  <entry id="containers.title"><![CDATA[Contenedores de Contextos:]]></entry>
+  <entry id="containers.description"><![CDATA[Esta lista permite visualizar todos los grupos de contextos y contextos creados para el buen funcionamiento del sistema.]]></entry>
+  <entry id="containernew.summary"><![CDATA[Click aquí para crear un nuevo contenedor de contextos.]]></entry>
+  <entry id="containernew.title"><![CDATA[Nuevo Grupo de Contextos:]]></entry>
+  <entry id="containernew.description"><![CDATA[Este botón permite crear un nuevo contenedor de contextos.]]></entry>
+  <entry id="CONTAINERNEWNAME"><![CDATA[Nuevo contenedor de contextos]]></entry>
 
-  <entry id="connector.repository.summary"><![CDATA[Permite administrar el conector, modificarlo o borrarlo.]]></entry>
-  <entry id="connector.repository.title"><![CDATA[Conector del repositorio:]]></entry>
-  <entry id="connector.repository.description"><![CDATA[Esta opción permite administrar el conector. Se necesita un conector funcionando para que se pueda instalar el repositorio de datos de la aplicación.]]></entry>
-  <entry id="CONNECTORNAME"><![CDATA[ <img src="/skins/__SKIN__/icons/connector-ok.png" alt="" style="width: 16px; vertical-align: middle;" /> Conector: ]]></entry>
+  <entry id="container.summary"><![CDATA[Click aquí para abrir o cerrar la lista de contextos definidos en el contenedor.]]></entry>
+  <entry id="container.title"><![CDATA[Contenedor:]]></entry>
+  <entry id="container.description"><![CDATA[Esta lista permite visualizar todos los contextos definidos en el contenedor.]]></entry>
+  <entry id="CONTAINERNAME"><![CDATA[Contenedor:]]></entry>
+  <entry id="containeradmin.summary"><![CDATA[Click aquí para administrar este contenedor de contextos.]]></entry>
+  <entry id="containeradmin.title"><![CDATA[Adminitrar contenedor:]]></entry>
+  <entry id="containeradmin.description"><![CDATA[Esta opción permite administrar los datos principales del contenedor de contextos]]></entry>
+  <entry id="contextsnew.summary"><![CDATA[Click aquí para crear un nuevo contexto.]]></entry>
+  <entry id="contextsnew.title"><![CDATA[Nuevo Contexto:]]></entry>
+  <entry id="contextsnew.description"><![CDATA[Este botón permite crear un nuevo contexto.]]></entry>
+  <entry id="CONTEXTNEWNAME"><![CDATA[Nuevo contexto]]></entry>
 
-  <entry id="REPOSITORYMENU"><![CDATA[Repositorio]]></entry>
-  <entry id="repository.ok"><![CDATA[El repositorio esta instalado y funciona bien.]]></entry>
-  <entry id="repository.no"><![CDATA[El repositorio aún no esta creado.]]></entry>
-  <entry id="repository.noconnector"><![CDATA[Falta configurar el conector para poder crear el repositorio.]]></entry>
-  <entry id="repository.title"><![CDATA[Repositorio base de datos:]]></entry>
-  <entry id="repository.summary"><![CDATA[Permite administrar el repositorio de datos en base de datos.]]></entry>
-  <entry id="repository.description"><![CDATA[Esta opción permite administrar, instalar o borrar el repositorio en la base de datos del conector principal del sitio.]]></entry>
-  <entry id="REPOSITORYNAME"><![CDATA[ <img src="/skins/__SKIN__/icons/repository-ok.png" alt="" style="width: 16px; vertical-align: middle;" /> Repositorio Base de datos]]></entry>
+  <entry id="context.summary"><![CDATA[Click aquí para administrar el contexto.]]></entry>
+  <entry id="context.title"><![CDATA[Contexto:]]></entry>
+  <entry id="context.description"><![CDATA[Esta opción permite administrar los parámetros del contexto.]]></entry>
+  <entry id="CONTEXTNAME"><![CDATA[Contexto:]]></entry>
 
-  <entry id="SITESMENU"><![CDATA[Sitios]]></entry>
-  <entry id="sites.ok"><![CDATA[Los sitios estan instalados y funcionan bien.]]></entry>
-  <entry id="sites.no"><![CDATA[Los sitios no estan instalados.]]></entry>
-  <entry id="sites.upgrade"><![CDATA[Los sitios requieren atención para actualización.]]></entry>
-  <entry id="sites.summary"><![CDATA[Permite administrar la instalación y actualización de los diversos sitios de la aplicación.]]></entry>
-  <entry id="sites.title"><![CDATA[Sitios de la aplicación:]]></entry>
-  <entry id="sites.description"><![CDATA[Esta opción permite crear, administrar, borrar, reinstalar o actualizar los varios sitios de la aplicación: Site, Root, Admin, Generator.]]></entry>
-  <entry id="SITESNAME"><![CDATA[ <img src="/skins/__SKIN__/icons/sites-ok.png" alt="" style="width: 16px; vertical-align: middle;" /> Mantenimiento de Sitios]]></entry>
-
-  <entry id="APPLICATIONMENU"><![CDATA[Aplicación]]></entry>
-  <entry id="sites.ok"><![CDATA[La aplicación esta instalada y funciona bien.]]></entry>
-  <entry id="sites.no"><![CDATA[La aplicación no esta instalada.]]></entry>
-  <entry id="sites.upgrade"><![CDATA[La aplicación requiere atención para actualización.]]></entry>
-  <entry id="sites.summary"><![CDATA[Permite administrar la instalación y actualización de la aplicación.]]></entry>
-  <entry id="sites.title"><![CDATA[Aplicación:]]></entry>
-  <entry id="sites.description"><![CDATA[Esta opción permite crear, administrar, borrar, reinstalar o actualizar la aplicación.]]></entry>
-  <entry id="APPLICATIONNAME"><![CDATA[ <img src="/skins/__SKIN__/icons/application-ok.png" alt="" style="width: 16px; vertical-align: middle;" /> Mantenimiento de la Aplicación]]></entry>
-
-  <entry id="CONNECTORSMENU"><![CDATA[Conectores]]></entry>
-  <entry id="connectors.title"><![CDATA[Conectores:]]></entry>
-  <entry id="connectors.summary"><![CDATA[Click aquí para abrir o cerrar la lista de conectores creados.]]></entry>
-  <entry id="connectors.description"><![CDATA[Esta lista permite visualizar todos los conectores creados en el sistema incluyendo el conector principal del repositorio de datos. Un click aquí permite abrir o cerrar la lista de conectores creados.]]></entry>
-  <entry id="newconnector.title"><![CDATA[Nuevo Conector:]]></entry>
-  <entry id="newconnector.summary"><![CDATA[Permite dar de alta un nuevo conector para crear un enlace a una base de datos.]]></entry>
-  <entry id="newconnector.description"><![CDATA[Esta opción permite dar de alta un nuevo conector. Cada conector permite un enlace con una base de datos. Cada sitio necesita un conector para el repositorio principal. Además cada sitio podrá tener más conectores para conectarse a los distintos repositorios de datos adicionales.]]></entry>
-
-  <entry id="CONNECTORNEW"><![CDATA[ <img src="/skins/__SKIN__/icons/connectors.png" alt="" style="width: 16px; vertical-align: middle;" /> Nuevo conector]]></entry>
-
-  <!-- CONTROL NAME is put into a title attribute, it is with entities -->
-  <entry id="CONTROLNAME"><![CDATA[ &lt;img src=&quot;/skins/__SKIN__/icons/controlcenter.png&quot; alt=&quot;&quot; style=&quot;width: 16px; vertical-align: middle;&quot; /&gt; &lt;u&gt;C&lt;/u&gt;entro de control]]></entry>
-  <entry id="CONTROLSHORTCUT"><![CDATA[alt+c]]></entry>
-
-  <entry id="MODULESMENU"><![CDATA[Módulos]]></entry>
-  <entry id="modules.title"><![CDATA[Módulos:]]></entry>
-  <entry id="modules.summary"><![CDATA[Click aquí para abrir o cerrar la lista de módulos disponibles en el sistema.]]></entry>
-  <entry id="modules.description"><![CDATA[Esta lista permite visualizar todos los módulos disponibles en el sistema. Un click permite abrir o cerrar la lista de módulos.]]></entry>
-
-  <entry id="MODULESVERIFYNAME"><![CDATA[Actualización de Módulos]]></entry>
-  <entry id="modulesverify.title"><![CDATA[Actualización:]]></entry>
-  <entry id="modulesverify.summary"><![CDATA[Click aquí para abrir el administrador de actualización de todos los módulos del sistema.]]></entry>
-  <entry id="modulesverify.description"><![CDATA[En esta lista podrás visualizar todos los módulos instalados, displnibles y que se pueden actualizar.]]></entry>
-
-  <entry id="module.title"><![CDATA[Módulo:]]></entry>
-  <entry id="module.summary"><![CDATA[Click aquí para abrir o cerrar la lista de versiones del módulo disponibles en el sistema.]]></entry>
-  <entry id="module.description"><![CDATA[Esta lista permite visualizar todas las versiones disponibles del módulo en el sistema. Un click permite abrir o cerrar la lista de versiones.]]></entry>
-  <entry id="module.available"><![CDATA[Disponible]]></entry>
-  <entry id="module.missing"><![CDATA[Faltan componentes]]></entry>
-
-  <entry id="moduleversion.title"><![CDATA[Versión del módulo:]]></entry>
-  <entry id="moduleversion.summary"><![CDATA[Click aquí para administrar el módulo.]]></entry>
-  <entry id="moduleversion.description"><![CDATA[Esta opción permite administrar el módulo, es decir ver su estatus, instalarlo, modificarlo, actualizarlo o desinstalarlo.]]></entry>
-  <entry id="moduleversion.install"><![CDATA[Instalar]]></entry>
-  <entry id="moduleversion.missing"><![CDATA[Faltan componentes]]></entry>
-
-  <entry id="MODULENAME"><![CDATA[Módulo: ]]></entry>
-
-  <entry id="DATABASESNAME"><![CDATA[ <img src="/skins/__SKIN__/icons/connector-available.png" alt="" style="width: 16px; vertical-align: middle;" /> <u>B</u>ases de datos]]></entry>
-  <entry id="DATABASESSHORTCUT"><![CDATA[alt+b]]></entry>
-
-  <entry id="SITELINKMENU"><![CDATA[Ir al sitio]]></entry>
-  <entry id="sitelink.summary"><![CDATA[Abrir el sitio en una otra ventana.]]></entry>
-  <entry id="sitelink.title"><![CDATA[Sitio:]]></entry>
-  <entry id="sitelink.description"><![CDATA[Puede hacer click en esta opción para abrir el sitio en otra ventana.]]></entry>
-
-  <entry id="ADMINLINKMENU"><![CDATA[Ir al administrador]]></entry>
-  <entry id="adminlink.summary"><![CDATA[Abrir el administrador en una otra ventana.]]></entry>
-  <entry id="adminlink.title"><![CDATA[Administrador:]]></entry>
-  <entry id="adminlink.description"><![CDATA[Puede hacer click en esta opción para abrir el sitio de administración en otra ventana.]]></entry>
-
-  <entry id="EXPLORERMENU"><![CDATA[Explorador]]></entry>
-  <entry id="explorer.summary"><![CDATA[Explorador de archivos para administrar las carpetas y contenidos.]]></entry>
-  <entry id="explorer.title"><![CDATA[Explorador:]]></entry>
-  <entry id="explorer.description"><![CDATA[El explorador permite navegar todos los archivos de la aplicación, modificarlos, abrirlos, renombrarlos y borrarlos.]]></entry>
-  <entry id="EXPLORERNAME"><![CDATA[<u>E</u>xplorador]]></entry>
-  <entry id="EXPLORERSHORTCUT"><![CDATA[alt+e]]></entry>
-
-  <entry id="CONFIGMENU"><![CDATA[Configuración]]></entry>
-  <entry id="config.summary"><![CDATA[Parámetros de configuración del sitio Maestro.]]></entry>
-  <entry id="config.title"><![CDATA[Parámetros de configuración:]]></entry>
-  <entry id="config.description"><![CDATA[Esta opción permite acceder a los parámetros de configuración del sitio Maestro, incluyendo skins, pais, idiomas, el manejo de errores, entre otros.
-  ]]></entry>
-  <entry id="CONFIGNAME"><![CDATA[C<u>o</u>nfiguración]]></entry>
-  <entry id="CONFIGSHORTCUT"><![CDATA[alt+o]]></entry>
-
-  <entry id="MYPAGEMENU"><![CDATA[Mi página]]></entry>
-  <entry id="mypage.summary"><![CDATA[Ir a la página personal de actividad y datos.]]></entry>
-  <entry id="mypage.title"><![CDATA[Mi página:]]></entry>
-  <entry id="mypage.description"><![CDATA[Esta opción permite acceder a la pantalla donde podrá modificar su nombre de usuario, contraseña, y ver su bitácora de actividades.]]></entry>
-  <entry id="MYPAGENAME"><![CDATA[Mi <u>p</u>ágina]]></entry>
-  <entry id="MYPAGESHORTCUT"><![CDATA[alt+p]]></entry>
-
-  <entry id="CONSOLEMENU"><![CDATA[Consola]]></entry>
-  <entry id="console.summary"><![CDATA[Abrir la consola de mensajes sistema.]]></entry>
-  <entry id="console.title"><![CDATA[Consola:]]></entry>
-  <entry id="console.description"><![CDATA[Esta opción permite acceder a la consola para visualizar los mensajes de administración, sistema y depuración del codigo de la aplicación.]]></entry>
+  <entry id="CONTROLNAME"><![CDATA[Centro de control]]></entry>
+  <entry id="CONTROLSHORTCUT"><![CDATA[alt+C]]></entry>
 
 </language>

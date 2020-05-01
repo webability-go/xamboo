@@ -1,46 +1,41 @@
 package main
 
 import (
+	//	"fmt"
+
 	"github.com/webability-go/xcore/v2"
 
-	"github.com/webability-go/xamboo/master/app/bridge"
 	"github.com/webability-go/xamboo/server/assets"
+
+	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
 func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if !installed {
-		return "Error: system not yet installed"
-	}
-
-	// Let's call out external app library (you should create a wrapper to your app so it's much easier to access funcions instead or writing all this code here)
-	myappdata, ok := ctx.Plugins["app"]
+	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
-		return "ERROR: THE APPLICATION LIBRARY IS NOT AVAILABLE"
-	}
-
-	bridge.Start(myappdata)
-	bridge.VerifyLogin(ctx)
-
-	sessionid, _ := ctx.Sessionparams.GetString("sessionid")
-	if sessionid == "" {
-		return "ERROR: THE USER IS NOT LOGGED IN"
+		return ""
 	}
 
 	//	bridge.EntityLog_LogStat(ctx)
-	params := &xcore.XDataset{}
+	params := &xcore.XDataset{
+		"#": language,
+	}
 
 	return template.Execute(params)
 }
 
 func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
+	ok := bridge.Setup(ctx, bridge.USER)
+	if !ok {
+		return ""
+	}
+
 	Order := ctx.Request.Form.Get("Order")
 
 	if Order == "get" {
-		return getMenu()
+		return getMenu(ctx)
 	}
 	if Order == "openclose" {
 
@@ -54,20 +49,86 @@ func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangu
 	}
 }
 
-func getMenu() map[string]interface{} {
+func getMenu(ctx *assets.Context) map[string]interface{} {
 
-	opt := map[string]interface{}{
-		"id":        "sitelink",
-		"template":  "sitelink",
+	rows := []interface{}{}
+
+	optr := map[string]interface{}{
+		"id":        "containers",
+		"template":  "containers",
 		"loadable":  false,
-		"closeable": false,
+		"closeable": true,
+		"closed":    true,
 	}
+
+	rows = append(rows, optr)
+
+	bridge.Containers.Load(ctx)
+	list := bridge.Containers.GetContainersList()
+
+	for _, c := range list {
+		opt := map[string]interface{}{
+			"id":        "cnt-" + c.Name,
+			"modid":     c.Name,
+			"template":  "container",
+			"name":      c.Name,
+			"color":     "black",
+			"status":    "",
+			"father":    "containers",
+			"loadable":  false,
+			"closeable": true,
+			"closed":    true,
+		}
+		if c.Config == nil {
+			opt["status"] = "NUEVO"
+		}
+
+		rows = append(rows, opt)
+
+		for _, ct := range c.Contexts {
+			opt := map[string]interface{}{
+				"id":        "ctx-" + ct.ID,
+				"modid":     ct.ID,
+				"template":  "context",
+				"name":      ct.ID,
+				"color":     "black",
+				"status":    "",
+				"father":    "cnt-" + c.Name,
+				"loadable":  false,
+				"closeable": false,
+			}
+			if ct.Config == nil {
+				opt["status"] = "NUEVO"
+			}
+			rows = append(rows, opt)
+		}
+
+	}
+
+	/*
+
+
+
+	   optr1 := map[string]interface{}{
+	   	"id":          "receta-nueva",
+	   	"template":    "opcionmenu",
+	   	"image":       "opcion.png",
+	   	"name":        "Nueva receta",
+	   	"page":        "recetas/editor",
+	   	"resumen":     "Nueva receta",
+	   	"titulo":      "Nueva receta",
+	   	"descripcion": "Nueva receta",
+	   	"loadable":    false,
+	   	"closeable":   false,
+	   	"father":      "receta",
+	   }
+
+	*/
 
 	return map[string]interface{}{
-		"row": []interface{}{
-			opt,
-		},
+		"row": rows,
 	}
+
 }
 
 /*

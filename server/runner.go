@@ -118,7 +118,14 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		host, port, _ = net.SplitHostPort(r.Host)
 	}
 	hostdef, listenerdef := config.Config.GetListener(host, port, secure)
-	w.(*CoreWriter).RequestStat.Hostname = hostdef.Name
+	cw, ok := w.(*CoreWriter)
+	if ok && cw.RequestStat != nil {
+		w.(*CoreWriter).RequestStat.Hostname = hostdef.Name
+	} else {
+		fmt.Println("ERROR DETECTED: the writer is not a CoreWriter or the RequestStat is not set (and that should not happen)", r, w, cw)
+		http.Error(w, "Writer error", http.StatusInternalServerError)
+		return
+	}
 
 	if listenerdef != nil {
 

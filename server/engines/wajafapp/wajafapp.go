@@ -149,17 +149,21 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			}
 
 			if strcode[0] == '<' {
+
 				app := wajaf.NewApplication("")
 				err := xml.Unmarshal([]byte(strcode), app)
 				if err != nil {
 					ctx.LoggerError.Println("ERROR: UNMARSHALLING XML LIBRARY, Error: ", err)
 					return "ERROR: UNMARSHALLING XML LIBRARY, Error: " + fmt.Sprint(err)
 				}
+				//				fmt.Printf("%#v", app)
+
 				json, err := json.Marshal(app)
 				if err != nil {
 					ctx.LoggerError.Println("ERROR: MARSHALLING JSON LIBRARY, Error: ", err)
 					return "ERROR: MARSHALLING JSON LIBRARY, Error: " + fmt.Sprint(err)
 				}
+				//				fmt.Printf("%#v", string(json))
 				return string(json)
 			}
 			if strcode[0] == '{' || strcode[0] == '[' {

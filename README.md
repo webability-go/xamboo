@@ -76,6 +76,15 @@ Extras:
 Version Changes Control
 =======================
 
+V1.2.5 - 2020-05-01
+-----------------------
+- Added contexts editor, contexts config file, contexts menu and templates into master/index.
+- Added mutexes on code compiler to avoid pile racing.
+- master APP enhanced with Setup function to link anything with pages so the page does not have to do it itself.
+- master/js.go modified to try to preload first local javascript files, then search into resources container.
+- Added protection against corrupt writer without RequestStat (? <= have to investigate why it happens some times: wrong requests, unfinished requests... etc)
+- Enhanced master site with containers and contexts administration
+
 V1.2.4 - 2020-04-26
 -----------------------
 - New wajaf version, with JS embedded in code, remove JS from master public

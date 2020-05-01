@@ -5,14 +5,15 @@ import (
 
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/config"
+
+	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
 func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
-	// If config already done, CANNOT call this page (error)
-	installed, _ := ctx.Sysparams.GetBool("installed")
-	if installed {
-		return "Error: system already installed"
+	ok := bridge.Setup(ctx, bridge.NOTINSTALLED)
+	if !ok {
+		return ""
 	}
 
 	// PAGE depends on COUNTRY variable (if already selected) or not
