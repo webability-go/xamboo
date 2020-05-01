@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="containereditor">
+
+  <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes" classname="separatorinvisiblevertical">
+    <zone size="60">
+      <container type="simpleContainer" width="max" height="max">
+        <zone>
+          <element id="titleform" type="htmlElement" classname="introcenter">
+<![CDATA[##editortitle##]]>
+          </element>
+        </zone>
+      </container>
+    </zone>
+    <zone size="*">
+{{FORM}}
+    </zone>
+  </container>
+</application>

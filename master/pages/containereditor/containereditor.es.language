@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="containereditor" lang="es">
+  <!-- into the xml application -->
+  <entry id="editortitle"><![CDATA[Administración de contenedores de contextos:]]></entry>
+
+  <!-- into the lib php application -->
+  <entry id="mask.errormessage"><![CDATA[Los datos aún no son bien capturados. Por favor, verifique los mensajes y los campos en rojo antes de enviar la información.]]></entry>
+  <entry id="mask.servermessage"><![CDATA[Error: Los datos del registro tienen un error desconocido reportado por el servidor.]]></entry>
+  <entry id="mask.titleinsert"><![CDATA[Capturar los datos del nuevo contenedor:]]></entry>
+  <entry id="mask.titleupdate"><![CDATA[Editar los datos del contenedor:]]></entry>
+  <entry id="mask.titleview"><![CDATA[Validación de los datos capturados:]]></entry>
+
+  <entry id="name.title"><![CDATA[Nombre del contenedor:]]></entry>
+  <entry id="name.help.summary"><![CDATA[Capturar el nombre del contenedor. Letras, números y espacio. Máximo 20 catácteres.]]></entry>
+  <entry id="name.help.title"><![CDATA[Nombre del contenedor]]></entry>
+  <entry id="name.help.description"><![CDATA[El nombre del contenedor de contextos contiene hasta 20 carácteres, con letras, números y espacio. Este nombre es indicativo solamente y no afecta la operación de los contextos.]]></entry>
+  <entry id="name.status.notnull"><![CDATA[El nombre del contenedor no puede ser vacio.]]></entry>
+  <entry id="name.status.badformat"><![CDATA[El nombre del contenedor esta mal escrito. 20 carácteres alfanuméricos con espacio opcional.]]></entry>
+
+  <entry id="path.title"><![CDATA[Ubicación del archivo:]]></entry>
+  <entry id="path.help.summary"><![CDATA[Capturar la ubicación del archivo maestro de contextos del contenedor]]></entry>
+  <entry id="path.help.title"><![CDATA[Ubicación del archivo]]></entry>
+  <entry id="path.help.description"><![CDATA[Tiene que capturar la ubicación del archivo maestro de contextos del contenedor. Puede ser una ruta relativa a la raíz del Xamboo, o una ruta absoluta en el disco duro. El usuario que lanza el Xamboo debe de tener derechos de escritura sobre el archivo y su directorio.]]></entry>
+  <entry id="path.status.notnull"><![CDATA[La ubicación no puede ser vacia.]]></entry>
+  <entry id="path.status.tooshort"><![CDATA[La ubicación necesita un mínimo de 4 carácteres.]]></entry>
+
+  <entry id="form.continue"><![CDATA[Enviar la información]]></entry>
+  <entry id="form.reset"><![CDATA[Limpiar la forma]]></entry>
+  <entry id="success"><![CDATA[Información grabada con éxito.]]></entry>
+
+  <entry id="error.name.wrong"><![CDATA[El nombre tiene un formato erroneo.]]></entry>
+  <entry id="error.path.missing"><![CDATA[Falta el path del archivo.]]></entry>
+</language>

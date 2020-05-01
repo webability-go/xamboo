@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"sync"
 
 	"github.com/webability-go/xamboo/server/logger"
 	"github.com/webability-go/xamboo/server/utils"
@@ -28,6 +29,7 @@ func (w *Worker) Broadcast() {
 }
 
 type Pile struct {
+	mutex   sync.RWMutex
 	Workers map[string]*Worker
 }
 
@@ -37,7 +39,9 @@ func (p *Pile) CreateCompiler(path string, plugin string, version int, logger *l
 
 	// we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
 	w := &Worker{ready: make(chan bool), version: version}
+	p.mutex.Lock()
 	p.Workers[path] = w
+	p.mutex.Unlock()
 	go w.Compile(path, plugin, version, logger)
 	return w
 }
@@ -64,17 +68,22 @@ func (w *Worker) Compile(path string, plugin string, version int, logger *log.Lo
 func PleaseCompile(path string, plugin string, version int, logger *log.Logger) (int, error) {
 
 	newversion := 0
+	CPile.mutex.RLock()
 	if worker, ok := CPile.Workers[path]; ok {
+		CPile.mutex.RUnlock()
 		newversion = worker.version
 		readychannel := worker.Subscribe()
 		<-readychannel
 	} else {
 		// 1. Creates a channel, send message to supervisor, wait for response
+		CPile.mutex.RUnlock()
 		newversion = searchNextFreeVersion(plugin, version)
 		worker := CPile.CreateCompiler(path, plugin, newversion, logger)
 		<-worker.ready
 		// destroys the Worker
+		CPile.mutex.Lock()
 		delete(CPile.Workers, path)
+		CPile.mutex.Unlock()
 	}
 	return newversion, nil
 }

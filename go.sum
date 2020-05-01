@@ -22,6 +22,10 @@ github.com/webability-go/wajaf v0.0.15 h1:JRisIUAQf3DNXKiQPKQM6fGna/8NFMqI0WSlXE
 github.com/webability-go/wajaf v0.0.15/go.mod h1:aBwEQGUjwMbMrrQiJcSuVU76JfTDK2/hWepZym89PyY=
 github.com/webability-go/xconfig v0.4.0 h1:avwYQ8y1d3EJY6x5Yu4rjWd8I85prCYHuFvH20Y4Zzw=
 github.com/webability-go/xconfig v0.4.0/go.mod h1:rOt/+lXMz7zAxkzLXzTjJNGUB85+L8PxUPUFCctpC9I=
+github.com/webability-go/xconfig v0.4.1 h1:SIhT1G3qtrPFkbY+UfeWzpyb7+/t7nZRkydGekxqhL4=
+github.com/webability-go/xconfig v0.4.1/go.mod h1:rOt/+lXMz7zAxkzLXzTjJNGUB85+L8PxUPUFCctpC9I=
+github.com/webability-go/xconfig v0.4.2 h1:gjH/WJ4uG2B+A/sV0bmLYwtPzbt3sPGIpn5XLYIz4B4=
+github.com/webability-go/xconfig v0.4.2/go.mod h1:rOt/+lXMz7zAxkzLXzTjJNGUB85+L8PxUPUFCctpC9I=
 github.com/webability-go/xcore v1.1.0 h1:mvlNUDeleKdx+3MbbsiF6wpfQUgXOFg4YabImZBttMw=
 github.com/webability-go/xcore v1.1.0/go.mod h1:Wq0uDNASOhur5bEOqGiEfBzDtq4NowjVeqgQkbftW/E=
 github.com/webability-go/xcore/v2 v2.0.2 h1:ztdwunb54Oe3i+qMV+JZAl2yGhMhjsWLr5oGRW9acpQ=

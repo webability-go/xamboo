@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -65,14 +64,13 @@ func (js *WJS) Load(filename string) ([]byte, error) {
 	}
 
 	for _, d := range dirs {
-		fmt.Println("Searching", d+filename)
-		data := resources.ResourcesContainer.Get(d + filename)
-		if data != nil {
-			return data, nil
-		}
-
+		// precedence for local files to replace system file
 		if fileExists(js.Dir + d + filename) {
 			data, _ := ioutil.ReadFile(js.Dir + d + filename)
+			return data, nil
+		}
+		data := resources.ResourcesContainer.Get(d + filename)
+		if data != nil {
 			return data, nil
 		}
 	}
