@@ -4,6 +4,12 @@ import (
 	"fmt"
 
 	"github.com/webability-go/xamboo/server/config"
+
+	_ "github.com/webability-go/xmodules/context"
+
+	//	_ "github.com/webability-go/xmodules/admin"
+	_ "github.com/webability-go/xmodules/translation"
+	_ "github.com/webability-go/xmodules/user"
 )
 
 const VERSION = "1.0.0"

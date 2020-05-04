@@ -547,3 +547,9 @@ func (s *Server) analyzeUserAgent() string {
 	ua := uasurfer.Parse(useragent)
 	return devices[ua.DeviceType]
 }
+
+// GetFullConfig for admin functions. See how to protect this
+// TODO(phi) protect GetFullConfig
+func (s *Server) GetFullConfig() *config.ConfigDef {
+	return config.Config
+}

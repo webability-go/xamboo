@@ -5,12 +5,13 @@ import (
 
 	"github.com/webability-go/xcore/v2"
 
+	"github.com/webability-go/xamboo/server"
 	"github.com/webability-go/xamboo/server/assets"
 
 	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
-func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
@@ -25,7 +26,7 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 	return template.Execute(params)
 }
 
-func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
@@ -35,7 +36,7 @@ func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangu
 	Order := ctx.Request.Form.Get("Order")
 
 	if Order == "get" {
-		return getMenu(ctx)
+		return getMenu(ctx, s.(*server.Server))
 	}
 	if Order == "openclose" {
 
@@ -49,11 +50,93 @@ func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangu
 	}
 }
 
-func getMenu(ctx *assets.Context) map[string]interface{} {
+func getMenu(ctx *assets.Context, s *server.Server) map[string]interface{} {
 
 	rows := []interface{}{}
 
+	config := s.GetFullConfig()
+
+	// Config:
 	optr := map[string]interface{}{
+		"id":        "config",
+		"template":  "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+
+	//   listeners
+	optr = map[string]interface{}{
+		"id":        "listeners",
+		"template":  "listeners",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, l := range config.Listeners {
+		opt := map[string]interface{}{
+			"id":        "lis-" + l.Name,
+			"modid":     l.Name,
+			"template":  "listener",
+			"name":      l.Name + " [" + l.Protocol + "://" + l.IP + ":" + l.Port + "]",
+			"father":    "listeners",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	//   Hosts
+	optr = map[string]interface{}{
+		"id":        "hosts",
+		"template":  "hosts",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, h := range config.Hosts {
+		opt := map[string]interface{}{
+			"id":        "hos-" + h.Name,
+			"modid":     h.Name,
+			"template":  "host",
+			"name":      h.Name,
+			"father":    "hosts",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	//   Engines
+	optr = map[string]interface{}{
+		"id":        "engines",
+		"template":  "engines",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, e := range config.Engines {
+		opt := map[string]interface{}{
+			"id":        "eng-" + e.Name,
+			"modid":     e.Name,
+			"template":  "engine",
+			"name":      e.Name,
+			"father":    "engines",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	// Containers
+	optr = map[string]interface{}{
 		"id":        "containers",
 		"template":  "containers",
 		"loadable":  false,

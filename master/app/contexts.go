@@ -188,3 +188,7 @@ func (c *TContainers) SaveContext(ctx *assets.Context, containerid string, conte
 		}
 	}
 }
+
+//func AvailableModules() *context.Modules {
+//	return context.ModulesList
+//}

@@ -5,6 +5,187 @@
 
       <container id="menu" type="treeContainer" haslistener="yes">
 
+        <!-- Config -->
+        <template name="config">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/xconfig.png"></element>
+          <element type="textElement" classname="textmenulink"><![CDATA[##CONFIGMENU##]]>
+            <help>
+              <summary><![CDATA[##config.summary##]]></summary>
+              <title><![CDATA[##config.title##]]></title>
+              <description><![CDATA[##config.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var n = WA.$N('menu');
+  n.switchzone('config');
+  }
+              ]]></code>
+            </event>
+          </element>
+          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/xconfig-view.png">
+            <help>
+              <summary><![CDATA[##configview.summary##]]></summary>
+              <title><![CDATA[##configview.title##]]></title>
+              <description><![CDATA[##configview.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var node = WA.$N("app_configview");
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_configview',title:'##CONFIGVIEW##',closeable:'yes',application:'config|single',params:'view=global'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone("app_configview");
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <!-- Listeners -->
+        <template name="listeners">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/listeners.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[##LISTENERSMENU##]]>
+            <help>
+              <summary><![CDATA[##listeners.summary##]]></summary>
+              <title><![CDATA[##listeners.title##]]></title>
+              <description><![CDATA[##listeners.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var n = WA.$N('menu');
+  n.switchzone('{id}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="listener">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/listener.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name}]]>
+            <help>
+              <summary><![CDATA[##listener.summary##]]></summary>
+              <title><![CDATA[##listener.title##]]></title>
+              <description><![CDATA[##listener.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var node = WA.$N('app_config_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_config_lis_{modid}',title:'##LISTENERNAME## {modid}',closeable:'yes',application:'config|lis-{modid}',params:'listener={modid}'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_lis_{modid}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <!-- Hosts -->
+        <template name="hosts">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/hosts.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[##HOSTSMENU##]]>
+            <help>
+              <summary><![CDATA[##hosts.summary##]]></summary>
+              <title><![CDATA[##hosts.title##]]></title>
+              <description><![CDATA[##hosts.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var n = WA.$N('menu');
+  n.switchzone('{id}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="host">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/host.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name}]]>
+            <help>
+              <summary><![CDATA[##host.summary##]]></summary>
+              <title><![CDATA[##host.title##]]></title>
+              <description><![CDATA[##host.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var node = WA.$N('app_config_hos_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_config_hos_{modid}',title:'##HOSTNAME## {modid}',closeable:'yes',application:'config|hos-{modid}',params:'host={modid}'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_hos_{modid}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+
+        <!-- engines -->
+        <template name="engines">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/engines.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[##ENGINESMENU##]]>
+            <help>
+              <summary><![CDATA[##engines.summary##]]></summary>
+              <title><![CDATA[##engines.title##]]></title>
+              <description><![CDATA[##engines.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var n = WA.$N('menu');
+  n.switchzone('{id}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="engine">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/engine.png"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name}]]>
+            <help>
+              <summary><![CDATA[##engine.summary##]]></summary>
+              <title><![CDATA[##engine.title##]]></title>
+              <description><![CDATA[##engine.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+  function(e)
+  {
+  var node = WA.$N('app_config_eng_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_config_eng_{modid}',title:'##ENGINENAME## {modid}',closeable:'yes',application:'config|eng-{modid}',params:'engine={modid}'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_eng_{modid}');
+  }
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
         <!-- Contexts options -->
         <template name="containers">
           <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/containers.png"></element>

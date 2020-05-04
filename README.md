@@ -58,23 +58,22 @@ You may attach the xamboo as a OS/service, calling the start.sh
 TO DO
 =======================
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
-- capture compiler result for page, not for stdout
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
-- language server injector (beautify output)
-- template server injector (beautify output)
-- Caches generator from XCore
-- Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 - Stats module
-- Errors manager and Logs managers
 - implement call stat function(context)
-- Distribute messages and data to logs as they should be
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 
 Version Changes Control
 =======================
+
+V1.2.6 - 2020-05-03
+-----------------------
+- runner error on RequestStat corrected
+- Server funcion GetFullConfig added for Admin purposes
+- Master index build with config elements (General, Listeners, Hosts, Engines)
 
 V1.2.5 - 2020-05-01
 -----------------------

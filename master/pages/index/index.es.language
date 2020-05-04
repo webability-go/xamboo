@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <language id="index" lang="es">
 
+  <entry id="CONFIGMENU"><![CDATA[Configuración]]></entry>
+  <entry id="config.summary"><![CDATA[Click aquí para abrir o cerrar la lista de elementos de la configuración.]]></entry>
+  <entry id="config.title"><![CDATA[Configuración:]]></entry>
+  <entry id="config.description"><![CDATA[Esta lista permite visualizar todos los elementos de la configuración del sistema.]]></entry>
+  <entry id="configview.summary"><![CDATA[Click aquí para visualizar los parámetros globales de configuración.]]></entry>
+  <entry id="configview.title"><![CDATA[Ver configuración:]]></entry>
+  <entry id="configview.description"><![CDATA[Este botón permite visualizar los parámetros globales de la configuración.]]></entry>
+  <entry id="CONFIGVIEW"><![CDATA[Configuración Global]]></entry>
+
+  <entry id="LISTENERSMENU"><![CDATA[Listeners]]></entry>
+  <entry id="listeners.summary"><![CDATA[Click aquí para abrir o cerrar la lista de elementos de la configuración.]]></entry>
+  <entry id="listeners.title"><![CDATA[Configuración:]]></entry>
+  <entry id="listeners.description"><![CDATA[Esta lista permite visualizar todos los elementos de la configuración del sistema.]]></entry>
+  <entry id="listener.summary"><![CDATA[Click aquí para ver el detalle del listener.]]></entry>
+  <entry id="listener.title"><![CDATA[Listener:]]></entry>
+  <entry id="listener.description"><![CDATA[Puedes hacer click en esta linea para visualizar el detalle de los datos del listener.]]></entry>
+  <entry id="LISTENERMENU"><![CDATA[Listener:]]></entry>
+
+  <entry id="HOSTSMENU"><![CDATA[Hosts]]></entry>
+  <entry id="hosts.summary"><![CDATA[Click aquí para abrir o cerrar la lista de elementos de la configuración.]]></entry>
+  <entry id="hosts.title"><![CDATA[Configuración:]]></entry>
+  <entry id="hosts.description"><![CDATA[Esta lista permite visualizar todos los elementos de la configuración del sistema.]]></entry>
+  <entry id="host.summary"><![CDATA[Click aquí para ver el detalle del host.]]></entry>
+  <entry id="host.title"><![CDATA[Host:]]></entry>
+  <entry id="host.description"><![CDATA[Puedes hacer click en esta linea para visualizar el detalle de los datos del host.]]></entry>
+  <entry id="HOSTMENU"><![CDATA[Host:]]></entry>
+
+  <entry id="ENGINESMENU"><![CDATA[Engines]]></entry>
+  <entry id="engines.summary"><![CDATA[Click aquí para abrir o cerrar la lista de elementos de la configuración.]]></entry>
+  <entry id="engines.title"><![CDATA[Configuración:]]></entry>
+  <entry id="engines.description"><![CDATA[Esta lista permite visualizar todos los elementos de la configuración del sistema.]]></entry>
+  <entry id="engine.summary"><![CDATA[Click aquí para ver el detalle del engine.]]></entry>
+  <entry id="engine.title"><![CDATA[Engine:]]></entry>
+  <entry id="engine.description"><![CDATA[Puedes hacer click en esta linea para visualizar el detalle de los datos del engine.]]></entry>
+  <entry id="ENGINEMENU"><![CDATA[Engine:]]></entry>
+
+
   <entry id="CONTAINERSMENU"><![CDATA[Contenedores de Contextos]]></entry>
   <entry id="containers.summary"><![CDATA[Click aquí para abrir o cerrar la lista de contenedores de contextos instalados.]]></entry>
   <entry id="containers.title"><![CDATA[Contenedores de Contextos:]]></entry>
