@@ -148,11 +148,17 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// IS it a static file to server ?
+		// IS it a static file to server ? (No dynamic CMS config available)
+		pagesdir, _ := hostdef.Config.GetString("pagesdir")
+		mustservefile := false
+		if pagesdir == "" {
+			mustservefile = true
+		}
+
 		// 2 conditions: 1. Has an extension, 2. exists on file directory for this site
 		pospoint := strings.Index(r.URL.Path, ".")
 		posdoublepoint := strings.Index(r.URL.Path, "..")
-		if pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath+r.URL.Path) {
+		if mustservefile || (pospoint >= 0 && posdoublepoint < 0 && len(hostdef.StaticPath) > 0 && utils.FileExists(hostdef.StaticPath+r.URL.Path)) {
 
 			// verify filetype and mimes if auth to gzip
 			if gzipcandidate && utils.GzipFileCandidate(hostdef.GZip.Files, r.URL.Path) {
@@ -189,7 +195,6 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// SPLIT URI - QUERY to call the engine
-		pagesdir, _ := hostdef.Config.GetString("pagesdir")
 		server := &Server{
 			Method:        r.Method,
 			Page:          r.URL.Path,

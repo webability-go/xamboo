@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <application id="index">
   <container type="separatorContainer" width="max" height="max" mode="horizontal" auto="no">
-    <zone size="200">
+    <zone size="400">
 
       <container id="menu" type="treeContainer" haslistener="yes">
 
@@ -80,13 +80,13 @@
               <code><![CDATA[
   function(e)
   {
-  var node = WA.$N('app_config_{modid}');
+  var node = WA.$N('app_config_{lisid}');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_config_lis_{modid}',title:'##LISTENERNAME## {modid}',closeable:'yes',application:'config|lis-{modid}',params:'listener={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_config_lis_{lisid}',title:'##LISTENERNAME## {lisid}',closeable:'yes',application:'config|lis-{lisid}',params:'listener={lisid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('index|single|application').activateZone('app_config_lis_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_lis_{lisid}');
   }
               ]]></code>
             </event>
@@ -126,13 +126,13 @@
               <code><![CDATA[
   function(e)
   {
-  var node = WA.$N('app_config_hos_{modid}');
+  var node = WA.$N('app_config_hos_{hosid}');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_config_hos_{modid}',title:'##HOSTNAME## {modid}',closeable:'yes',application:'config|hos-{modid}',params:'host={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_config_hos_{hosid}',title:'##HOSTNAME## {hosid}',closeable:'yes',application:'config|hos-{hosid}',params:'host={hosid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('index|single|application').activateZone('app_config_hos_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_hos_{hosid}');
   }
               ]]></code>
             </event>
@@ -173,13 +173,13 @@
               <code><![CDATA[
   function(e)
   {
-  var node = WA.$N('app_config_eng_{modid}');
+  var node = WA.$N('app_config_eng_{engid}');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_config_eng_{modid}',title:'##ENGINENAME## {modid}',closeable:'yes',application:'config|eng-{modid}',params:'engine={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_config_eng_{engid}',title:'##ENGINENAME## {engid}',closeable:'yes',application:'config|eng-{engid}',params:'engine={engid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('index|single|application').activateZone('app_config_eng_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_config_eng_{engid}');
   }
               ]]></code>
             </event>
@@ -201,27 +201,6 @@ function(e)
 {
   var n = WA.$N('menu');
   n.switchzone('containers');
-}
-              ]]></code>
-            </event>
-          </element>
-          <element type="imageElement" classname="buttonmenu" width="16" height="16" src="/skins/master/icons/container-new.png">
-            <help>
-              <summary><![CDATA[##containernew.summary##]]></summary>
-              <title><![CDATA[##containernew.title##]]></title>
-              <description><![CDATA[##containernew.description##]]></description>
-            </help>
-            <event type="onclick">
-              <code><![CDATA[
-function(e)
-{
-  var node = WA.$N("app_containernew");
-  if (!node)
-  {
-    var tree = {tag:'zone',attributes:{id:'app_containernew',title:'##CONTAINERNEWNAME##',closeable:'yes',application:'containereditor|single'}};
-    this._4gl.app.createTree('index|single|application', tree);
-  }
-  this._4gl.app.getNode('index|single|application').activateZone("app_containernew");
 }
               ]]></code>
             </event>
@@ -256,13 +235,13 @@ function(e)
               <code><![CDATA[
 function(e)
 {
-  var node = WA.$N('app_container_{modid}');
+  var node = WA.$N('app_container_{hostid}_{appid}');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_container_{modid}',title:'##CONTAINERNAME## {modid}',closeable:'yes',application:'containereditor|{modid}',params:'container={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_container_{hostid}_{appid}',title:'##CONTAINERNAME## {hostid}:: {appid}',closeable:'yes',application:'containereditor|{hostid}_{appid}',params:'host={hostid}&app={appid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('index|single|application').activateZone('app_container_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_container_{hostid}_{appid}');
 }
               ]]></code>
             </event>
@@ -280,7 +259,7 @@ function(e)
   var node = WA.$N('app_contextnew');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_contextnew',title:'##CONTEXTNEWNAME##',closeable:'yes',application:'contexteditor|single',params:'container={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_contextnew',title:'##CONTEXTNEWNAME##',closeable:'yes',application:'contexteditor|single',params:'host={hostid}&app={appid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
   this._4gl.app.getNode('index|single|application').activateZone('app_contextnew');
@@ -291,8 +270,8 @@ function(e)
         </template>
 
         <template name="context">
-          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/context.png"></element>
-          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name} {status}]]>
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{icon}"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[##CONTEXTMENU## {name}]]>
             <help>
               <summary><![CDATA[##context.summary##]]></summary>
               <title><![CDATA[##context.title##]]></title>
@@ -302,13 +281,38 @@ function(e)
               <code><![CDATA[
 function(e)
 {
-  var node = WA.$N('app_context_{modid}');
+  var node = WA.$N('app_context_{hostid}_{appid}_{conid}');
   if (!node)
   {
-    var tree = {tag:'zone',attributes:{id:'app_context_{modid}',title:'##CONTEXTNAME## {modid}',closeable:'yes',application:'contexteditor|{modid}',params:'container={modid}&context={modid}'}};
+    var tree = {tag:'zone',attributes:{id:'app_context_{hostid}_{appid}_{conid}',title:'##CONTEXTNAME## {conid}',closeable:'yes',application:'contexteditor|{hostid}_{appid}_{conid}',params:'host={hostid}&app={appid}&context={conid}'}};
     this._4gl.app.createTree('index|single|application', tree);
   }
-  this._4gl.app.getNode('index|single|application').activateZone('app_context_{modid}');
+  this._4gl.app.getNode('index|single|application').activateZone('app_context_{hostid}_{appid}_{conid}');
+}
+              ]]></code>
+            </event>
+          </element>
+        </template>
+
+        <template name="module">
+          <element type="imageElement" classname="imagemenu" width="16" height="16" src="/skins/master/icons/{icon}"></element>
+          <element type="textElement" classname="textmenulink" style="color: {color};"><![CDATA[{name} {status}]]>
+            <help>
+              <summary><![CDATA[##module.summary##]]></summary>
+              <title><![CDATA[##module.title##]]></title>
+              <description><![CDATA[##module.description##]]></description>
+            </help>
+            <event type="onclick">
+              <code><![CDATA[
+function(e)
+{
+  var node = WA.$N('app_module_{hostid}_{appid}_{modid}');
+  if (!node)
+  {
+    var tree = {tag:'zone',attributes:{id:'app_context_{hostid}_{appid}_{conid}_{modprefix}{modid}',title:'##MODULENAME## {modprefix}{modid} {conid} ',closeable:'yes',application:'moduleeditor|{hostid}_{appid}_{conid}_{modprefix}{modid}',params:'host={hostid}&app={appid}&context={conid}&module={modid}&prefix={modprefix}'}};
+    this._4gl.app.createTree('index|single|application', tree);
+  }
+  this._4gl.app.getNode('index|single|application').activateZone('app_context_{hostid}_{appid}_{conid}_{modprefix}{modid}');
 }
               ]]></code>
             </event>

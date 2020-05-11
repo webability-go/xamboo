@@ -69,11 +69,21 @@ Extras:
 Version Changes Control
 =======================
 
-V1.2.6 - 2020-05-03
+V1.2.7 - 2020-05-10
+-----------------------
+- Version adjustment
+- Master can now install compiled modules in Apps on each hosts, as databases and others. (early alpha version)
+
+V1.2.6 - 2020-05-04
 -----------------------
 - runner error on RequestStat corrected
 - Server funcion GetFullConfig added for Admin purposes
 - Master index build with config elements (General, Listeners, Hosts, Engines)
+- The APPs for the host must now export at least 4 standard functions for admin and control:
+  * Start called for each host startup function,
+  * GetContextConfigFile to get the path of the contexts config file,
+  * GetCompiledModules to get the list of the compiled available Modules,
+  * GetContextContainer to get the created contexts and container of contexts of the APP.
 
 V1.2.5 - 2020-05-01
 -----------------------

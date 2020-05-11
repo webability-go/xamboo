@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	"github.com/webability-go/xconfig"
 
@@ -10,44 +9,30 @@ import (
 	"github.com/webability-go/xamboo/server/assets"
 )
 
-const (
-	CONTAINERSFILE = "containers.conf"
-)
-
 type TContainers []*cassets.Container
 
 var Containers = TContainers{}
 
-func (c *TContainers) Load(ctx *assets.Context) {
+func (c *TContainers) Load(ctx *assets.Context, id string, configfile string) {
 
-	resourcesdir, _ := ctx.Sysparams.GetString("resourcesdir")
-	path := resourcesdir + "/" + CONTAINERSFILE
+	datacontainer := c.UpsertContainer(id, id, configfile)
+	// load container
+	datacontainer.Config = xconfig.New()
+	err := datacontainer.Config.LoadFile(configfile)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-	containers := xconfig.New()
-	containers.LoadFile(path)
-
-	containerids, _ := containers.GetStringCollection("container")
-	for _, containerid := range containerids {
-		cfgpath, _ := containers.GetString(containerid + "+config")
-		datacontainer := c.UpsertContainer(containerid, containerid, cfgpath)
-		// load container
-		datacontainer.Config = xconfig.New()
-		err := datacontainer.Config.LoadFile(cfgpath)
+	contexts, _ := datacontainer.Config.GetStringCollection("context")
+	for _, context := range contexts {
+		cfgpath, _ := datacontainer.Config.GetString(context + "+config")
+		datacontext := c.UpsertContext(id, context, context, cfgpath)
+		datacontext.Config = xconfig.New()
+		err := datacontext.Config.LoadFile(cfgpath)
 		if err != nil {
 			fmt.Println("Error:", err)
-			continue
-		}
-
-		contexts, _ := datacontainer.Config.GetStringCollection("context")
-		for _, context := range contexts {
-			cfgpath, _ := datacontainer.Config.GetString(context + "+config")
-			datacontext := c.UpsertContext(containerid, context, context, cfgpath)
-			datacontext.Config = xconfig.New()
-			err := datacontext.Config.LoadFile(cfgpath)
-			if err != nil {
-				fmt.Println("Error:", err)
-				continue
-			}
+			return
 		}
 	}
 }
@@ -143,15 +128,6 @@ func (c *TContainers) GetContext(containerid string, contextid string) *cassets.
 }
 
 func (c *TContainers) SaveContainers(ctx *assets.Context) {
-
-	resourcesdir, _ := ctx.Sysparams.GetString("resourcesdir")
-	path := resourcesdir + "/" + CONTAINERSFILE
-
-	local := "# Contexts containers. Do not edit. Automatic generation\n"
-	for _, cont := range *c {
-		local += "container=" + cont.Name + "\n" + cont.Name + "+config=" + cont.Path + "\n"
-	}
-	ioutil.WriteFile(path, []byte(local), 0644)
 }
 
 func (c *TContainers) SaveContainer(ctx *assets.Context, containerid string) {
@@ -165,14 +141,11 @@ func (c *TContainers) SaveContainer(ctx *assets.Context, containerid string) {
 			container.Config = xconfig.New()
 		}
 
-		fmt.Printf("%#v\n", container.Config)
+		container.Config.Set("logcore", container.LogFile)
 		container.Config.Del("context")
-		fmt.Printf("%#v\n", container.Config)
 		for _, ct := range container.Contexts {
 			container.Config.Add("context", ct.ID)
-			fmt.Printf("%#v\n", container.Config)
 			container.Config.Set(ct.ID+"+config", ct.Path)
-			fmt.Printf("%#v\n", container.Config)
 		}
 		container.Config.SaveFile(path)
 	}
@@ -188,7 +161,3 @@ func (c *TContainers) SaveContext(ctx *assets.Context, containerid string, conte
 		}
 	}
 }
-
-//func AvailableModules() *context.Modules {
-//	return context.ModulesList
-//}

@@ -14,3 +14,5 @@ require (
 	github.com/webability-go/xdommask v0.0.6 // indirect
 	github.com/webability-go/xmodules v0.0.3 // indirect
 )
+
+replace github.com/webability-go/xmodules => ../xmodules

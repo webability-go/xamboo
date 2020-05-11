@@ -6,6 +6,8 @@ import (
 	"github.com/webability-go/xamboo/server/assets"
 	"github.com/webability-go/xamboo/server/config"
 	"github.com/webability-go/xcore/v2"
+
+	"github.com/webability-go/xmodules/context"
 )
 
 const VERSION = "1.0.0"
@@ -28,4 +30,16 @@ func GetPageData(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 	fmt.Println("Distributes a page data called by a page library from app.go")
 
 	return "This is the code of the external application after build all what you need into it. This is a shared library compiled as a plugin."
+}
+
+func GetContextConfigFile() string {
+	return ""
+}
+
+func GetCompiledModules() *context.Modules {
+	return nil
+}
+
+func GetContextContainer() *context.Container {
+	return nil
 }

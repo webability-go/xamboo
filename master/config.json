@@ -1,7 +1,7 @@
 {
   "listeners": [
     {
-      "name": "admin",
+      "name": "master",
       "ip": "",
       "port": "81",
       "protocol": "https",
@@ -20,7 +20,7 @@
     {
       "name": "admin",
       "listeners": [
-        "admin"
+        "master"
       ],
       "hostnames": [
         "developers.webability.info"
@@ -62,13 +62,13 @@
     {
       "name": "master",
       "listeners": [
-        "admin"
+        "master"
       ],
       "hostnames": [
         "master.webability.info"
       ],
       "config": [
-        "./master/master.conf",
+        "./master/config/master.conf",
         "./master/resources/local.conf"
       ],
       "cert": "./example/ssl/cert.pem",

@@ -3,22 +3,26 @@ package main
 import (
 	"encoding/xml"
 
+	"github.com/webability-go/xconfig"
 	"github.com/webability-go/xcore/v2"
 	"github.com/webability-go/xdominion"
 	"github.com/webability-go/xdommask"
 
-	"github.com/webability-go/xamboo/master/app/bridge"
+	"github.com/webability-go/xamboo/server"
 	"github.com/webability-go/xamboo/server/assets"
+
+	cassets "github.com/webability-go/xamboo/master/app/assets"
+	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
-func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
 		return ""
 	}
 
-	mask := getMask(ctx).Compile()
+	mask := getMask(ctx, s.(*server.Server)).Compile()
 	xmlmask, _ := xml.Marshal(mask)
 	params := &xcore.XDataset{
 		"FORM": string(xmlmask),
@@ -27,15 +31,36 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 	return template.Execute(params)
 }
 
-func getMask(ctx *assets.Context) *xdommask.Mask {
+func searchContext(s *server.Server, ctx *assets.Context, host string, app string, contextid string) *cassets.Context {
+	config := s.GetFullConfig()
 
-	container := ctx.Request.Form.Get("container")
-	if container == "" {
-		// return mask with message
+	// Carga los APPs Libraries de cada Host config
+	for _, h := range config.Hosts {
+		for id, lib := range h.Plugins {
+			if h.Name == host && id == app {
+				ccf, _ := lib.Lookup("GetContextConfigFile")
+				GetContextConfigFile := ccf.(func() string)
+				configfile := GetContextConfigFile()
+				bridge.Containers.Load(ctx, host+"_"+app, configfile)
+				container := bridge.Containers.GetContext(host+"_"+app, contextid)
+				return container
+			}
+		}
 	}
+	return nil
+}
+
+func getMask(ctx *assets.Context, s *server.Server) *xdommask.Mask {
+
+	host := ctx.Request.Form.Get("host")
+	app := ctx.Request.Form.Get("app")
 	context := ctx.Request.Form.Get("context")
+
+	// lets search for host::app config file to load it
+	contextdata := searchContext(s, ctx, host, app, context)
+
 	mode := 1
-	if context != "" {
+	if contextdata != nil {
 		mode = 2
 	}
 
@@ -48,7 +73,7 @@ func getMask(ctx *assets.Context) *xdommask.Mask {
 		mask.Key = context
 	}
 	mask.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
-	mask.Variables["container"] = container
+	mask.Variables["context"] = context
 
 	mask.AlertMessage = "##mask.errormessage##"
 	mask.ServerMessage = "##mask.servermessage##"
@@ -56,32 +81,46 @@ func getMask(ctx *assets.Context) *xdommask.Mask {
 	mask.UpdateTitle = "##mask.titleupdate##"
 	mask.ViewTitle = "##mask.titleview##"
 
-	// container
-	f0 := xdommask.NewTextField("containerid")
-	f0.Title = "##container.title##"
-	f0.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
-	f0.ViewModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
-	f0.DefaultValue = container
-	mask.AddField(f0)
+	// Host
+	f1 := xdommask.NewTextField("host")
+	f1.Title = "##host.title##"
+	f1.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
+	//	f1.ReadOnlyModes = xdommask.INSERT | xdommask.UPDATE
+	f1.ViewModes = xdommask.VIEW
+	f1.Size = "200"
+	f1.URLVariable = "host"
+	f1.DefaultValue = host
+	mask.AddField(f1)
+
+	// App
+	f2 := xdommask.NewTextField("app")
+	f2.Title = "##app.title##"
+	f2.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
+	//	f2.ReadOnlyModes = xdommask.INSERT | xdommask.UPDATE
+	f2.ViewModes = xdommask.VIEW
+	f2.Size = "200"
+	f2.URLVariable = "app"
+	f2.DefaultValue = app
+	mask.AddField(f2)
 
 	// name
-	f1 := xdommask.NewTextField("name")
-	f1.Title = "##name.title##"
-	f1.HelpDescription = "##name.help.description##"
-	f1.NotNullModes = xdommask.INSERT | xdommask.UPDATE
-	f1.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
-	f1.HelpModes = xdommask.INSERT | xdommask.UPDATE
-	f1.ViewModes = xdommask.VIEW
-	f1.StatusNotNull = "##name.status.notnull##"
-	f1.Size = "200"
-	f1.MinLength = 1
-	f1.MaxLength = 20
-	f1.URLVariable = "name"
-	f1.Format = "^[a-z|A-Z|0-9]{1,20}$"
-	f1.FormatJS = "^[a-z|A-Z|0-9]{1,20}$"
-	f1.StatusBadFormat = "##name.status.badformat##"
-	f1.DefaultValue = ""
-	mask.AddField(f1)
+	f3 := xdommask.NewTextField("name")
+	f3.Title = "##name.title##"
+	f3.HelpDescription = "##name.help.description##"
+	f3.NotNullModes = xdommask.INSERT | xdommask.UPDATE
+	f3.AuthModes = xdommask.INSERT | xdommask.UPDATE | xdommask.VIEW
+	f3.HelpModes = xdommask.INSERT | xdommask.UPDATE
+	f3.ViewModes = xdommask.VIEW
+	f3.StatusNotNull = "##name.status.notnull##"
+	f3.Size = "200"
+	f3.MinLength = 1
+	f3.MaxLength = 20
+	f3.URLVariable = "name"
+	f3.Format = "^[a-z|A-Z|0-9]{1,20}$"
+	f3.FormatJS = "^[a-z|A-Z|0-9]{1,20}$"
+	f3.StatusBadFormat = "##name.status.badformat##"
+	f3.DefaultValue = ""
+	mask.AddField(f3)
 
 	// path
 	f4 := xdommask.NewTextField("path")
@@ -307,12 +346,11 @@ func getMask(ctx *assets.Context) *xdommask.Mask {
 
 	if mode == 2 {
 		mask.GetRecord = func(mask *xdommask.Mask) *xdominion.XRecord {
-			bridge.Containers.Load(ctx)
-			contextdata := bridge.Containers.GetContext(container, context)
 			if contextdata != nil {
 				rec := xdominion.NewXRecord()
 				subrec := xdominion.NewXRecord()
-				subrec.Set("containerid", container)
+				subrec.Set("host", host)
+				subrec.Set("app", app)
 				subrec.Set("name", contextdata.ID)
 				subrec.Set("path", contextdata.Path)
 				rec.Set(context, subrec)
@@ -325,7 +363,7 @@ func getMask(ctx *assets.Context) *xdommask.Mask {
 	return mask
 }
 
-func Formcontext(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Formcontext(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
@@ -334,7 +372,9 @@ func Formcontext(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 
 	key := ctx.Request.Form.Get("Key")
 	mode := ctx.Request.Form.Get("Mode")
-	container := ctx.Request.Form.Get("container")
+
+	host := ctx.Request.Form.Get("host")
+	app := ctx.Request.Form.Get("app")
 	name := ctx.Request.Form.Get("name")
 	path := ctx.Request.Form.Get("path")
 
@@ -343,6 +383,16 @@ func Formcontext(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 		success := true
 		messages := map[string]string{}
 		messagetext := ""
+		if host == "" {
+			success = false
+			messages["host"] = language.Get("error.name.wrong")
+			messagetext += language.Get("error.name.wrong")
+		}
+		if app == "" {
+			success = false
+			messages["app"] = language.Get("error.name.wrong")
+			messagetext += language.Get("error.name.wrong")
+		}
 		if name == "" {
 			success = false
 			messages["name"] = language.Get("error.name.wrong")
@@ -356,19 +406,23 @@ func Formcontext(ctx *assets.Context, template *xcore.XTemplate, language *xcore
 
 		if success {
 			// write config file
-			// simulate load of config file into Engine.Host.Config till next system restart
-			bridge.Containers.Load(ctx)
-			bridge.Containers.UpsertContext(container, key, name, path)
-			bridge.Containers.SaveContainer(ctx, container)
+			// Load context to load all config
+			searchContext(s.(*server.Server), ctx, host, app, key)
+			context := bridge.Containers.UpsertContext(host+"_"+app, key, name, path)
+			bridge.Containers.SaveContainer(ctx, host+"_"+app)
+
+			// All the parameters of context config file
+			// adds/modify params
+			if context.Config == nil {
+				context.Config = xconfig.New()
+			}
+
+			bridge.Containers.SaveContext(ctx, host+"_"+app, name)
+
 			messages["text"] = language.Get("success")
 		} else {
 			messages["text"] = messagetext
 		}
-
-		// All the parameters of context config file
-		// adds/modify params
-
-		bridge.Containers.SaveContext(ctx, container, name)
 
 		return map[string]interface{}{
 			"success": success, "messages": messages, "popup": false,

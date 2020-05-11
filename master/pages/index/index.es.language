@@ -59,10 +59,20 @@
   <entry id="contextsnew.description"><![CDATA[Este botón permite crear un nuevo contexto.]]></entry>
   <entry id="CONTEXTNEWNAME"><![CDATA[Nuevo contexto]]></entry>
 
+  <entry id="CONTEXTMENU"><![CDATA[Contexto:]]></entry>
   <entry id="context.summary"><![CDATA[Click aquí para administrar el contexto.]]></entry>
   <entry id="context.title"><![CDATA[Contexto:]]></entry>
   <entry id="context.description"><![CDATA[Esta opción permite administrar los parámetros del contexto.]]></entry>
   <entry id="CONTEXTNAME"><![CDATA[Contexto:]]></entry>
+
+  <entry id="module.summary"><![CDATA[Click aquí para administrar el módulo.]]></entry>
+  <entry id="module.title"><![CDATA[Módulo:]]></entry>
+  <entry id="module.description"><![CDATA[Esta opción permite administrar la instalación y acutalización del módulo.]]></entry>
+  <entry id="MODULENAME"><![CDATA[Module:]]></entry>
+  <entry id="OK"><![CDATA[(OK)]]></entry>
+  <entry id="NOTINSTALLED"><![CDATA[(NOT INSTALLED)]]></entry>
+  <entry id="UPGRADE"><![CDATA[(UPGRADE)]]></entry>
+  <entry id="NOTCOMPILED"><![CDATA[(NOT COMPILED)]]></entry>
 
   <entry id="CONTROLNAME"><![CDATA[Centro de control]]></entry>
   <entry id="CONTROLSHORTCUT"><![CDATA[alt+C]]></entry>
