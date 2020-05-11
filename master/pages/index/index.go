@@ -1,16 +1,19 @@
 package main
 
 import (
-	//	"fmt"
+	"fmt"
+	"strings"
 
 	"github.com/webability-go/xcore/v2"
 
+	"github.com/webability-go/xamboo/server"
 	"github.com/webability-go/xamboo/server/assets"
+	"github.com/webability-go/xmodules/context"
 
 	"github.com/webability-go/xamboo/master/app/bridge"
 )
 
-func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
@@ -25,7 +28,7 @@ func Run(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangua
 	return template.Execute(params)
 }
 
-func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, s interface{}) interface{} {
 
 	ok := bridge.Setup(ctx, bridge.USER)
 	if !ok {
@@ -35,7 +38,7 @@ func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangu
 	Order := ctx.Request.Form.Get("Order")
 
 	if Order == "get" {
-		return getMenu(ctx)
+		return getMenu(ctx, s.(*server.Server), language)
 	}
 	if Order == "openclose" {
 
@@ -49,384 +52,286 @@ func Menu(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLangu
 	}
 }
 
-func getMenu(ctx *assets.Context) map[string]interface{} {
+func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) map[string]interface{} {
 
 	rows := []interface{}{}
 
+	config := s.GetFullConfig()
+
+	// Config:
 	optr := map[string]interface{}{
+		"id":        "config",
+		"template":  "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+
+	//   listeners
+	optr = map[string]interface{}{
+		"id":        "listeners",
+		"template":  "listeners",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, l := range config.Listeners {
+		ip := "*"
+		if l.IP != "" {
+			ip = l.IP
+		}
+		opt := map[string]interface{}{
+			"id":        "lis-" + l.Name,
+			"lisid":     l.Name,
+			"template":  "listener",
+			"name":      l.Name + " [" + l.Protocol + "://" + ip + ":" + l.Port + "]",
+			"father":    "listeners",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	//   Hosts
+	optr = map[string]interface{}{
+		"id":        "hosts",
+		"template":  "hosts",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, h := range config.Hosts {
+		hn := ""
+		if len(h.HostNames) > 0 {
+			hn = h.HostNames[0]
+		}
+		opt := map[string]interface{}{
+			"id":        "hos-" + h.Name,
+			"hosid":     h.Name,
+			"template":  "host",
+			"name":      h.Name + " [" + hn + "]",
+			"father":    "hosts",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	//   Engines
+	optr = map[string]interface{}{
+		"id":        "engines",
+		"template":  "engines",
+		"father":    "config",
+		"loadable":  false,
+		"closeable": true,
+		"closed":    true,
+	}
+	rows = append(rows, optr)
+	for _, e := range config.Engines {
+		opt := map[string]interface{}{
+			"id":        "eng-" + e.Name,
+			"engid":     e.Name,
+			"template":  "engine",
+			"name":      e.Name,
+			"father":    "engines",
+			"loadable":  false,
+			"closeable": false,
+		}
+		rows = append(rows, opt)
+	}
+
+	// Containers de los hosts x APPs
+	optr = map[string]interface{}{
 		"id":        "containers",
 		"template":  "containers",
 		"loadable":  false,
 		"closeable": true,
 		"closed":    true,
 	}
-
 	rows = append(rows, optr)
 
-	bridge.Containers.Load(ctx)
-	list := bridge.Containers.GetContainersList()
+	apps := map[string]int{}
+	cnt := 1
 
-	for _, c := range list {
-		opt := map[string]interface{}{
-			"id":        "cnt-" + c.Name,
-			"modid":     c.Name,
-			"template":  "container",
-			"name":      c.Name,
-			"color":     "black",
-			"status":    "",
-			"father":    "containers",
-			"loadable":  false,
-			"closeable": true,
-			"closed":    true,
-		}
-		if c.Config == nil {
-			opt["status"] = "NUEVO"
-		}
+	// Carga los APPs Libraries de cada Host config
+	for _, h := range config.Hosts {
+		for id, lib := range h.Plugins {
 
-		rows = append(rows, opt)
-
-		for _, ct := range c.Contexts {
-			opt := map[string]interface{}{
-				"id":        "ctx-" + ct.ID,
-				"modid":     ct.ID,
-				"template":  "context",
-				"name":      ct.ID,
-				"color":     "black",
-				"status":    "",
-				"father":    "cnt-" + c.Name,
-				"loadable":  false,
-				"closeable": false,
+			ptr := fmt.Sprint(lib)
+			num, ok := apps[ptr]
+			if !ok {
+				num = cnt
+				apps[ptr] = cnt
+				cnt++
 			}
-			if ct.Config == nil {
-				opt["status"] = "NUEVO"
+
+			opt := map[string]interface{}{
+				"id":        "cnt-" + h.Name + "-" + id,
+				"hostid":    h.Name,
+				"appid":     id,
+				"template":  "container",
+				"name":      h.Name + "::" + id,
+				"status":    "[#" + fmt.Sprint(num) + "]",
+				"father":    "containers",
+				"loadable":  false,
+				"closeable": true,
+				"closed":    true,
 			}
 			rows = append(rows, opt)
+
+			// Contexts and its modules on each library. Taken from its CONFIG FILE (not running in memory: maybe still not lauched)
+			ccf, _ := lib.Lookup("GetContextConfigFile")
+			GetContextConfigFile := ccf.(func() string)
+			configfile := GetContextConfigFile()
+
+			cm, _ := lib.Lookup("GetCompiledModules")
+			GetCompiledModules := cm.(func() *context.Modules)
+			compiledmodules := GetCompiledModules()
+
+			cc, _ := lib.Lookup("GetContextContainer")
+			GetContextContainer := cc.(func() *context.Container)
+			contextcontainer := GetContextContainer()
+
+			// Lets load the configuration structure of the context
+			bridge.Containers.Load(ctx, h.Name+"_"+id, configfile)
+			container := bridge.Containers.GetContainer(h.Name + "_" + id)
+			contexts := container.Contexts
+
+			for _, context := range contexts {
+				thiscontext := contextcontainer.GetContext(context.ID)
+				icon := "context.png"
+				if thiscontext == nil {
+					icon = "context-notavailable.png"
+				}
+
+				opt := map[string]interface{}{
+					"id":        "ctx-" + context.ID,
+					"hostid":    h.Name,
+					"appid":     id,
+					"conid":     context.ID,
+					"template":  "context",
+					"icon":      icon,
+					"name":      context.ID,
+					"color":     "black",
+					"father":    "cnt-" + h.Name + "-" + id,
+					"loadable":  false,
+					"closeable": false,
+				}
+				rows = append(rows, opt)
+
+				if context.Config == nil {
+					continue // nothing to scan: only config link exists
+				}
+				authorizedmodules, _ := context.Config.GetStringCollection("module")
+				if len(authorizedmodules) == 0 && len(*compiledmodules) == 0 {
+					continue // nothing to show
+				}
+
+				for _, authmod := range authorizedmodules {
+					xauthmod := strings.Split(authmod, "|")
+					modid := xauthmod[0]
+					modprefix := ""
+					if len(xauthmod) > 1 {
+						modprefix = xauthmod[1]
+					}
+
+					// Verify if the module is compiled/installed for this DB
+					modversion := ""
+					installedversion := ""
+					for _, mod := range *compiledmodules {
+						if modid == mod.GetID() {
+							modversion = mod.GetVersion()
+							if thiscontext != nil {
+								installedversion = mod.GetInstalledVersion(thiscontext)
+							}
+							break
+						}
+					}
+
+					// Get version from module table to know installed version etc
+					prefix := ""
+					if modprefix != "" {
+						prefix = "[" + modprefix + "]"
+					}
+
+					icon := "module.png"
+					status := language.Get("OK")
+					version := ""
+					if modversion != "" {
+						version = "v" + modversion
+						if installedversion == "" {
+							status = language.Get("NOTINSTALLED")
+							icon = "module-installable.png" // not installed
+						} else if modversion != installedversion {
+							status = language.Get("UPGRADE")
+							icon = "module-updatable.png" // have to update
+						}
+					} else {
+						status = language.Get("NOTCOMPILE")
+						icon = "module-notcompiled.png" // not compiled
+					}
+
+					opt := map[string]interface{}{
+						"id":        "mod-" + context.ID + modprefix + modid,
+						"icon":      icon,
+						"hostid":    h.Name,
+						"appid":     id,
+						"conid":     context.ID,
+						"modid":     modid,
+						"modprefix": modprefix,
+						"template":  "module",
+						"name":      prefix + modid + " " + version,
+						"color":     "black",
+						"status":    status,
+						"father":    "ctx-" + context.ID,
+						"loadable":  false,
+						"closeable": false,
+					}
+					rows = append(rows, opt)
+				}
+
+				// Now we add compiled modules not authorized
+				for _, compmod := range *compiledmodules {
+					found := false
+					for _, authmod := range authorizedmodules {
+						xauthmod := strings.Split(authmod, "|")
+						if compmod.GetID() == xauthmod[0] {
+							found = true
+							break
+						}
+					}
+					if found {
+						continue
+					}
+
+					opt := map[string]interface{}{
+						"id":        "mod-" + context.ID + compmod.GetID(),
+						"hostid":    h.Name,
+						"appid":     id,
+						"modid":     compmod.GetID(),
+						"modprefix": "",
+						"template":  "module",
+						"icon":      "module-noaction.png",
+						"name":      compmod.GetID() + " " + compmod.GetVersion(),
+						"color":     "black",
+						"status":    "(NOT AUTHORIZED)",
+						"father":    "ctx-" + context.ID,
+						"loadable":  false,
+						"closeable": false,
+					}
+					rows = append(rows, opt)
+				}
+			}
 		}
-
 	}
-
-	/*
-
-
-
-	   optr1 := map[string]interface{}{
-	   	"id":          "receta-nueva",
-	   	"template":    "opcionmenu",
-	   	"image":       "opcion.png",
-	   	"name":        "Nueva receta",
-	   	"page":        "recetas/editor",
-	   	"resumen":     "Nueva receta",
-	   	"titulo":      "Nueva receta",
-	   	"descripcion": "Nueva receta",
-	   	"loadable":    false,
-	   	"closeable":   false,
-	   	"father":      "receta",
-	   }
-
-	*/
 
 	return map[string]interface{}{
 		"row": rows,
 	}
 
 }
-
-/*
-
-class masterindex extends \common\WAApplication
-{
-  private $baseModuleEntity = null;
-
-  public function __construct($template, $language)
-  {
-    parent::__construct($template, $language);
-
-    // calling this, the system is installed
-    $this->baseModuleEntity = \entities\baseModuleEntity::getInstance();
-  }
-
-  private function getTree()
-  {
-    $globalstatus = $this->base->getGlobalStatus();
-    $full = array();
-
-    if ($globalstatus['fglobal'])
-    {
-      // SI INSTALADO Y TODO OK,
-      // PON LOS ACCESOS A LOS SITIOS
-      // PON MANTENIMIENTO (CACHES, TABLAS, ARCHIVOS TEMPORALES, ver, borrar)
-      // PON LOS MODULES
-      // PON LOS CONECTORES
-      // PON LAS HERRAMIENTAS
-      // PON LA INSTALACION HASTA EL FINAL
-
-      $full[] = array('id' => 'sitelink', 'template' => 'sitelink', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'adminlink', 'template' => 'adminlink', 'loadable' => false, 'closeable' => false);
-
-      $closed = $this->base->user->getParameter('mastertree', 'modules')?true:false;
-      $full[] = array('id' => 'modules', 'template' => 'modules', 'loadable' => false, 'closeable' => true, 'closed' => $closed);
-      $full = array_merge($full, $this->getModules());
-
-      $full[] = array('id' => 'explorer', 'template' => 'explorer', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'config', 'template' => 'config', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'mypage', 'template' => 'mypage', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'console', 'template' => 'console', 'loadable' => false, 'closeable' => false);
-
-      $full = array_merge($full, $this->getInstallation($globalstatus));
-    }
-    else
-    {
-      // SI NO INSTALADO AUN, PON INSTALACION ARRIBA Y ABAJO LAS 4 HERRAMIENTAS
-      $full = array_merge($full, $this->getInstallation($globalstatus));
-
-      $full[] = array('id' => 'explorer', 'template' => 'explorer', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'config', 'template' => 'config', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'mypage', 'template' => 'mypage', 'loadable' => false, 'closeable' => false);
-      $full[] = array('id' => 'console', 'template' => 'console', 'loadable' => false, 'closeable' => false);
-    }
-
-    return array('row' => $full);
-  }
-
-  private function getInstallation($gs)
-  {
-    if ($gs['fglobal'])
-    {
-      $image = 'installation-ok.png';
-      $title = $this->language->getEntry('installation.ok');
-    }
-    else
-    {
-      $image = 'installation-error.png';
-      $title = $this->language->getEntry('installation.error');
-    }
-
-    if ($this->base->user)
-      $installclosed = $this->base->user->getParameter('mastertree', 'installation')?true:false;
-    else
-      $installclosed = false;
-    $full = array();
-    $full[] = array('id' => 'installation', 'template' => 'installation', 'father' => null, 'image' => $image, 'title' => $title, 'loadable' => false, 'closeable' => true, 'closed' => $installclosed);
-    $full = array_merge($full, $this->getMainConnector($gs));
-    $full = array_merge($full, $this->getRepository($gs));
-    $full = array_merge($full, $this->getSites($gs));
-    return $full;
-  }
-
-  private function getMainConnector($gs)
-  {
-    $full = array();
-    switch ($gs['fconnector'])
-    {
-      case 0:
-        $title = $this->language->getEntry('connector.repository.no');
-        $image = 'connector-no.png';
-        $repo = $this->language->getEntry('connector.repository.missing');
-        break;
-      case 1:
-        $title = $this->language->getEntry('connector.repository.ok');
-        $image = 'connector-ok.png';
-        $names = $this->base->getDatabases();
-        $Connectors = $this->base->loadConnectors();
-        $repo = $names[$Connectors['main']['type']];
-        break;
-      case 2:
-        $title = $this->language->getEntry('connector.repository.error');
-        $image = 'connector-error.png';
-        $names = $this->base->getDatabases();
-        $Connectors = $this->base->loadConnectors();
-        $repo = $names[$Connectors['main']['type']];
-        break;
-    }
-
-    $full[] = array('id' => 'mainconnector', 'template' => 'mainconnector', 'father' => 'installation', 'uid' => 'main', 'image' => $image, 'title' => $title, 'type' => $repo, 'loadable' => false, 'closeable' => false);
-    return $full;
-  }
-
-  private function getRepository($gs)
-  {
-    $full = array();
-    switch($gs['frepository'])
-    {
-      case 0:
-        $image = 'repository-noconnector.png';
-        $title = $this->language->getEntry('repository.noconnector');
-        break;
-      case 1:
-        $image = 'repository-ok.png';
-        $title = $this->language->getEntry('repository.ok');
-        break;
-      case 2:
-        $image = 'repository-no.png';
-        $title = $this->language->getEntry('repository.no');
-        break;
-      case 3:
-        $image = 'repository-update.png';
-        $title = $this->language->getEntry('repository.update');
-        break;
-    }
-
-    $full[] = array('id' => 'repository', 'template' => 'repository', 'father' => 'installation', 'image' => $image, 'title' => $title, 'loadable' => false, 'closeable' => false);
-    return $full;
-  }
-
-  private function getSites($gs)
-  {
-    $full = array();
-    // installed or not ?
-    if ($gs['fadmin'] == 1 && $gs['fsite'] == 1)
-    {
-      $image = 'sites-ok.png';
-      $title = $this->language->getEntry('sites.ok');
-
-    }
-    else if ($gs['fadmin'] == 0 || $gs['fsite'] == 0)
-    {
-      $image = 'sites-no.png';
-      $title = $this->language->getEntry('sites.no');
-    }
-    else
-    {
-      $image = 'sites-update.png';
-      $title = $this->language->getEntry('sites.update');
-    }
-
-    $full[] = array('id' => 'sites', 'template' => 'sites', 'father' => 'installation', 'image' => $image, 'title' => $title, 'loadable' => false, 'closeable' => false);
-    return $full;
-  }
-
-  private function getModules()
-  {
-    $full = array();
-
-    // get all the modules from the directory and check if they are installed
-    $installed = $this->baseModuleEntity->readModule(new \dominion\DB_Condition('installed', '=', 1), new \dominion\DB_OrderBy('key', \dominion\DB_OrderBy::ASC));
-    // always >= 1 installed, no need to check installed not null
-    $modulesinstalled = array();
-    foreach($installed as $rec)
-      $modulesinstalled[$rec->key] = $rec;
-
-    $full[] = array('id' => 'wa', 'uid' => 'wa', 'modid' => 'wa', 'template' => 'module', 'father' => 'modules', 'name' => 'WA Core', 'icon' => 'module.png', 'status' => '[' . \common\Base::VERSION . ']', 'loadable' => false, 'closeable' => false);
-
-    $modules = $this->baseModuleEntity->getLocalModulesList();
-    foreach($modules as $mod => $cart)
-    {
-      // installed ?
-      // to upgrade ?
-      // another needed ?
-      $status = '';
-      if (isset($modulesinstalled[$mod]))
-      {
-        $status = '[' . $modulesinstalled[$mod]->version . ']';
-        $icon = 'module.png';
-        $color = 'black';
-        // upgrade available ?
-        foreach($cart as $num => $c)
-        {
-          if ($modulesinstalled[$mod]->version <= $num)
-            continue;
-          else
-          {
-            // oldest: nothing
-            // newest and upgradeable: [upgrade]
-            // newset not compatible: nothing
-            $installable = $this->moduleInstallable($c, $modulesinstalled);
-            if ($installable)
-            {
-              $icon = 'module-upgradable.png';
-              $color = 'orange';
-              break;
-            }
-          }
-        }
-      }
-      else
-      {
-        // can be installed ?
-        $installparty = false;
-        foreach($cart as $num => $c)
-        {
-          $installparty |= $this->moduleInstallable($c, $modulesinstalled);
-        }
-        $status = $installparty?'['.$this->language['module.available'].']':'['.$this->language['module.missing'].']';
-        $icon = $installparty?'module-installable.png':'module-noaction.png';
-        $color = 'grey';
-      }
-
-//      $closed = $this->base->user->getParameter('mastertree', 'module-' . $mod);
-//      if ($closed === null) $closed = true;
-      $full[] = array('id' => $mod, 'uid' => $mod, 'modid' => $mod, 'template' => 'module', 'father' => 'modules', 'name' => $mod, 'icon' => $icon, 'color' => $color, 'status' => $status, 'loadable' => false, 'closeable' => false); //, 'closed' => $closed);
-      / *
-      foreach($cart as $num => $c)
-      {
-        if (isset($modulesinstalled[$mod]) && $modulesinstalled[$mod]->version == $num)
-          $status = '[Instalado]';
-        else
-        {
-          if (isset($modulesinstalled[$mod]))
-          {
-            // oldest: nothing
-            // newest and upgradeable: [upgrade]
-            // newset not compatible: nothing
-            $status = '';
-          }
-          else
-          {
-            $installable = $this->moduleInstallable($c, $modulesinstalled);
-            $status = $installable?'['.$this->language['moduleversion.install'].']':'['.$this->language['moduleversion.missing'].']';
-          }
-        }
-
-        $full[] = array('id' => $mod.'.'.$num, 'uid' => $mod.'.'.$num, 'modid' => $mod, 'versionid' => $num, 'status' => $status, 'template' => 'moduleversion', 'father' => $mod, 'name' => $num, 'loadable' => false, 'closeable' => false);
-      }
-      * /
-    }
-    return $full;
-  }
-
-  private function moduleInstallable($c, $installed)
-  {
-    if (!isset($c->modules) || !$c->modules)
-      return true;
-
-    foreach($c->modules as $module)
-    {
-      if (!$module)
-        continue;
-
-      // verify this one is installed or not
-      $xparts = explode('.', $module);
-      if (isset($modulesinstalled[$xparts[0]]))
-      {
-        // installed, we check the version OK
-      }
-      else
-      {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  // open/close listener
-  public function menu()
-  {
-    $Order = $this->base->HTTPRequest->getParameter('Order');
-
-    if ($Order == 'get')
-    {
-      return $this->getTree();
-    }
-    elseif ($Order == 'openclose')
-    {
-      $id = $this->base->HTTPRequest->getParameter('id');
-      $status = $this->base->HTTPRequest->getParameter('status');
-      $this->base->security->setParameter('mastertree', $id, $status=='true'?1:0);
-      return array('status' => 'OK');
-    }
-  }
-
-}
-
-*/

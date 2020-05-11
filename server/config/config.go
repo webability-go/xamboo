@@ -208,13 +208,26 @@ func (c *ConfigDef) Load(file string) error {
 							lib, err := plugin.Open(p1)
 							if err != nil {
 								return err
-							} else {
-								c.Hosts[i].Plugins[app] = lib
-								fct, err := lib.Lookup("Start")
-								if err == nil {
-									fct.(func(Host))(c.Hosts[i])
-								}
 							}
+							// 4 mandatory functions to be a Xamboo MODULE
+							start, err := lib.Lookup("Start")
+							if err != nil {
+								return err
+							}
+							_, err = lib.Lookup("GetContextConfigFile")
+							if err != nil {
+								return err
+							}
+							_, err = lib.Lookup("GetCompiledModules")
+							if err != nil {
+								return err
+							}
+							_, err = lib.Lookup("GetContextContainer")
+							if err != nil {
+								return err
+							}
+							c.Hosts[i].Plugins[app] = lib
+							start.(func(Host))(c.Hosts[i])
 						}
 					}
 				}

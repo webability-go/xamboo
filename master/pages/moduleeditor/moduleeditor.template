@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="moduleeditor">
+
+  <container type="separatorContainer" width="max" height="max" mode="vertical" auto="yes" classname="separatorinvisiblevertical">
+    <zone size="60">
+      <container type="simpleContainer" width="max" height="max">
+        <zone>
+          <element id="titleform" type="htmlElement" classname="introcenter">
+<![CDATA[##editortitle##]]>
+          </element>
+        </zone>
+      </container>
+    </zone>
+    <zone size="*">
+      <element type="htmlElement" classname="introcenter">
+<![CDATA[{{DATA}}]]>
+      </element>
+      <element type="buttonElement">Instalar/Actualizar
+        <event type="onclick">
+          <code><![CDATA[
+function(e)
+{
+  WA.Managers.ajax.createRequest("/moduleeditor/install/json", "POST", "host={{host}}&app={{app}}&context={{context}}&module={{module}}&prefix={{prefix}}", function(response) { console.log(response.responseText); }, true)
+}
+          ]]></code>
+        </event>
+
+      </element>
+    </zone>
+  </container>
+</application>

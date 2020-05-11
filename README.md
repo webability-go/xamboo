@@ -58,23 +58,32 @@ You may attach the xamboo as a OS/service, calling the start.sh
 TO DO
 =======================
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
-- capture compiler result for page, not for stdout
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
-- language server injector (beautify output)
-- template server injector (beautify output)
-- Caches generator from XCore
-- Host Resolution problem when the config.json file have a blank IP (to listen to all server IPs)
 - Stats module
-- Errors manager and Logs managers
 - implement call stat function(context)
-- Distribute messages and data to logs as they should be
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 
 Version Changes Control
 =======================
+
+V1.2.7 - 2020-05-10
+-----------------------
+- Version adjustment
+- Master can now install compiled modules in Apps on each hosts, as databases and others. (early alpha version)
+
+V1.2.6 - 2020-05-04
+-----------------------
+- runner error on RequestStat corrected
+- Server funcion GetFullConfig added for Admin purposes
+- Master index build with config elements (General, Listeners, Hosts, Engines)
+- The APPs for the host must now export at least 4 standard functions for admin and control:
+  * Start called for each host startup function,
+  * GetContextConfigFile to get the path of the contexts config file,
+  * GetCompiledModules to get the list of the compiled available Modules,
+  * GetContextContainer to get the created contexts and container of contexts of the APP.
 
 V1.2.5 - 2020-05-01
 -----------------------

@@ -18,6 +18,7 @@ type Context struct {
 type Container struct {
 	Name     string
 	Path     string
+	LogFile  string
 	Config   *xconfig.XConfig
 	Contexts []*Context
 }
@@ -26,7 +27,7 @@ type ContainersList interface {
 	fmt.Stringer   // please implement String()
 	fmt.GoStringer // Please implement GoString()
 
-	Load(ctx *assets.Context)
+	Load(ctx *assets.Context, id string, contextfile string)
 	UpsertContainer(containerid string, newid string, path string) *Container
 	UpsertContext(containerid string, contextid string, newid string, path string) *Context
 
