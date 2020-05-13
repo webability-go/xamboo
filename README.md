@@ -60,14 +60,22 @@ TO DO
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
-- Stats module
-- implement call stat function(context)
+- Stats module: set mask %ip %h %l %s etc from config file
+- implement call stat function(context) into APP
 Extras:
-- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange)
+- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
+- hot-reload config (change config dynamically without restarting)
+- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.)
+
 
 Version Changes Control
 =======================
+
+V1.2.8 - 2020-05-13
+-----------------------
+- IP added into error logs and stat logs.
+- Master/Index now put unique IDs for contexts/modules to avoid DOM ids conflicts while building the list of configured contexts.
 
 V1.2.7 - 2020-05-10
 -----------------------

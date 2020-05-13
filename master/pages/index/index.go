@@ -162,7 +162,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 	for _, h := range config.Hosts {
 		for id, lib := range h.Plugins {
 
-			ptr := fmt.Sprint(lib)
+			ptr := fmt.Sprintf("%p", lib)
 			num, ok := apps[ptr]
 			if !ok {
 				num = cnt
@@ -210,7 +210,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 				}
 
 				opt := map[string]interface{}{
-					"id":        "ctx-" + context.ID,
+					"id":        "ctx-" + h.Name + "-" + id + "-" + context.ID,
 					"hostid":    h.Name,
 					"appid":     id,
 					"conid":     context.ID,
@@ -277,7 +277,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 					}
 
 					opt := map[string]interface{}{
-						"id":        "mod-" + context.ID + modprefix + modid,
+						"id":        "mod-" + h.Name + "-" + id + "-" + context.ID + "-" + modprefix + modid,
 						"icon":      icon,
 						"hostid":    h.Name,
 						"appid":     id,
@@ -288,7 +288,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 						"name":      prefix + modid + " " + version,
 						"color":     "black",
 						"status":    status,
-						"father":    "ctx-" + context.ID,
+						"father":    "ctx-" + h.Name + "-" + id + "-" + context.ID,
 						"loadable":  false,
 						"closeable": false,
 					}
@@ -310,7 +310,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 					}
 
 					opt := map[string]interface{}{
-						"id":        "mod-" + context.ID + compmod.GetID(),
+						"id":        "mod-" + h.Name + "-" + id + "-" + context.ID + "-" + compmod.GetID(),
 						"hostid":    h.Name,
 						"appid":     id,
 						"modid":     compmod.GetID(),
@@ -320,7 +320,7 @@ func getMenu(ctx *assets.Context, s *server.Server, language *xcore.XLanguage) m
 						"name":      compmod.GetID() + " " + compmod.GetVersion(),
 						"color":     "black",
 						"status":    "(NOT AUTHORIZED)",
-						"father":    "ctx-" + context.ID,
+						"father":    "ctx-" + h.Name + "-" + id + "-" + context.ID,
 						"loadable":  false,
 						"closeable": false,
 					}

@@ -146,15 +146,15 @@ func (r *RequestStat) End() {
 	// log the stat in pages and stat loggers
 	if r.Hostname == "" {
 		xlogger := logger.GetCoreLogger("errors")
-		xlogger.Println("Stat without hostname:", r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+		xlogger.Println("Stat without hostname:", r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
 	} else {
 		hlogger := logger.GetHostLogger(r.Hostname, "pages")
 		slogger := logger.GetHostLogger(r.Hostname, "stats")
 		if hlogger != nil {
-			hlogger.Println(r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+			hlogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
 		}
 		if slogger != nil {
-			slogger.Println(r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+			slogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
 		}
 	}
 
