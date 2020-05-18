@@ -128,6 +128,17 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// check Redirect
+		if hostdef.Redirect.Enabled {
+			// verify url contains protocol and domain, or redirect to
+			if (hostdef.Redirect.Scheme == "https" && r.TLS == nil) || r.Host != hostdef.Redirect.Host {
+				// rebuild the whole URL
+				url := "https://" + hostdef.Redirect.Host + r.URL.Path
+				code := http.StatusPermanentRedirect
+				http.Redirect(w, r, url, code)
+				return
+			}
+		}
 		// check AUTH
 		if hostdef.Auth.Enabled {
 			user, pass, ok := r.BasicAuth()

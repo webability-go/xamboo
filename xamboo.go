@@ -8,7 +8,7 @@ import (
 )
 
 // VERSION oficial of the xamboo
-const VERSION = "1.2.8"
+const VERSION = "1.2.9"
 
 func main() {
 	// *** system Language !!! preload

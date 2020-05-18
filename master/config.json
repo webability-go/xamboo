@@ -51,6 +51,10 @@
       },
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
+        "formatcomments": "The format is used for pages log. {ip} client ip, {pr} protocol, {mt} method, {cd} return code, {ur} requested uri, {sz} size before gzip, {tm} total time",
+        "formatcombinedapache": "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"",
+        "formatcommonapache": "%h %l %u %t \"%r\" %>s %b",
+        "format": "{ip} {pr} {mt} {cd} {ur} {sz} {tm}",
         "pages": "file:./example/logs/xamboo-admin-pages.log",
         "errors": "file:./example/logs/xamboo-admin-errors.log",
         "sys": "file:./example/logs/xamboo-admin-sys.log",
@@ -65,7 +69,7 @@
         "master"
       ],
       "hostnames": [
-        "master.webability.info"
+        "master.webability.info","mexico.thomassigny.org"
       ],
       "config": [
         "./master/config/master.conf",
@@ -91,6 +95,11 @@
         "realm": "Xamboo master console",
         "user": "master",
         "pass": "manager"
+      },
+      "redirect": {
+        "enabled": true,
+        "scheme": "https",
+        "host": "master.webability.info:81"
       },
       "log": {
         "comments": "this field is ignored by the xamboo. The rotate field is 1d, 1w, 1m, for days, weeks, months, compress = true to compress older files. logs can be file:[file] or stdout: or stderr: or discard:. the sys log is used for deep code log (like debug, pages code log, etc)",
