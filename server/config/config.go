@@ -38,6 +38,12 @@ type Log struct {
 	Compress bool   `json:"compress"`
 }
 
+type Redirect struct {
+	Enabled bool   `json:"enabled"`
+	Scheme  string `json:"scheme"`
+	Host    string `json:"host"`
+}
+
 type Auth struct {
 	Enabled bool   `json:"enabled"`
 	Realm   string `json:"realm"`
@@ -79,6 +85,7 @@ type Host struct {
 	ConfigFile []string   `json:"config"`
 	StaticPath string     `json:"static"`
 	Origin     *OriginDef `json:"origin"`
+	Redirect   Redirect   `json:"redirect"`
 	Auth       Auth       `json:"auth"`
 	Minify     Minify     `json:"minify"`
 	GZip       GZip       `json:"gzip"`

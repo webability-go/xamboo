@@ -57,11 +57,15 @@ You may attach the xamboo as a OS/service, calling the start.sh
 
 TO DO
 =======================
-- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
+- Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
+
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
 - Stats module: set mask %ip %h %l %s etc from config file
 - implement call stat function(context) into APP
+- xamboo local API to add/remove hosts, IPs, services ?
+Maybe, analyze:
+- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
@@ -71,6 +75,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+V1.2.9 - 2020-05-18
+-----------------------
+- Engines and config now keep track of compiled code with last compilation error, actual version number, for pages and apps
+- Very basic redirect module implemented (check scheme and main domain)
 
 V1.2.8 - 2020-05-13
 -----------------------
