@@ -1,6 +1,0 @@
-# Redirect to the home page example
-type=redirect
-status=published
-redirecturl=/
-# Moved permanently
-redirectcode=301

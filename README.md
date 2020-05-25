@@ -76,6 +76,12 @@ Extras:
 Version Changes Control
 =======================
 
+V1.3.0 - 2020-05-25
+-----------------------
+- Server code separated from master and environment code (project-usable code), so "xamboo" contains only the core code of server.
+- Standarization of application plugins: It now needs StartHost and StartContext exportable functions and must be compliant to the new assets.Application interface
+- Hosts definition structures are now in assets.
+
 V1.2.9 - 2020-05-18
 -----------------------
 - Engines and config now keep track of compiled code with last compilation error, actual version number, for pages and apps

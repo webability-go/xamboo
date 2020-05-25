@@ -1,9 +1,0 @@
-type=simple
-status=block
-template=templates/blue-block
-
-The following parameters are NOT used by the xamboo itself, but is for the code of the example site. You can define as much as parameters you wish.
-mainid=SimpleDemoCode
-maintitle=A Demo Block into the Page
-mainlanguage=on
-maincolor=123

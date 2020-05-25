@@ -1,6 +1,0 @@
-<div style="position: fixed; top: 0px; left: 0px; right: 0px; height: 50px; background-color: black; color: yellow;">
-  <div style="float: left; padding: 10px;font-size: 1.6em; text-weight: bold;">Xamboo Administration Console</div>
-  <div style="float: left; padding: 10px; text-weight: bold;" onclick="XB.Page('/');">Dashboard</div>
-  <div style="float: left; padding: 10px; text-weight: bold;" onclick="XB.Page('/tree');">Tree</div>
-</div>
-<div style="height: 50px;"></div>
