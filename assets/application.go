@@ -17,7 +17,7 @@ type Application interface {
 	// standard APPs function
 	StartHost(h Host)
 	StartContext(ctx *Context)
-	GeDatasourcesConfigFile() string
+	GetDatasourcesConfigFile() string
 	GetDatasourceSet() DatasourceSet
 	GetCompiledModules() ModuleSet
 }
@@ -34,16 +34,17 @@ type Module interface {
 	GetNeeds() []string // module[.version[+]]
 
 	GetInstalledVersion(Datasource) string
-	Setup(Datasource, string) ([]string, error)
-	Synchronize(Datasource, string) ([]string, error)
+	Setup(Datasource, string) ([]string, error)       // setup the module in the datasource (link tables definitions and others for first time)
+	Synchronize(Datasource, string) ([]string, error) // build anything missing into the datasource (tables, logs, files, etc)
+	StartContext(Datasource, *Context) error          // Called at any start of a new context
 }
 
 type DatasourceSet interface {
 	SetDatasource(id string, ctx Datasource)
 	GetDatasource(id string) Datasource
 	GetDatasources() map[string]Datasource
-	CreateDatasource(name string, config *xconfig.XConfig) (*Datasource, error)
-	TryContext(ctx *Context, defaultcontextname string) *Datasource
+	CreateDatasource(name string, config *xconfig.XConfig) (Datasource, error)
+	TryDatasource(ctx *Context, defaultdatasourcename string) Datasource
 }
 
 // Datasource is a portable structure interface containing pointer to usefull functions used in any datasources of applications
@@ -51,6 +52,7 @@ type DatasourceSet interface {
 // to avoid race conditions
 // The is only ONE database by datasource, with a set of modules and tables into this database.
 type Datasource interface {
+	GetName() string
 	AddLanguage(lang language.Tag)
 	GetLanguages() []language.Tag
 	SetLog(id string, logger *log.Logger)

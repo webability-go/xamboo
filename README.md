@@ -76,6 +76,10 @@ Extras:
 Version Changes Control
 =======================
 
+V1.3.1 - 2020-05-25
+-----------------------
+- Some bugs corrected on assets and Applications, Modules, Datasources interfaces.
+
 V1.3.0 - 2020-05-25
 -----------------------
 - Server code separated from master and environment code (project-usable code), so "xamboo" contains only the core code of server.
