@@ -111,9 +111,8 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 
 	// No ending /
 	if len(page) > 0 && page[len(page)-1] == '/' {
-		page = page[:len(page)-1]
-
-		// WE DO NOT ACCEPT ENDING / SO MAKE AUTOMATICALLY A REDIRECT TO THE SAME PAGE WITHOUT A / AT THE END
+		// WE DO NOT ACCEPT ENDING / SO MAKE AUTOMATICALLY A REDIRECT TO THE SAME PAGE WITHOUT A / AT THE END BUT STARTING WITH /
+		page = "/" + page[:len(page)-1]
 		s.launchRedirect(page)
 		return
 	}
