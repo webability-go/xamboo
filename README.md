@@ -76,6 +76,10 @@ Extras:
 Version Changes Control
 =======================
 
+V1.3.2 - 2020-06-26
+-----------------------
+- Bug corrected on URL redirect when it ends with a /
+
 V1.3.1 - 2020-05-25
 -----------------------
 - Some bugs corrected on assets and Applications, Modules, Datasources interfaces.
