@@ -1,4 +1,3 @@
-@UTF-8
 
 Xamboo for GO v1
 =============================
@@ -17,17 +16,28 @@ Xamboo works on sites currently distributing more than **60 millions web pages m
 INSTALATION AND COMPILATION
 =============================
 
-Create a new directory for Xamboo, for instance /home/sites/xamboo
+Create a new directory for your Xamboo Server, for instance /home/sites/server
 
-$ mkdir /home/sites/xamboo
+$ mkdir /home/sites/server
 
-Go in xamboo directory
-create a git:
+
+Go into your server directory amd create a git:
+
+$ cd /home/sites/server
 $ git init
 
-Pull the last verion of Xamboo
+Then pull the last version of Xamboo Example server, or the Ready to use environment project for Xamboo Server.
 
-$ git pull https://github.com/webability-go/xamboo.git
+$ git pull https://github.com/webability-go/xamboo-example.git
+or
+$ git pull https://github.com/webability-go/xamboo-env.git
+
+You may also add the master site for web administration of the Xamboo:
+
+$ mkdir /home/sites/server/master
+$ cd /home/sites/server/master
+$ git init
+$ git pull https://github.com/webability-go/xamboo-master.git
 
 You need to edit each .json files to adapt it to your own IP and ports
 
@@ -49,6 +59,7 @@ Install the master site and install contexts with XModules for any site you need
 
 You can compile xamboo to an executable with
 go build xamboo.go
+
 You do not need to recompile any app and page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity.
 You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo.
 
@@ -57,12 +68,13 @@ You may attach the xamboo as a OS/service, calling the start.sh
 
 TO DO
 =======================
-- Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
+- Stats module: set mask %ip %h %l %s etc from config file
+  Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
+  Make stats more persistent with file write before clean every X timer
+- Implement i18n and languages for messages.
 
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
-- Stats module: set mask %ip %h %l %s etc from config file
-- implement call stat function(context) into APP
 - xamboo local API to add/remove hosts, IPs, services ?
 Maybe, analyze:
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
@@ -70,11 +82,20 @@ Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI)
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
 - hot-reload config (change config dynamically without restarting)
-- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.)
+- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.) and implement with interceptors
 
 
 Version Changes Control
 =======================
+
+v1.3.4 - 2020-07-07
+-----------------------
+- Stat module now support the call to statistic function linked from plugin application declared in host plugins.
+  The statistic function must be a func(*assets.Context) {} and publicly exported from the plugin
+
+V1.3.3 - 2020-06-29
+-----------------------
+- Stat module now has a mutex to protect race condition on update/clean, and to avoid using memory white serving realtime stats on admin.
 
 V1.3.2 - 2020-06-26
 -----------------------

@@ -225,6 +225,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 func Run(file string) error {
 
+	// Load the language if needed for messages
+
 	// Link the engines
 	assets.EngineWrapper = wrapper
 	assets.EngineWrapperString = wrapperstring
@@ -315,7 +317,7 @@ func Run(file string) error {
 							llogger.Fatal(certerror)
 						}
 						xlogger.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
-						i += 1
+						i++
 					}
 				}
 				tlsConfig.BuildNameToCertificate()

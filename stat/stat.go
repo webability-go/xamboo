@@ -2,6 +2,7 @@ package stat
 
 import (
 	"net"
+	"sync"
 	"time"
 
 	"github.com/webability-go/xamboo/assets"
@@ -45,6 +46,8 @@ type Stat struct {
 	Requests       []*RequestStat // by microtime. keep last minute requests
 
 	SitesStat map[string]*SiteStat // Every site stat. referenced by ID (from config)
+
+	mutex sync.RWMutex
 }
 
 var SystemStat *Stat
@@ -85,6 +88,7 @@ func (s *Stat) Clean() {
 		last := 0
 
 		// if it's alive: no delete
+		s.mutex.Lock()
 		for i, r := range s.Requests {
 			if r.Time.Add(delta).Before(n) {
 				last = i
@@ -93,15 +97,13 @@ func (s *Stat) Clean() {
 			}
 		}
 		s.Requests = s.Requests[last:]
+		s.mutex.Unlock()
 		// we clean every 60 seconds
 		time.Sleep(time.Minute)
 	}
 }
 
 func CreateRequestStat(request string, method string, protocol string, code int, length int, duration time.Duration, remoteaddr string) *RequestStat {
-
-	SystemStat.RequestsTotal++
-	SystemStat.LengthServed += length
 
 	ip, port, _ := net.SplitHostPort(remoteaddr)
 
@@ -120,7 +122,13 @@ func CreateRequestStat(request string, method string, protocol string, code int,
 		Alive:     true,
 	}
 	RequestCounter++
+
+	SystemStat.LengthServed += length
+
+	SystemStat.mutex.Lock()
+	SystemStat.RequestsTotal++
 	SystemStat.Requests = append(SystemStat.Requests, r)
+	SystemStat.mutex.Unlock()
 
 	// Adding stat to the site:
 	return r
@@ -134,6 +142,22 @@ func (r *RequestStat) UpdateStat(code int, length int) {
 	r.Length += length
 	SystemStat.LengthServed += length
 	r.Duration = r.Time.Sub(r.StartTime)
+
+	// Put the stat at the end of the pile.. it has been modified!
+	SystemStat.mutex.Lock()
+	// find the request. It is highly possible it's at the end of Pile
+	for i := len(SystemStat.Requests) - 1; i >= 0; i-- {
+		if SystemStat.Requests[i] == r {
+			if i == len(SystemStat.Requests)-1 {
+				SystemStat.Requests = SystemStat.Requests[:i]
+			} else {
+				SystemStat.Requests = append(SystemStat.Requests[:i], SystemStat.Requests[i+1:]...)
+			}
+			break
+		}
+	}
+	SystemStat.Requests = append(SystemStat.Requests, r)
+	SystemStat.mutex.Unlock()
 }
 
 func (r *RequestStat) UpdateProtocol(protocol string) {
@@ -149,12 +173,12 @@ func (r *RequestStat) End() {
 		xlogger.Println("Stat without hostname:", r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
 	} else {
 		hlogger := logger.GetHostLogger(r.Hostname, "pages")
-		slogger := logger.GetHostLogger(r.Hostname, "stats")
+		slogger := logger.GetHostHook(r.Hostname, "stats")
 		if hlogger != nil {
 			hlogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
 		}
-		if slogger != nil {
-			slogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+		if slogger != nil && r.Context != nil {
+			slogger(r.Context)
 		}
 	}
 
