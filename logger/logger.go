@@ -12,6 +12,7 @@ import (
 	//  "github.com/webability-go/xconfig"
 	//  "github.com/webability-go/xamboo/utils"
 
+	"github.com/webability-go/xamboo/assets"
 	"github.com/webability-go/xamboo/config"
 )
 
@@ -19,6 +20,7 @@ type Logger struct {
 	TypeOfLogger string
 	File         string
 	Logger       *log.Logger
+	Hook         func(*assets.Context)
 }
 
 var Loggers map[string]*Logger
@@ -31,31 +33,31 @@ func Start() {
 
 	// 1. main loggers
 	id := "X[sys]"
-	Loggers[id] = Create(id, config.Config.Log.Sys, nil)
+	Loggers[id] = Create(id, config.Config.Log.Sys, nil, nil)
 	id = "X[errors]"
-	Loggers[id] = Create(id, config.Config.Log.Errors, Loggers["X[sys]"].Logger)
+	Loggers[id] = Create(id, config.Config.Log.Errors, Loggers["X[sys]"].Logger, nil)
 
 	// 2. listeners have loggers
 	for _, l := range config.Config.Listeners {
 		id = "L[" + l.Name + "][sys]"
-		Loggers[id] = Create(id, l.Log.Sys, Loggers["X[sys]"].Logger)
+		Loggers[id] = Create(id, l.Log.Sys, Loggers["X[sys]"].Logger, nil)
 	}
 
 	// 3. hosts
 	for _, h := range config.Config.Hosts {
 		id = "H[" + h.Name + "][pages]"
-		Loggers[id] = Create(id, h.Log.Pages, Loggers["X[sys]"].Logger)
+		Loggers[id] = Create(id, h.Log.Pages, Loggers["X[sys]"].Logger, &h)
 		id = "H[" + h.Name + "][errors]"
-		Loggers[id] = Create(id, h.Log.Errors, Loggers["X[sys]"].Logger)
+		Loggers[id] = Create(id, h.Log.Errors, Loggers["X[sys]"].Logger, &h)
 		id = "H[" + h.Name + "][sys]"
-		Loggers[id] = Create(id, h.Log.Sys, Loggers["X[sys]"].Logger)
+		Loggers[id] = Create(id, h.Log.Sys, Loggers["X[sys]"].Logger, &h)
 		id = "H[" + h.Name + "][stats]"
-		Loggers[id] = Create(id, h.Log.Stats, Loggers["X[sys]"].Logger)
+		Loggers[id] = Create(id, h.Log.Stats, Loggers["X[sys]"].Logger, &h)
 	}
 }
 
 // Then main xamboo runner
-func Create(id string, typeoflogger string, explain *log.Logger) *Logger {
+func Create(id string, typeoflogger string, explain *log.Logger, host *assets.Host) *Logger {
 
 	var writer io.Writer
 	protocol := typeoflogger
@@ -86,11 +88,23 @@ func Create(id string, typeoflogger string, explain *log.Logger) *Logger {
 			}
 		} else if protocol == "call" {
 			// only stat on Host can use this one. Any other will be ignored
-			writer = ioutil.Discard
-			file = typeoflogger[strings.Index(typeoflogger, ":")+1:]
+			if host != nil {
+				xlogger := strings.Split(typeoflogger, ":")
+				if len(xlogger) == 3 {
+					textexplain += "call: " + xlogger[1] + "." + xlogger[2]
 
-			textexplain += "call: " + file
-
+					plugin := host.Plugins[xlogger[1]]
+					hook, err := plugin.Lookup(xlogger[2])
+					if err != nil {
+						log.Fatalln("Failed to find stat call function:", xlogger[1], xlogger[2], err)
+					} else {
+						l := &Logger{TypeOfLogger: protocol, File: xlogger[1] + "." + xlogger[2], Hook: hook.(func(*assets.Context))}
+						return l
+					}
+				} else {
+					log.Fatalln("Failed to link stat call function:", typeoflogger)
+				}
+			}
 		} else {
 			log.Fatalln("Log protocol not known:", protocol)
 		}
@@ -116,4 +130,8 @@ func GetListenerLogger(id string, cat string) *log.Logger {
 
 func GetHostLogger(id string, cat string) *log.Logger {
 	return Loggers["H["+id+"]["+cat+"]"].Logger
+}
+
+func GetHostHook(id string, cat string) func(*assets.Context) {
+	return Loggers["H["+id+"]["+cat+"]"].Hook
 }
