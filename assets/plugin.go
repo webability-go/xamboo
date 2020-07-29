@@ -15,6 +15,7 @@ type Plugin struct {
 	Messages    string
 	Status      int // 0: not loaded/compile, 1: OK, 2: compile error (see messages)
 	Lib         *plugin.Plugin
+	Libs        map[string]*plugin.Plugin
 
 	// standard libraries function (can be nil if not a page library)
 	Run func(*Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{}
