@@ -2,68 +2,159 @@
 Xamboo for GO v1
 =============================
 
-Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.8+
+Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
 
-It is a very high quality framework for CMS, made in GO 1.8 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+It is a very high quality framework for CMS, made in GO 1.14 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
-Xamboo is freeware, and uses several other freeware components (XConfig, XCore)
+Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
 Xamboo is an engine to build applications that distribute any type of code to the client:
-It is completely independent of the generated code, i.e. you can send HTML, XHTML, XML, SGML, javascript, JS, JSON, WAP, PDF, etc.
+It is completely independent of the generated code, i.e. you can send HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc.
 
 Xamboo works on sites currently distributing more than **60 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
+
+The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
 
 INSTALATION AND COMPILATION
 =============================
 
 Create a new directory for your Xamboo Server, for instance /home/sites/server
 
+```
 $ mkdir /home/sites/server
+```
 
+Go into your server directory and create a git:
 
-Go into your server directory amd create a git:
-
+```
 $ cd /home/sites/server
 $ git init
+```
 
-Then pull the last version of Xamboo Example server, or the Ready to use environment project for Xamboo Server.
+Then pull the last version of Xamboo Ready to use environment project for Xamboo Server.
 
-$ git pull https://github.com/webability-go/xamboo-example.git
-or
+```
 $ git pull https://github.com/webability-go/xamboo-env.git
+```
 
 You may also add the master site for web administration of the Xamboo:
 
+```
 $ mkdir /home/sites/server/master
 $ cd /home/sites/server/master
 $ git init
 $ git pull https://github.com/webability-go/xamboo-master.git
+```
 
 You need to edit each .json files to adapt it to your own IP and ports
+You can also link the master config.json to the mainconfig.json (commented lines)
 
 Set the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
 Run the xamboo with master and examples
 
+```
 $ start.sh
+```
 
 
 To build your own server:
 Edit start.sh, json config files and change the config file path.
 
-You can copy the example directory and change anything you need.
+You can copy the example directory and change anything you need, or build from scratch.
 
-The master site is not necessary to make the CMS work. It's a helpfull tool to configure and install anything easier.
+The master site is not necessary to make the CMS work. It's a helpfull tool to configure and install anything easier and edit the json config files.
+
 Install the master site and install contexts with XModules for any site you need.
 
-You can compile xamboo to an executable with
+You can compile xamboo to an executable with:
+```
 go build xamboo.go
+```
 
 You do not need to recompile any app and page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity.
-You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo.
+You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo-env.
 
-You may attach the xamboo as a OS/service, calling the start.sh
+You may attach the xamboo to an OS/service, calling the start.sh
+
+
+CONFIGURATION FILES
+=============================
+
+Starting the Xamboo, you need to pass a configuration JSON file to the application with --config=[config path]
+
+You may use absolute paths, but it's very recommended to use only relative paths for portability. All the path you will use are relative to the directory where you launch your xamboo application.
+
+The config file is a JSON object which have 5 main sections.
+```
+{
+  "log": {},
+  "include": [],
+  "listeners": [],
+  "hosts": [],
+  "engines": []
+}
+```
+
+You may add other entries into each level for comments, they are going to be just ignored.
+```
+{
+  "comments": "This comment entry will be ignored by the xamboo",
+  "log-comments": "The logs are into the /var/log directory on my server",
+  "log": {},
+  "include-comments": "Each site has its own config file included",
+  "not-included": ["site1/config.json", "site2/config.json"],
+  "include": [],
+  "listeners": [],
+  "hosts": [],
+  "engines": []
+}
+```
+
+Every entry is optional in each file, but you must have them at least once in the full configuration with included files.
+For instance you may have only log and include section in the main config, and listeners, hosts and engines in the included file.
+
+The final config will concatenate every section together.
+For instance if in the config for site1 you have listener1 and listener2, and host1; and in the config for site2 you have listener3 and host2,
+```
+{
+  "comments": "MAIN CONFIG",
+  "log": {},
+  "include": ["site1/config.json", "site2/config.json"],
+  "engines": []
+}
+
+{
+  "comments": "site1/config.json",
+  "listeners": [ <LISTENER1>, <LISTENER2> ],
+  "hosts": [ <HOST1> ]
+}
+
+{
+  "comments": "site2/config.json",
+  "listeners": [ <LISTENER3> ],
+  "hosts": [ <HOST2> ]
+}
+```
+
+the result configuration would be (as interpreted by Xamboo):
+```
+{
+  "log": {},
+  "listeners": [ <LISTENER1>, <LISTENER2>, <LISTENER3> ],
+  "hosts": [ <HOST1>, <HOST2> ]
+  "engines": []
+}
+```
+
+1. "log" section
+
+2. "listeners" section
+
+3. "listeners" section
+
+4. "listeners" section
 
 
 TO DO
@@ -87,6 +178,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.3.5 - 2020-07-28
+-----------------------
+- library and wajafapp engines enhanced to keep track of loaded plugins and avoid 'plugin already loaded' error
+- Reference manual enhanced (config files introduction)
 
 v1.3.4 - 2020-07-07
 -----------------------

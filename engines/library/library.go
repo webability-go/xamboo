@@ -3,6 +3,7 @@ package library
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"plugin"
 	//  "time"
 
@@ -87,23 +88,27 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			PluginPath:  p.PluginPath,
 			PluginVPath: p.PluginPath + ".1",
 			Version:     0, // will be 1 at first compile
-			Messages:    p.PluginPath + ".1" + " does not exist. Let's compile.\n",
-			Status:      0,
+			Messages:    "",
+			Status:      0, // 0 = must compile or/and load (first creation of library)
+			Libs:        map[string]*plugin.Plugin{},
 		}
 	}
 
-	mustcompile := true
 	if !utils.FileExists(lib.SourcePath) {
-		lib.Status = 2
-		lib.Messages += "Error: " + lib.SourcePath + " Source file does not exists.\n"
-		mustcompile = false
-	} else {
-		if utils.FileExists(lib.PluginVPath) {
-			dp, _ := os.Stat(lib.PluginVPath)
-			dptime := dp.ModTime()
-			if utils.FileValidator(lib.SourcePath, dptime) {
-				mustcompile = false
-			}
+		if lib.Status != 2 {
+			lib.Status = 2
+			lib.Messages += "Error: " + lib.SourcePath + " Source file does not exists.\n"
+			LibraryCache.Set(lib.SourcePath, lib)
+		}
+		return lib.Messages
+	}
+
+	mustcompile := true
+	if utils.FileExists(lib.PluginVPath) {
+		dp, _ := os.Stat(lib.PluginVPath)
+		dptime := dp.ModTime()
+		if utils.FileValidator(lib.SourcePath, dptime) {
+			mustcompile = false
 		}
 	}
 
@@ -113,37 +118,53 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		if err != nil {
 			lib.Status = 2
 			ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
-			lib.Messages += "Error: " + lib.SourcePath + " cound not compile:\n" + fmt.Sprint(err)
+			lib.Messages += "Error: " + lib.SourcePath + " could not compile:\n" + fmt.Sprint(err)
+			LibraryCache.Set(lib.SourcePath, lib)
+			return lib.Messages
 		}
 	}
 
-	if lib.Status == 0 {
-		lib.Lib, err = plugin.Open(lib.PluginVPath)
-		if err != nil {
-			lib.Status = 2
-			ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
-			lib.Messages += "Error: " + lib.SourcePath + " cound not load:\n" + fmt.Sprint(err)
+	if lib.Status == 0 { // needs to load the plugin
+		// Get GO BuildID to compare with in-memory GO BuildID and keep it with the library itself
+		// if already exists in memory, set it as default, or load it
+		buildid := getBuildId(lib.PluginVPath)
+		plg := lib.Libs[buildid]
+		if plg != nil { // already exists and loaded
+			lib.Lib = plg
 		} else {
-			fct, err := lib.Lib.Lookup("Run")
+			lib.Lib, err = plugin.Open(lib.PluginVPath)
 			if err != nil {
 				lib.Status = 2
-				ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
-				lib.Messages += "Error: " + lib.SourcePath + " does not contain Run function:\n" + fmt.Sprint(err)
+				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
+				lib.Messages += "Error: " + lib.SourcePath + " could not load:\n" + fmt.Sprint(err)
+				LibraryCache.Set(lib.SourcePath, lib)
+				return lib.Messages
+			}
+			lib.Libs[buildid] = lib.Lib
+		}
+
+		fct, err := lib.Lib.Lookup("Run")
+		if err != nil {
+			lib.Status = 2
+			ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
+			lib.Messages += "Error: " + lib.SourcePath + " does not contain a Run function:\n" + fmt.Sprint(err)
+			LibraryCache.Set(lib.SourcePath, lib)
+			return lib.Messages
+		} else {
+			ok := false
+			lib.Run, ok = fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
+			if !ok {
+				lib.Status = 2
+				ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN A VALID STANDARD RUN FUNCTION", err)
+				lib.Messages += "Error: " + lib.SourcePath + " does not contain a valid standard Run function:\n"
+				LibraryCache.Set(lib.SourcePath, lib)
+				return lib.Messages
 			} else {
-				ok := false
-				lib.Run, ok = fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
-				if !ok {
-					lib.Status = 2
-					ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN A VALID STANDARD RUN FUNCTION", err)
-					lib.Messages += "Error: " + lib.SourcePath + " does not contain a valid standard Run function:\n"
-				} else {
-					lib.Status = 1
-				}
+				lib.Status = 1
 			}
 		}
+		LibraryCache.Set(lib.SourcePath, lib)
 	}
-
-	LibraryCache.Set(lib.SourcePath, lib)
 
 	if lib.Status == 1 {
 		return lib.Run(ctx, template, language, e)
@@ -152,66 +173,12 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	return lib.Messages
 }
 
-/*
-// context contains all the page context and history
-// params are an array of strings (if page from outside) or a mapped array of data (inner pages)
-func (p *LibraryEngineInstance) OldRun(ctx *assets.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
-
-	var lib *assets.Plugin
-
-	return "N/A working on it"
-
-	// verify if the code is compiled.
-	// IF THERE IS A NEW VERSION; CALL THE COMPILER THREAD (ONLY ONE) THAT WILL COMPILE THE CODE AND UPDATE THE CACHE MAP TO THE NEW VERSION.
-	// BE CAREFULL OF MEMORY OVERLOAD FOR NEW VERSION HOT LOADED (hotload = any flag in config ? authorized/not authorized, # authorized, send alerts, monitor etc)
-	var lib *plugin.Plugin
-	var err error
-
-	// If the plugin is not loaded, load it (equivalent of cache for other types of server)
-	// verify if the code is loaded in memory
-	cdata, invalid := LibraryCache.Get(p.SourcePath)
-	if cdata != nil {
-		lib = cdata.(*plugin.Plugin)
-	} else {
-		// Check if HOT reload authorized
-		if !invalid {
-			lib, err = plugin.Open(p.PluginPath)
-			if err != nil {
-				invalid = true
-			}
-		}
-
-		if invalid {
-			// get back version number && error
-			version, err := compiler.PleaseCompile(p.SourcePath, p.PluginPath, 0, ctx.LoggerError)
-			if err != nil {
-				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
-				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE, Error: " + fmt.Sprint(err)
-			}
-
-			// try to reload new library (hot load)
-			// works or fail
-			if version > 0 {
-				p.PluginPath = p.PluginPath + fmt.Sprintf(".%d", version)
-			}
-
-			lib, err = plugin.Open(p.PluginPath)
-			if err != nil {
-				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
-				return "ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD, Error: " + fmt.Sprint(err)
-			}
-		}
-		LibraryCache.Set(p.SourcePath, lib)
-	}
-
-	fct, err := lib.Lookup("Run")
+func getBuildId(path string) string {
+	cmd := exec.Command("go", "tool", "buildid", path)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
-		return "ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION, Error: " + fmt.Sprint(err)
+		// log error ?
+		return "Error running go tool buildid:\n" + fmt.Sprint(err)
 	}
-
-	x1 := fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})(ctx, template, language, e)
-
-	return x1
+	return string(out)
 }
-*/
