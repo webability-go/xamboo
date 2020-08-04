@@ -150,6 +150,66 @@ the result configuration would be (as interpreted by Xamboo):
 
 1. "log" section
 
+The log section contains the following parameters:
+
+```
+{
+  "log": {
+    "enabled": true,
+    "sys": "file:./example/logs/xamboo-sys.log",
+    "pages": "file:./example/logs/developers.log",
+    "errors": "file:./example/logs/xamboo-error.log",
+    "stats": "discard",
+  },
+  ...
+}
+```
+
+The log section is present in the root of the config file (main log), and also into each of the hosts and listeners defined in "hosts" and "listeners" sections.
+
+* Main log:
+
+Only "sys" and "errors" logs are used
+
+* Listener log:
+
+Only "sys" log is used
+
+* Host log:
+
+"enabled" (true/false) parameter, and "sys", "pages", "errors" and "stats" logs are used.
+
+Any other entry is ignored.
+
+---
+
+The "sys" logs will log anything "normal" for the object, for instance all the http.net server messages from TLS , startup, shutdown, etc.
+The "errors" logs will always receive any errors that may happen in the system, from main thread up to each hit on server (even panic errors and recovered errors.)
+The "pages" logs will log any hit on any pages and files for the host.
+Finally, the "stat" log will call any file or function at the same time as the "pages" log, but you are free to call a function with the whole context to log anything you need to.
+
+Each log entry can be one of:
+
+- file:<file>
+- stdout:
+- stderr:
+- discard
+
+The stat log can also be "call:<app plugin>:<entry function>".
+The function will be called for each hit on the host, with the server context so you can log anything you want anywhere you want to.
+
+The function must be, and be publicly exported:
+
+```
+import "github.com/webability-go/xamboo/assets"
+
+func Log(ctx *assets.Context) {
+	// do the log
+}
+```
+
+
+
 2. "listeners" section
 
 3. "listeners" section
@@ -163,6 +223,7 @@ TO DO
   Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
   Make stats more persistent with file write before clean every X timer
 - Implement i18n and languages for messages.
+- Moves the modules.so load to config.json, not anymore into site config.conf
 
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
 - simple code server injector, finish all supported code
@@ -178,6 +239,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.3.6 - 2020-08-03
+-----------------------
+- Replace github.com/avct/uasurfer by github.com/webability-go/uasurfer (forked to correct an important bug: the original uasurfer does not recognize mobile bots as mobile devices and gives big problem on google search console for device recognition)
+- Manual enhanced (logs)
 
 v1.3.5 - 2020-07-28
 -----------------------

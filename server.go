@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/avct/uasurfer"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -18,6 +17,7 @@ import (
 	"github.com/tdewolff/minify/svg"
 	"github.com/tdewolff/minify/xml"
 
+	"github.com/webability-go/uasurfer"
 	"github.com/webability-go/xconfig"
 	"github.com/webability-go/xcore/v2"
 
