@@ -306,7 +306,7 @@ func Run(file string) error {
 				}
 				tlsConfig.PreferServerCipherSuites = true
 				tlsConfig.MinVersion = tls.VersionTLS12
-				tlsConfig.MaxVersion = tls.VersionTLS12
+				tlsConfig.MaxVersion = tls.VersionTLS13
 				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
 				i := 0
 				var certerror error

@@ -198,7 +198,7 @@ Each log entry can be one of:
 The stat log can also be "call:<app plugin>:<entry function>".
 The function will be called for each hit on the host, with the server context so you can log anything you want anywhere you want to.
 
-The function must be, and be publicly exported:
+The function must be publicly exported like this:
 
 ```
 import "github.com/webability-go/xamboo/assets"
@@ -212,9 +212,51 @@ func Log(ctx *assets.Context) {
 
 2. "listeners" section
 
-3. "listeners" section
+3. "hosts" section
 
-4. "listeners" section
+4. "engines" section
+
+The engines are type of pages that can be called from the Xamboo server.
+There are 6 build-in engines for standard type of pages, and you can add as many engines as you need. (See Engine section of this manual to know how to build them)
+
+The engines syntax is:
+
+```
+"engines":
+[
+  { "name": "redirect", "source": "built-in" },
+  { "name": "simple", "source": "built-in" },
+  { "name": "library", "source": "built-in" },
+  { "name": "template", "source": "built-in" },
+  { "name": "language", "source": "built-in" },
+  { "name": "wajafapp", "source": "built-in" }
+]
+```
+
+When you want to add a hand made engine, the syntax is:
+
+```
+  { "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" },
+```
+
+
+ENGINES
+=============================
+
+1. Redirect page
+
+2. Simple page
+
+3. Library page
+
+4. Template page
+
+5. Language page
+
+6. WajafApp page
+
+7. User made Engines
+
 
 
 TO DO
@@ -239,6 +281,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.3.7 - 2020-08-10
+-----------------------
+- Opened to TLS 1.3 (now support TLS 1.2 and TLS 1.3)
+- Manual enhanced (engines config)
 
 v1.3.6 - 2020-08-03
 -----------------------
