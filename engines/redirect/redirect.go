@@ -1,6 +1,7 @@
 package redirect
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/webability-go/xamboo/assets"
@@ -32,6 +33,8 @@ func (re *RedirectEngine) Run(ctx *assets.Context, s interface{}) interface{} {
 			return ""
 		}
 	}
-	ctx.LoggerError.Println("Please specify redirecturl and redirectcode in .page")
-	return "Please specify redirecturl and redirectcode in .page"
+	errortext := "Please specify redirecturl and redirectcode in .page " + ctx.MainPage
+	ctx.Code = http.StatusInternalServerError
+	ctx.LoggerError.Println(errortext)
+	return errors.New(errortext)
 }

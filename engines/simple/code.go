@@ -1,8 +1,10 @@
 package simple
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -94,7 +96,10 @@ func (p *SimpleEngineInstance) Run(ctx *assets.Context, template *xcore.XTemplat
 	} else {
 		data, err := ioutil.ReadFile(p.FilePath)
 		if err != nil {
-			return "ERROR; .CODE FILE UNAVAILABLE " + p.FilePath
+			errortext := "Error; .code file unavailable " + p.FilePath
+			ctx.Code = http.StatusInternalServerError
+			ctx.LoggerError.Println(errortext)
+			return errors.New(errortext)
 		}
 		compiled = compileCode(string(data))
 		CodeCache.Set(p.FilePath, compiled)

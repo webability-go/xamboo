@@ -345,11 +345,13 @@ Extras:
 Version Changes Control
 =======================
 
-v1.3.8 - 2020-08-12
+v1.4.0 - 2020-08-12
 -----------------------
-- The engines can now return directly an error and the error will automatically be used to call error pages (available for library pages, wajafapp pages and any hand made extern engines)
-- Manual enhanced (listeners config)
-
+- The context now have a Code attribute to pass the return code from an engine to the writer.
+- The server now synchronize the returned code with the stat module so the correct returned code is logged.
+- The engines can now return directly an error and the error will automatically be used to call error pages (available for library pages, wajafapp pages and any hand made extern engines).
+- Engines has been adjusted to be able to return the error as an error (not a string).
+- Manual enhanced (listeners config).
 
 v1.3.7 - 2020-08-10
 -----------------------
