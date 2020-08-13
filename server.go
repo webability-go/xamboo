@@ -407,6 +407,12 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)
+	// if data is an error, launch the error page (the error has already been generated and handled)
+	dataerror, okerr := data.(error)
+	if okerr {
+		rstat := ctx.Writer.(*CoreWriter).RequestStat
+		return s.launchError(page, rstat.Code, innerpage, dataerror.Error())
+	}
 	_, okstr := data.(string)
 	if innerpage && !okstr { // If Data is not string so it may be any type of data for the caller. We will not incapsulate it into a template, even if asked
 		return data
