@@ -175,6 +175,7 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.Code != http.StatusOK {
+		s.writer.(*CoreWriter).RequestStat.Code = s.Code
 		s.writer.WriteHeader(s.Code)
 	}
 	s.writer.Write([]byte(scode))
@@ -240,6 +241,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	ctx := &assets.Context{
 		Request:             s.reader,
 		Writer:              s.writer,
+		Code:                http.StatusOK,
 		LocalPage:           page,
 		LocalPageUsed:       P,
 		LocalURLparams:      xParams,
@@ -298,7 +300,12 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 
 	if !engine.NeedInstance() {
 		// This engine does not need more than the .page itself.
-		return engine.Run(ctx, s)
+		data := engine.Run(ctx, s)
+		dataerror, okerr := data.(error)
+		if okerr {
+			return s.launchError(page, ctx.Code, innerpage, dataerror.Error())
+		}
+		return data
 	}
 
 	// ==========================================================
@@ -344,12 +351,12 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	if instancedata == nil {
-		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the page/block has no instance")
+		return s.launchError(page, http.StatusInternalServerError, innerpage, "Error: the page/block has no instance")
 	}
 
 	// verify the possible recursion
 	if r, c := s.verifyRecursion(P, ctx.LocalPageparams); r {
-		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
+		return s.launchError(page, http.StatusInternalServerError, innerpage, "Error: the page/block is recursive: "+P+" after "+strconv.Itoa(c)+" times")
 	}
 
 	//  s.pushContext(innerpage, page, P, instancedata, params, version, language)
@@ -369,7 +376,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	if engineinstance == nil {
-		return s.launchError(page, http.StatusNotFound, innerpage, "Error: the engine could not find an instance to Run. Please verify the available instances.")
+		return s.launchError(page, http.StatusInternalServerError, innerpage, "Error: the engine could not find an instance to Run. Please verify the available instances.")
 	}
 
 	var templatedata *xcore.XTemplate = nil
@@ -407,6 +414,11 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)
+	// if data is an error, launch the error page (the error has already been generated and handled)
+	dataerror, okerr := data.(error)
+	if okerr {
+		return s.launchError(page, ctx.Code, innerpage, dataerror.Error())
+	}
 	_, okstr := data.(string)
 	if innerpage && !okstr { // If Data is not string so it may be any type of data for the caller. We will not incapsulate it into a template, even if asked
 		return data
@@ -448,7 +460,6 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 
 	// Cache system disabled for now
 	// s.setFullCache()
-
 	return xdata
 }
 

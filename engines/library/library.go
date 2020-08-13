@@ -1,7 +1,8 @@
 package library
 
 import (
-	"fmt"
+	"errors"
+	"net/http"
 	"os"
 	"os/exec"
 	"plugin"
@@ -75,7 +76,6 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	// verify if the code is compiled.
 	// BE CAREFULL OF MEMORY OVERLOAD FOR NEW VERSION HOT LOADED (hotload = any flag in config ? authorized/not authorized, # authorized, send alerts, monitor etc)
 	var lib *assets.Plugin
-	var err error
 
 	// If the plugin is not loaded, load it (equivalent of cache for other types of server)
 	// verify if the code is loaded in memory
@@ -97,10 +97,13 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	if !utils.FileExists(lib.SourcePath) {
 		if lib.Status != 2 {
 			lib.Status = 2
-			lib.Messages += "Error: " + lib.SourcePath + " Source file does not exists.\n"
+			errortext := "Error: " + lib.SourcePath + " Source file does not exists.\n"
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
 		}
-		return lib.Messages
+		ctx.Code = http.StatusInternalServerError
+		return errors.New(lib.Messages)
 	}
 
 	mustcompile := true
@@ -117,17 +120,27 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		err := compiler.PleaseCompile(ctx, lib)
 		if err != nil {
 			lib.Status = 2
-			ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
-			lib.Messages += "Error: " + lib.SourcePath + " could not compile:\n" + fmt.Sprint(err)
+			errortext := "Error: the GO code could not compile " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
-			return lib.Messages
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
 		}
 	}
 
 	if lib.Status == 0 { // needs to load the plugin
 		// Get GO BuildID to compare with in-memory GO BuildID and keep it with the library itself
 		// if already exists in memory, set it as default, or load it
-		buildid := getBuildId(lib.PluginVPath)
+		buildid, err := getBuildId(lib.PluginVPath)
+		if err != nil {
+			errortext := "Error: the library .so does not have a build id " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
+			LibraryCache.Set(lib.SourcePath, lib)
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
+		}
 		plg := lib.Libs[buildid]
 		if plg != nil { // already exists and loaded
 			lib.Lib = plg
@@ -135,10 +148,12 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Lib, err = plugin.Open(lib.PluginVPath)
 			if err != nil {
 				lib.Status = 2
-				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
-				lib.Messages += "Error: " + lib.SourcePath + " could not load:\n" + fmt.Sprint(err)
+				errortext := "Error: the library .so could not load " + lib.SourcePath + "\n" + err.Error()
+				ctx.LoggerError.Println(errortext)
+				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
-				return lib.Messages
+				ctx.Code = http.StatusInternalServerError
+				return errors.New(lib.Messages)
 			}
 			lib.Libs[buildid] = lib.Lib
 		}
@@ -146,19 +161,23 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		fct, err := lib.Lib.Lookup("Run")
 		if err != nil {
 			lib.Status = 2
-			ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
-			lib.Messages += "Error: " + lib.SourcePath + " does not contain a Run function:\n" + fmt.Sprint(err)
+			errortext := "Error: the called library does not contain a Run function " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
-			return lib.Messages
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
 		} else {
 			ok := false
 			lib.Run, ok = fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
 			if !ok {
 				lib.Status = 2
-				ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN A VALID STANDARD RUN FUNCTION", err)
-				lib.Messages += "Error: " + lib.SourcePath + " does not contain a valid standard Run function:\n"
+				errortext := "Error: the called library does not contain a valid standard Run function " + lib.SourcePath + "\n" + err.Error()
+				ctx.LoggerError.Println(errortext)
+				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
-				return lib.Messages
+				ctx.Code = http.StatusInternalServerError
+				return errors.New(lib.Messages)
 			} else {
 				lib.Status = 1
 			}
@@ -170,15 +189,16 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		return lib.Run(ctx, template, language, e)
 	}
 	// any error: return Messages
-	return lib.Messages
+	ctx.Code = http.StatusInternalServerError
+	return errors.New(lib.Messages)
 }
 
-func getBuildId(path string) string {
+func getBuildId(path string) (string, error) {
 	cmd := exec.Command("go", "tool", "buildid", path)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		// log error ?
-		return "Error running go tool buildid:\n" + fmt.Sprint(err)
+		return "", err
 	}
-	return string(out)
+	return string(out), nil
 }

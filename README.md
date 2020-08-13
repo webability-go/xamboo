@@ -209,8 +209,71 @@ func Log(ctx *assets.Context) {
 ```
 
 
-
 2. "listeners" section
+
+The listener is the thread charged to listen to a specific IP:Port on the server, with some metrics and logs.
+
+The general syntax is:
+
+```
+"listeners": [ <LISTENER1>, <LISTENER2>, ... ]
+
+Each listener is:
+
+  {
+    "name": "<NAME>",
+    "ip": "<IP>",
+    "port": "<PORT>",
+    "protocol": "<PROTOCOL>",
+    "readtimeout": <TIMEOUT>,
+    "writetimeout": <TIMEOUT>,
+    "headersize": <SIZE>,
+    "log": {
+      "sys": "<SYSLOG>",
+    }
+  }
+```
+
+Where each parameter is:
+
+<NAME>: is the name of the listener (any string)
+<IP>: is the IP to listen to. If the IP is empty "", then the server will listen to all the available IPs on the server.
+<PORT>: is the port to listen to.
+<PROTOCOL>: is the protocol to listen to. For now, Xamboo knows http and https only.
+<TIMEOUT>: is a number between 0 and 65535, the time is in seconds.
+<SIZE>: is a number between 4096 and 65535, the size is in bytes.
+the <SYSLOG> is explained in the log section.
+
+Example of a working real listeners for HTTP and HTTPS:
+
+```
+"listeners": [
+  {
+    "name": "server-http",
+    "ip": "10.10.10.10",
+    "port": "80",
+    "protocol": "http",
+    "readtimeout": 120,
+    "writetimeout": 120,
+    "headersize": 65536,
+    "log": {
+      "sys": "file:./logs/listener-http-sys.log",
+    }
+  },
+  {
+    "name": "server-https",
+    "ip": "10.10.10.10",
+    "port": "443",
+    "protocol": "https",
+    "readtimeout": 120,
+    "writetimeout": 120,
+    "headersize": 65536,
+    "log": {
+      "sys": "file:./logs/listener-https-sys.log",
+    }
+  }
+]
+```
 
 3. "hosts" section
 
@@ -281,6 +344,14 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.4.0 - 2020-08-12
+-----------------------
+- The context now have a Code attribute to pass the return code from an engine to the writer.
+- The server now synchronize the returned code with the stat module so the correct returned code is logged.
+- The engines can now return directly an error and the error will automatically be used to call error pages (available for library pages, wajafapp pages and any hand made extern engines).
+- Engines has been adjusted to be able to return the error as an error (not a string).
+- Manual enhanced (listeners config).
 
 v1.3.7 - 2020-08-10
 -----------------------

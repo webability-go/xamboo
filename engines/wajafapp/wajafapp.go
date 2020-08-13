@@ -3,7 +3,8 @@ package wajafapp
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
+	"errors"
+	"net/http"
 	"os"
 	"os/exec"
 	"plugin"
@@ -20,7 +21,7 @@ import (
 
 // no limits, no timeout (it's part of the code itself)
 // Will cache *Plugin objects
-var LibraryCache = xcore.NewXCache("library", 0, 0)
+var LibraryCache = xcore.NewXCache("wajafapp", 0, 0)
 
 /*
 func init() {
@@ -100,10 +101,13 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	if !utils.FileExists(lib.SourcePath) {
 		if lib.Status != 2 {
 			lib.Status = 2
-			lib.Messages += "Error: " + lib.SourcePath + " Source file does not exists.\n"
+			errortext := "Error: " + lib.SourcePath + " Source file does not exists.\n"
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
 		}
-		return lib.Messages
+		ctx.Code = http.StatusInternalServerError
+		return errors.New(lib.Messages)
 	}
 
 	mustcompile := true
@@ -120,17 +124,27 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		err := compiler.PleaseCompile(ctx, lib)
 		if err != nil {
 			lib.Status = 2
-			ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT COMPILE", err)
-			lib.Messages += "Error: " + lib.SourcePath + " could not compile:\n" + fmt.Sprint(err)
+			errortext := "Error: the GO code could not compile " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
-			return lib.Messages
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
 		}
 	}
 
 	if lib.Status == 0 { // needs to load the plugin
 		// Get GO BuildID to compare with in-memory GO BuildID and keep it with the library itself
 		// if already exists in memory, set it as default, or load it
-		buildid := getBuildId(lib.PluginVPath)
+		buildid, err := getBuildId(lib.PluginVPath)
+		if err != nil {
+			errortext := "Error: the library .so does not have a build id " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
+			LibraryCache.Set(lib.SourcePath, lib)
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
+		}
 		plg := lib.Libs[buildid]
 		if plg != nil { // already exists and loaded
 			lib.Lib = plg
@@ -138,10 +152,12 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Lib, err = plugin.Open(lib.PluginVPath)
 			if err != nil {
 				lib.Status = 2
-				ctx.LoggerError.Println("ERROR: LIBRARY PAGE/BLOCK COULD NOT LOAD", err)
-				lib.Messages += "Error: " + lib.SourcePath + " could not load:\n" + fmt.Sprint(err)
+				errortext := "Error: the library .so could not load " + lib.SourcePath + "\n" + err.Error()
+				ctx.LoggerError.Println(errortext)
+				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
-				return lib.Messages
+				ctx.Code = http.StatusInternalServerError
+				return errors.New(lib.Messages)
 			}
 			lib.Libs[buildid] = lib.Lib
 		}
@@ -149,19 +165,23 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 		fct, err := lib.Lib.Lookup("Run")
 		if err != nil {
 			lib.Status = 2
-			ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN RUN FUNCTION", err)
-			lib.Messages += "Error: " + lib.SourcePath + " does not contain a Run function:\n" + fmt.Sprint(err)
+			errortext := "Error: the called library does not contain a Run function " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
-			return lib.Messages
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
 		} else {
 			ok := false
 			lib.Run, ok = fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
 			if !ok {
 				lib.Status = 2
-				ctx.LoggerError.Println("ERROR: LIBRARY DOES NOT CONTAIN A VALID STANDARD RUN FUNCTION", err)
-				lib.Messages += "Error: " + lib.SourcePath + " does not contain a valid standard Run function:\n"
+				errortext := "Error: the called library does not contain a valid standard Run function " + lib.SourcePath + "\n" + err.Error()
+				ctx.LoggerError.Println(errortext)
+				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
-				return lib.Messages
+				ctx.Code = http.StatusInternalServerError
+				return errors.New(lib.Messages)
 			} else {
 				lib.Status = 1
 			}
@@ -188,14 +208,22 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 
 	fct, err := lib.Lib.Lookup(fctname)
 	if err != nil {
-		ctx.LoggerError.Println("ERROR: WAJAF LIBRARY DOES NOT CONTAIN FUNCTION "+fctname+", Error: ", err)
-		return "ERROR: WAJAF LIBRARY DOES NOT CONTAIN FUNCTION " + fctname + ", Error: " + fmt.Sprint(err)
+		errortext := "Error: the called library does not contain a function " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+		ctx.LoggerError.Println(errortext)
+		lib.Messages += errortext
+		LibraryCache.Set(lib.SourcePath, lib)
+		ctx.Code = http.StatusInternalServerError
+		return errors.New(lib.Messages)
 	}
 
 	xfct, ok := fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
 	if !ok {
-		ctx.LoggerError.Println("ERROR: WAJAF LIBRARY::"+fctname+" HAS NOT A VALID STANDARD DEFINITION, Error: ", err)
-		return "ERROR: WAJAF LIBRARY::" + fctname + " HAS NOT A VALID STANDARD DEFINITION, Error: " + fmt.Sprint(err)
+		errortext := "Error: the called library does not contain a valid standard function " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+		ctx.LoggerError.Println(errortext)
+		lib.Messages += errortext
+		LibraryCache.Set(lib.SourcePath, lib)
+		ctx.Code = http.StatusInternalServerError
+		return errors.New(lib.Messages)
 	}
 
 	x1 := xfct(ctx, template, language, e)
@@ -218,17 +246,23 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 				app := wajaf.NewApplication("")
 				err := xml.Unmarshal([]byte(strcode), app)
 				if err != nil {
-					ctx.LoggerError.Println("ERROR: UNMARSHALLING XML LIBRARY, Error: ", err)
-					return "ERROR: UNMARSHALLING XML LIBRARY, Error: " + fmt.Sprint(err)
+					errortext := "Error: unmarshalling the XML code in " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+					ctx.LoggerError.Println(errortext)
+					lib.Messages += errortext
+					LibraryCache.Set(lib.SourcePath, lib)
+					ctx.Code = http.StatusInternalServerError
+					return errors.New(lib.Messages)
 				}
-				//				fmt.Printf("%#v", app)
 
 				json, err := json.Marshal(app)
 				if err != nil {
-					ctx.LoggerError.Println("ERROR: MARSHALLING JSON LIBRARY, Error: ", err)
-					return "ERROR: MARSHALLING JSON LIBRARY, Error: " + fmt.Sprint(err)
+					errortext := "Error: marshalling the JSON code in " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+					ctx.LoggerError.Println(errortext)
+					lib.Messages += errortext
+					LibraryCache.Set(lib.SourcePath, lib)
+					ctx.Code = http.StatusInternalServerError
+					return errors.New(lib.Messages)
 				}
-				//				fmt.Printf("%#v", string(json))
 				return string(json)
 			}
 			if strcode[0] == '{' || strcode[0] == '[' {
@@ -241,16 +275,24 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			}
 			json, err := json.Marshal(data)
 			if err != nil {
-				ctx.LoggerError.Println("ERROR: MARSHALLING JSON DATA, Error: ", err)
-				return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
+				errortext := "Error: marshalling the JSON code in " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+				ctx.LoggerError.Println(errortext)
+				lib.Messages += errortext
+				LibraryCache.Set(lib.SourcePath, lib)
+				ctx.Code = http.StatusInternalServerError
+				return errors.New(lib.Messages)
 			}
 			return string(json)
 		}
 		// anything else: we just JSONify
 		json, err := json.Marshal(x1)
 		if err != nil {
-			ctx.LoggerError.Println("ERROR: MARSHALLING JSON DATA, Error: ", err)
-			return "ERROR: MARSHALLING JSON DATA, Error: " + fmt.Sprint(err)
+			errortext := "Error: marshalling the JSON code in " + fctname + " in " + lib.SourcePath + "\n" + err.Error()
+			ctx.LoggerError.Println(errortext)
+			lib.Messages += errortext
+			LibraryCache.Set(lib.SourcePath, lib)
+			ctx.Code = http.StatusInternalServerError
+			return errors.New(lib.Messages)
 		}
 		return string(json)
 	}
@@ -258,12 +300,12 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	return x1
 }
 
-func getBuildId(path string) string {
+func getBuildId(path string) (string, error) {
 	cmd := exec.Command("go", "tool", "buildid", path)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		// log error ?
-		return "Error running go tool buildid:\n" + fmt.Sprint(err)
+		return "", err
 	}
-	return string(out)
+	return string(out), nil
 }
