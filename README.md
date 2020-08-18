@@ -302,6 +302,31 @@ When you want to add a hand made engine, the syntax is:
   { "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" },
 ```
 
+PAGES
+=============================
+
+1. What is a page
+
+2. Page resolution
+
+3. .page file, type, status, template and others
+
+4. Instances of a page
+
+5. Type of pages
+
+  3.1 Redirect page
+
+  3.2 Simple Page
+
+  3.3 Library Page
+
+  3.4 WajafApp Page
+
+  3.5 Template Page
+
+  3.6 Language Page
+
 
 ENGINES
 =============================
@@ -319,6 +344,45 @@ ENGINES
 6. WajafApp page
 
 7. User made Engines
+
+An Engine must meet the assets.Engine and assets.EngineInstance interfaces to be used by the Xamboo.
+
+An Engine is a plugin (go --buildmode=plugin) loadable by the Server.
+
+When the system loads the engine, it will check the existence of the exported variable Engine, that must meet the assets.Engine interface.
+
+The engine will work in 2 step.
+  a. When the xamboo detect a page with the type of the engine, it will call the Engine.NeedInstance() function to know if the engines needs to build an instance to work (returns true/false).
+    a.1 If the engine does not need an instance, the server will call Engine.Run() function to get the result of the calculated page.
+    a.2 If the engine needs an instance, the server will call Engine.GetInstance() function to get the instance.
+
+
+APPLICATION
+=============================
+
+An Application must meet the assets.Application interface to be used by the Xamboo.
+
+An Application is a plugin (go --buildmode=plugin) loadable by the Server, called by a Host.
+
+A Host can load more than one Application.
+An Application can be called by more than one Host.
+
+When the system loads the Application, it will check the existence of the exported variable Application, that must meet the assets.Application interface.
+
+The Application is the entry point to load the XModules.
+
+1. Datasource
+
+2. Compiled Module
+
+3. Context
+
+
+XMODULES
+=============================
+
+
+
 
 
 
@@ -344,6 +408,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.4.1 - 2020-08-18
+-----------------------
+- Some bugs corrected to use the innerPage parameter correctly to pass the return Code.
+- Manual enchanced (APPLICATION, MANUAL ENGINE)
 
 v1.4.0 - 2020-08-12
 -----------------------
