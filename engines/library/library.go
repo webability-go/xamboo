@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"plugin"
+	"sync"
 	//  "time"
 
 	"github.com/webability-go/xcore/v2"
@@ -18,6 +19,7 @@ import (
 // no limits, no timeout (it's part of the code itself)
 // Will cache *Plugin objects
 var LibraryCache = xcore.NewXCache("library", 0, 0)
+var mutex sync.RWMutex
 
 /*
 func init() {
@@ -36,10 +38,10 @@ func (re *LibraryEngine) NeedInstance() bool {
 
 func (re *LibraryEngine) GetInstance(Hostname string, PagesDir string, P string, i assets.Identity) assets.EngineInstance {
 
-	prefix := Hostname + "-"
+	// prefix := Hostname + "-"   // No prefix. A library always has the same BuildID if it's from the same code. IT just gives conflicts when various sites use the same code
 	lastpath := utils.LastPath(P)
 	SourcePath := PagesDir + P + "/" + lastpath + ".go"
-	PluginPath := PagesDir + P + "/" + prefix + lastpath + ".so"
+	PluginPath := PagesDir + P + "/" + lastpath + ".so"
 
 	if utils.FileExists(SourcePath) {
 		data := &LibraryEngineInstance{
@@ -77,6 +79,8 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 	// BE CAREFULL OF MEMORY OVERLOAD FOR NEW VERSION HOT LOADED (hotload = any flag in config ? authorized/not authorized, # authorized, send alerts, monitor etc)
 	var lib *assets.Plugin
 
+	// During the seek of the library, we lock the engine for security. Very fast lock
+	mutex.Lock()
 	// If the plugin is not loaded, load it (equivalent of cache for other types of server)
 	// verify if the code is loaded in memory
 	cdata, _ := LibraryCache.Get(p.SourcePath)
@@ -92,7 +96,10 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			Status:      0, // 0 = must compile or/and load (first creation of library)
 			Libs:        map[string]*plugin.Plugin{},
 		}
+		LibraryCache.Set(lib.SourcePath, lib)
 	}
+	mutex.Unlock()
+	lib.Mutex.Lock()
 
 	if !utils.FileExists(lib.SourcePath) {
 		if lib.Status != 2 {
@@ -103,6 +110,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			LibraryCache.Set(lib.SourcePath, lib)
 		}
 		ctx.Code = http.StatusInternalServerError
+		lib.Mutex.Unlock()
 		return errors.New(lib.Messages)
 	}
 
@@ -125,6 +133,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
 			ctx.Code = http.StatusInternalServerError
+			lib.Mutex.Unlock()
 			return errors.New(lib.Messages)
 		}
 	}
@@ -139,6 +148,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
 			ctx.Code = http.StatusInternalServerError
+			lib.Mutex.Unlock()
 			return errors.New(lib.Messages)
 		}
 		plg := lib.Libs[buildid]
@@ -153,6 +163,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
 				ctx.Code = http.StatusInternalServerError
+				lib.Mutex.Unlock()
 				return errors.New(lib.Messages)
 			}
 			lib.Libs[buildid] = lib.Lib
@@ -166,6 +177,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Messages += errortext
 			LibraryCache.Set(lib.SourcePath, lib)
 			ctx.Code = http.StatusInternalServerError
+			lib.Mutex.Unlock()
 			return errors.New(lib.Messages)
 		} else {
 			ok := false
@@ -177,13 +189,14 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
 				ctx.Code = http.StatusInternalServerError
+				lib.Mutex.Unlock()
 				return errors.New(lib.Messages)
 			} else {
 				lib.Status = 1
 			}
 		}
-		LibraryCache.Set(lib.SourcePath, lib)
 	}
+	lib.Mutex.Unlock()
 
 	if lib.Status == 1 {
 		return lib.Run(ctx, template, language, e)
