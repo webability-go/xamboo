@@ -2,12 +2,14 @@ package assets
 
 import (
 	"plugin"
+	"sync"
 
 	"github.com/webability-go/xcore/v2"
 	//	"github.com/webability-go/xmodules/context"
 )
 
 type Plugin struct {
+	Mutex       sync.RWMutex
 	SourcePath  string
 	PluginPath  string
 	PluginVPath string

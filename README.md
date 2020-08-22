@@ -221,28 +221,28 @@ The general syntax is:
 Each listener is:
 
   {
-    "name": "<NAME>",
-    "ip": "<IP>",
-    "port": "<PORT>",
-    "protocol": "<PROTOCOL>",
-    "readtimeout": <TIMEOUT>,
-    "writetimeout": <TIMEOUT>,
-    "headersize": <SIZE>,
+    "name": "NAME",
+    "ip": "IP",
+    "port": "PORT",
+    "protocol": "PROTOCOL",
+    "readtimeout": TIMEOUT,
+    "writetimeout": TIMEOUT,
+    "headersize": SIZE,
     "log": {
-      "sys": "<SYSLOG>",
+      "sys": "SYSLOG",
     }
   }
 ```
 
 Where each parameter is:
 
-<NAME>: is the name of the listener (any string)
-<IP>: is the IP to listen to. If the IP is empty "", then the server will listen to all the available IPs on the server.
-<PORT>: is the port to listen to.
-<PROTOCOL>: is the protocol to listen to. For now, Xamboo knows http and https only.
-<TIMEOUT>: is a number between 0 and 65535, the time is in seconds.
-<SIZE>: is a number between 4096 and 65535, the size is in bytes.
-the <SYSLOG> is explained in the log section.
+- NAME: is the name of the listener (any string)
+- IP: is the IP to listen to. If the IP is empty "", then the server will listen to all the available IPs on the server.
+- PORT: is the port to listen to.
+- PROTOCOL: is the protocol to listen to. For now, Xamboo knows http and https only.
+- TIMEOUT: is a number between 0 and 65535, the time is in seconds.
+- SIZE: is a number between 4096 and 65535, the size is in bytes.
+- the SYSLOG is explained in the log section.
 
 Example of a working real listeners for HTTP and HTTPS:
 
@@ -305,9 +305,77 @@ When you want to add a hand made engine, the syntax is:
 PAGES
 =============================
 
-1. What is a page
+1. What is a page: Engines, Instances, Languages and Versions.
 
 2. Page resolution
+
+Xamboo separates the path of the URI first. Leave the / at the beginning and removes the last /.
+
+The notion of file does not exist in the framework. For example, /mi-ruta/mi-archivo.html is something not understood by the engine, unless there physically 'mi-file.html' folder within the 'my-route' folder in the root of the Web Site.
+If you want to call a file as is, it must exists in the static repository, or a 404 will be returned.
+
+Xamboo routes are manufactured to comply with the rules of SEO and search engine indexing.
+Xamboo routes Xamboo accept only the following characters:
+
+A-Z a-z letters, letters with accents and ñ, numbers 0-9, hyphen, underscore.
+
+You can not include /, \, punctuation marks, etc. within routes (unless the OS supports it).
+
+Capitalization is always converted to lowercase for compatibility with operating systems insensitive to uppercase / lowercase is Windows.
+
+For example if you capture the URI path:
+/My-PagE/My-PatH: looks at page repository folder "my-page/my-path"
+/ My-page / My-route: look at page repository folder "/ my-page / my-route" with spaces
+
+The pages of the framework are all in the repository pages. This repository is a folder defined in the config file of the host site.
+
+Each page is a folder, which contains a number of files that make up the definition and code of the page.
+
+Xamboo accepts a hierarchical structure of pages, i.e. folders within folders.
+
+The route of the pages is the same route used in the URI to access this page.
+
+* The search is performed as follows:
+
+```
+a. Locate the folder path directly as it comes from the URI. (with a protection of "..")
+  a.1. If there is no folder, follow in step b.
+  a.2. If the folder exists, check there inside the .page file.
+    a.2.i. If not, continues in step b.
+    a.2.ii. If the file exists, verify it with status 'published'
+      a.2.ii.1. If not 'published', follows in step b.
+      a.2.ii.2. If published, calculates and returns page.
+b. Not Found page. Removes the last folder URI
+  b.1. There are still folders, continues in step a.
+  b.2. No more folders, terminate with an error
+```
+
+In short, it is the first folder found on the route from the end to be executed. In other words, you can add whatever after the official route will be ignored and taken to the page found as a number of parameters.
+
+The parameter "AcceptPathParameters" in the .page file will confirm to the system to accept parameters after the valid page (that will be passed to the page), or launch an error if the page is not valid.
+
+Examples:
+Repository Structure:
+
+```
+/ section
+  => Real page with the file section.page published
+/ section / subsection
+  => Real page with the file subsection.page published
+/ Section / subsection / sub-subsection
+  => Actual page with sub-subsection.page file, unpublished
+
+URI path to solve: / section / subsection / sub-sub / other-thing / one-extra-thing
+
+The resolution first searches the / section / subsection / sub-sub / other-thing / one-way-extra, that does not exist.
+Then, the resolution looks / section / subsection / sub-sub / other-thing that does not exist
+Then, the resolution looks / section / subsection / sub-subsection, which exists but is not published
+Finally, the resolution looks / section / subsection exists and is published
+Executes and returns the actual page / section / subsection, only if AcceptPathParameters=true in .page file, or gives a 404.
+
+The complement of the path is passed to the page and can be used as an array of parameters
+In general, these parameters are words used for SEO, variables, names of items, etc.
+```
 
 3. .page file, type, status, template and others
 
@@ -355,7 +423,13 @@ The engine will work in 2 step.
   a. When the xamboo detect a page with the type of the engine, it will call the Engine.NeedInstance() function to know if the engines needs to build an instance to work (returns true/false).
     a.1 If the engine does not need an instance, the server will call Engine.Run() function to get the result of the calculated page.
     a.2 If the engine needs an instance, the server will call Engine.GetInstance() function to get the instance.
+  b. When and instance is created it will call Instance.Run() function to get the result of the calculated page.
 
+A page with instance may have as many instances as needed. Each instance normally have different parameters, most common parameters are language and type of connected device. Try to build instance only on 1 parameter or you will rapidly have a matrix of instances impossible to maintain.
+
+It is common to have a unique code with different languages tables (.language files), or have different templates for PC and Mobile for instance.
+
+The instance Run function will pass the template and language corresponding to the client parameters, i.e. language and version (generally the device) template
 
 APPLICATION
 =============================
@@ -377,11 +451,15 @@ The Application is the entry point to load the XModules.
 
 3. Context
 
+4. Bridge
+
 
 XMODULES
 =============================
 
+The XModules are all the modules that are build within the Xamboo applications and pages.
 
+It is a normalized structure to call the methods and link the contexts with hosts and applications.
 
 
 
@@ -408,6 +486,11 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.4.2 - 2020-08-22
+-----------------------
+- Race condition corrected on the compiler and library engine when 2 sites with different ID try to compile the same page (and finally breaks the page)
+- Manual enchanced (Page resolution)
 
 v1.4.1 - 2020-08-18
 -----------------------
