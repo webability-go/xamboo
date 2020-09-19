@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/webability-go/xamboo/assets"
-	"github.com/webability-go/xamboo/logger"
+	//	"github.com/webability-go/xamboo/logger"
 )
 
 type Worker struct {
@@ -61,7 +61,7 @@ type Pile struct {
 	Workers map[string]*Worker
 }
 
-var CPile Pile
+var CPile *Pile
 
 func (p *Pile) createCompiler(ctx *assets.Context, plugin *assets.Plugin) *Worker {
 
@@ -96,64 +96,9 @@ func (p *Pile) PleaseCompile(ctx *assets.Context, plugin *assets.Plugin) error {
 }
 
 func PleaseCompile(ctx *assets.Context, plugin *assets.Plugin) error {
+	if CPile == nil {
+		CPile = &Pile{Workers: map[string]*Worker{}}
+	}
+
 	return CPile.PleaseCompile(ctx, plugin)
-}
-
-/*
-func OldPleaseCompile(path string, plugin string, version int, logger *log.Logger) (int, error) {
-
-	newversion := 0
-	CPile.mutex.RLock()
-	if worker, ok := CPile.Workers[path]; ok {
-		CPile.mutex.RUnlock()
-		newversion = worker.version
-		readychannel := worker.Subscribe()
-		<-readychannel
-	} else {
-		// 1. Creates a channel, send message to supervisor, wait for response
-		CPile.mutex.RUnlock()
-		newversion = searchNextFreeVersion(plugin, version)
-		worker := CPile.CreateCompiler(path, plugin, newversion, logger)
-		<-worker.ready
-		// destroys the Worker
-		CPile.mutex.Lock()
-		delete(CPile.Workers, path)
-		CPile.mutex.Unlock()
-	}
-	return newversion, nil
-}
-
-func searchNextFreeVersion(plugin string, version int) int {
-
-	// search if version, version+1, version+2.... exists, return next available version
-	var newversion int
-	var newfile string
-	for newversion = version; true; newversion++ {
-		if newversion > 0 {
-			newfile = plugin + fmt.Sprintf(".%d", newversion)
-		} else {
-			newfile = plugin
-		}
-		if !utils.FileExists(newfile) {
-			break
-		}
-	}
-	return newversion
-}
-*/
-func Supervisor() {
-
-	CPile.Workers = make(map[string]*Worker)
-
-	slogger := logger.GetCoreLogger("sys")
-	slogger.Println("Launching the compilation supervisor.")
-
-	// put order in any .go and .so.xx,
-
-	// listen to the things to compile and recompile
-}
-
-func Start() {
-	// Supervisor will work until the xamboo is working.
-	go Supervisor()
 }

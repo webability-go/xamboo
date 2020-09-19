@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/webability-go/xamboo/assets"
-	"github.com/webability-go/xamboo/compiler"
+	//	"github.com/webability-go/xamboo/compiler"
 	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/logger"
 	"github.com/webability-go/xamboo/stat"
@@ -241,7 +241,6 @@ func Run(file string) error {
 
 	logger.Start()
 	stat.Start()
-	compiler.Start()
 	LinkEngines(config.Config.Engines)
 
 	http.HandleFunc("/", StatLoggerWrapper(mainHandler))

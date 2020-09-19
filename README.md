@@ -44,6 +44,7 @@ $ mkdir /home/sites/server/master
 $ cd /home/sites/server/master
 $ git init
 $ git pull https://github.com/webability-go/xamboo-master.git
+$ cd ..
 ```
 
 You need to edit each .json files to adapt it to your own IP and ports
@@ -52,9 +53,10 @@ You can also link the master config.json to the mainconfig.json (commented lines
 Set the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
-Run the xamboo with master and examples
+Upgrade to the lastest version, then run the xamboo with master and examples
 
 ```
+$ go get -u github.com/webability-go/xamboo
 $ start.sh
 ```
 
@@ -277,7 +279,129 @@ Example of a working real listeners for HTTP and HTTPS:
 
 3. "hosts" section
 
-4. "engines" section
+A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
+Any host can listen on any listener, and respond to any domain in the configuration.
+
+A Host may have modules activated, like gzip response, compress HTML/CSS/JS response, Basic Auth, Redirect, etc.
+
+Note: Modules are still not programmable, but will be soon.
+
+The general syntax is:
+
+```
+"hosts": [
+  {
+    "name": "developers",
+    "listeners": [ "http", "https" ],
+    "hostnames": [ "developers.webability.info", "www.webability.info", "webability.info", "webability.org" ],
+    "config": [ "./example/application/config/example.conf" ],
+    "cert": "./example/ssl/cert.pem",
+    "key": "./example/ssl/privkey.pem",
+    "static": "./example/repository/public/static",
+    "browser": {
+      "useragent": {
+        "enabled": true,
+        "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
+      }
+    },
+    "gzip": {
+      "enabled": true,
+      "mimes": [
+        "text/html",
+        "text/css"
+      ],
+      "files": [
+        "*.ico",
+        "*.css",
+        "*.js",
+        "*.html"
+      ]
+    },
+    "minify": {
+      "enabled": true,
+      "html": true,
+      "css": true,
+      "js": true,
+      "json": true,
+      "svg": true,
+      "xml": true
+    },
+    "auth": {
+      "enabled": false
+    },
+    "log": {
+      "enabled": true,
+      "pages": "file:./example/logs/developers.log",
+      "errors": "file:./example/logs/developers-error.log",
+      "sys": "file:./example/logs/developers-sys.log",
+      "stats": "discard"
+    }
+  },
+  ...
+  ]
+```
+
+The Host as a name, which is a free string.
+The Listeners section contains all the previously declared listeners in the config you want to respond for this host.
+The hostnames section contains all the host names (domain names) that will answer to the requests.
+
+The cert and key is the SSL certificate for the site, only if there is any listener on HTTPS protocol.
+The cert should include all the hostname you declare for this site.
+
+The config file is the configuration for the Host. See the following section for configuration
+
+The available modules (hard-wired for now) are:
+
+- Browser (set the page version to the type of device)
+- GZip (gzip output if authorized type of file or mime)
+- Minify (minify output html, css, json if authorized type of file or mime)
+- Auth  (basic realm authorization to access site)
+- Logs  (log the errors, hits, stats)
+
+Each module can be enabled or disabled.
+
+
+
+
+4. Host Configuration file
+
+Wait, why an extra configuration file?
+
+The configuration file is a set of param-value pairs that will be used into the construction of the site by both the pages engines and your own code. This is a XConfig configuration file (see the github.com/webability-go/xconfig manuals) for the whole code parameters.
+
+You may add as many as parameters you need for your code; the important ones for Xamboo are:
+
+```
+# The main example site configuration file
+
+# Where the pages of our CMS is
+# pagesdir can be relative to the xamboo run directory (prefered), or absolute
+pagesdir=./example/application/pages/
+
+# The main page to use for / (your home page) (must exists in the pages)
+mainpage=home
+errorpage=errors/page
+errorblock=errors/block
+
+#  The default version of the pages for this site. It is highly recommended to never change 'base' unless you perfectly know what you are doing (advanced configuration)
+#  The host module "browser-useragent" will change the version based on the type of connected device to your site if activated.
+version=base
+#  The default language of the pages for this site. You may change with your local language
+language=en
+
+# If the pages of the site accept parameters as URL by default (like this: /the-page/param1/param2/param3 )
+# MAIN PAGE SHOULD NEVER ACCEPT PARAMETERS unless you perfectly know what you do (calling icons, files, etc should get main page instead of a 404 for instance)
+# boolean: yes/no, true/false, 0/1
+acceptpathparameters=yes
+
+# Preload some libraries for this site (note: should be in config.json)
+# You can put more than one plugin, one on each line
+# Syntax: plugin.<Plugin name>.library = the library to load (one occurence)
+plugin.app.library=./example/app/app.so
+```
+
+
+5. "engines" section
 
 The engines are type of pages that can be called from the Xamboo server.
 There are 6 build-in engines for standard type of pages, and you can add as many engines as you need. (See Engine section of this manual to know how to build them)
@@ -466,26 +590,33 @@ It is a normalized structure to call the methods and link the contexts with host
 
 TO DO
 =======================
-- Stats module: set mask %ip %h %l %s etc from config file
+- Stats module: set mask %ip %h %l %s etc from config file.
   Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
-  Make stats more persistent with file write before clean every X timer
+  Make stats more persistent with file write before clean every X timer.
 - Implement i18n and languages for messages.
 - Moves the modules.so load to config.json, not anymore into site config.conf
 
-- BasicAuth should support an app function entry to call to verify user (not only user/pass into config file)
-- simple code server injector, finish all supported code
-- xamboo local API to add/remove hosts, IPs, services ?
+- BasicAuth should support an app function entry to call to verify user (not only user/pass into config file).
+- simple code server injector, finish all supported code.
+- xamboo local API to add/remove hosts, IPs, services ?.
+
 Maybe, analyze:
-- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed
+- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed.
+
 Extras:
-- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI)
-- page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange)
-- hot-reload config (change config dynamically without restarting)
-- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.) and implement with interceptors
+- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
+- page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange).
+- hot-reload config (change config dynamically without restarting).
+- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.) and implement with interceptors.
 
 
 Version Changes Control
 =======================
+
+v1.4.3 - 2020-08-
+-----------------------
+- Compiler supervisor removed because it's not used, creation of compiler pile dynamic when needed
+- Manual enchanced (config -- Host, config -- Host config file)
 
 v1.4.2 - 2020-08-22
 -----------------------
