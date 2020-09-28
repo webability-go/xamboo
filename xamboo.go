@@ -1,4 +1,4 @@
 package xamboo
 
 // VERSION oficial of the xamboo
-const VERSION = "1.4.3"
+const VERSION = "1.4.4"

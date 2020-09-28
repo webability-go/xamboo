@@ -613,10 +613,14 @@ Extras:
 Version Changes Control
 =======================
 
-v1.4.3 - 2020-08-
+v1.4.4 - 2020-09-28
 -----------------------
-- Compiler supervisor removed because it's not used, creation of compiler pile dynamic when needed
-- Manual enchanced (config -- Host, config -- Host config file)
+- Correction of a bug on the library engine using an inexistant error while verifying the called library.
+
+v1.4.3 - 2020-09-18
+-----------------------
+- Compiler supervisor and log removed because they are not used, creation of compiler pile dynamicly when needed.
+- Manual enchanced (config -- Host, and config -- Host config file).
 
 v1.4.2 - 2020-08-22
 -----------------------
