@@ -184,7 +184,7 @@ func (p *LibraryEngineInstance) Run(ctx *assets.Context, template *xcore.XTempla
 			lib.Run, ok = fct.(func(*assets.Context, *xcore.XTemplate, *xcore.XLanguage, interface{}) interface{})
 			if !ok {
 				lib.Status = 2
-				errortext := "Error: the called library does not contain a valid standard Run function " + lib.SourcePath + "\n" + err.Error()
+				errortext := "Error: the called library does not contain a valid standard Run function " + lib.SourcePath + "\n"
 				ctx.LoggerError.Println(errortext)
 				lib.Messages += errortext
 				LibraryCache.Set(lib.SourcePath, lib)
