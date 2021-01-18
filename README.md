@@ -621,6 +621,8 @@ Version Changes Control
 v1.4.5 - 2021-01-17
 -----------------------
 - Support for database transactions added in datasource interface.
+- Added Component structure in assets (not yet operational)
+- Added status for structures, to control changes of sources, and hot config reload (not yet operational)
 
 v1.4.4 - 2020-09-28
 -----------------------
