@@ -53,13 +53,12 @@ type UserAgent struct {
 }
 
 type Log struct {
-	Enabled  bool   `json:"enabled"`
-	Pages    string `json:"pages"`
-	Errors   string `json:"errors"`
-	Sys      string `json:"sys"`
-	Stats    string `json:"stats"`
-	Rotate   string `json:"rotate"`
-	Compress bool   `json:"compress"`
+	Enabled bool   `json:"enabled"`
+	Pages   string `json:"pages"`
+	Errors  string `json:"errors"`
+	Sys     string `json:"sys"`
+	Stats   string `json:"stats"`
+	Status  int
 }
 
 type Host struct {
@@ -80,4 +79,5 @@ type Host struct {
 	Config       *xconfig.XConfig
 	Plugins      map[string]*plugin.Plugin
 	Applications map[string]Application
+	Status       int
 }

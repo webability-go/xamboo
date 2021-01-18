@@ -21,6 +21,10 @@ import (
 	"github.com/webability-go/xamboo/utils"
 )
 
+var zippers = sync.Pool{New: func() interface{} {
+	return gzip.NewWriter(nil)
+}}
+
 // Structures to wrap writer and log stats
 type CoreWriter struct {
 	http.ResponseWriter
@@ -32,10 +36,6 @@ type CoreWriter struct {
 	GZip        bool
 	GZipWriter  *gzip.Writer
 }
-
-var zippers = sync.Pool{New: func() interface{} {
-	return gzip.NewWriter(nil)
-}}
 
 func (cw *CoreWriter) CreateGZiper() {
 	// If there is still not gzip writer, we create one based on cw WRITER
@@ -245,8 +245,6 @@ func Run(file string) error {
 
 	http.HandleFunc("/", StatLoggerWrapper(mainHandler))
 
-	finish := make(chan bool)
-
 	// build the different servers
 	xlogger := logger.GetCoreLogger("sys")
 	for _, l := range config.Config.Listeners {
@@ -339,6 +337,7 @@ func Run(file string) error {
 
 	}
 
-	<-finish
+	finish := make(chan bool)
+	<-finish // never finish by itself for now (OS will take care of this)
 	return nil
 }
