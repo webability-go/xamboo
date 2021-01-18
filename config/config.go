@@ -21,12 +21,15 @@ type Listener struct {
 	WriteTimeOut int        `json:"writetimeout"`
 	HeaderSize   int        `json:"headersize"`
 	Log          assets.Log `json:"log"`
+	Status       int
 }
 
 type Engine struct {
 	Name    string `json:"name"`
 	Source  string `json:"source"`
 	Library string `json:"library"`
+	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
+	Status int
 }
 
 type Engines []Engine

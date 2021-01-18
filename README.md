@@ -590,6 +590,7 @@ It is a normalized structure to call the methods and link the contexts with host
 
 TO DO
 =======================
+
 - Stats module: set mask %ip %h %l %s etc from config file.
   Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
   Make stats more persistent with file write before clean every X timer.
@@ -599,6 +600,10 @@ TO DO
 - BasicAuth should support an app function entry to call to verify user (not only user/pass into config file).
 - simple code server injector, finish all supported code.
 - xamboo local API to add/remove hosts, IPs, services ?.
+
+Note:
+ When the .so is compile with a set of modules, the code is put into the .so but if the loader already use this code,
+ the one in the .so will be ignored. The only problem is that the .so become really big when the system is complex and load lots of libraries.
 
 Maybe, analyze:
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed.
@@ -612,6 +617,10 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.4.5 - 2021-01-17
+-----------------------
+- Support for database transactions added in datasource interface.
 
 v1.4.4 - 2020-09-28
 -----------------------

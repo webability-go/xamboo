@@ -52,6 +52,7 @@ type DatasourceSet interface {
 // to avoid race conditions
 // The is only ONE database by datasource, with a set of modules and tables into this database.
 type Datasource interface {
+	// general needed funcion
 	GetName() string
 	AddLanguage(lang language.Tag)
 	GetLanguages() []language.Tag
@@ -71,4 +72,10 @@ type Datasource interface {
 	GetModule(moduleid string) string
 	GetModules() map[string]string
 	IsModuleAuthorized(id string) bool
+	// Functions to clone the shell and build transactions
+	CloneShell() Datasource
+	StartTransaction() (*xdominion.XTransaction, error)
+	GetTransaction() (*xdominion.XTransaction, error)
+	Commit() error
+	Rollback() error
 }
