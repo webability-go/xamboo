@@ -11,7 +11,7 @@ Xamboo is freeware, and uses several other freeware components (XConfig, XCore, 
 Xamboo is an engine to build applications that distribute any type of code to the client:
 It is completely independent of the generated code, i.e. you can send HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc.
 
-Xamboo works on sites currently distributing more than **60 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
+Xamboo works on sites currently distributing more than **90 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
 
 The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
 
@@ -47,13 +47,23 @@ $ git pull https://github.com/webability-go/xamboo-master.git
 $ cd ..
 ```
 
+And also add the administration site for your application, installation and administration of the xmodules:
+
+```
+$ mkdir /home/sites/server/admin
+$ cd /home/sites/server/admin
+$ git init
+$ git pull https://github.com/webability-go/xamboo-admin.git
+$ cd ..
+```
+
 You need to edit each .json files to adapt it to your own IP and ports
 You can also link the master config.json to the mainconfig.json (commented lines)
 
 Set the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
-Upgrade to the lastest version, then run the xamboo with master and examples
+Upgrade to the lastest version, then run the xamboo with master, admin and examples
 
 ```
 $ go get -u github.com/webability-go/xamboo
@@ -617,6 +627,10 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.4.6 - 2021-01-19
+-----------------------
+- The function datasource.GetTransaction now returns the transaction or nil, so it is directly usable without a possible useless error.
 
 v1.4.5 - 2021-01-17
 -----------------------
