@@ -75,7 +75,7 @@ type Datasource interface {
 	// Functions to clone the shell and build transactions
 	CloneShell() Datasource
 	StartTransaction() (*xdominion.XTransaction, error)
-	GetTransaction() (*xdominion.XTransaction, error)
+	GetTransaction() *xdominion.XTransaction
 	Commit() error
 	Rollback() error
 }
