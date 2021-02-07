@@ -12,53 +12,56 @@ import (
 	"github.com/webability-go/xamboo/utils"
 )
 
-type Listener struct {
-	Name         string     `json:"name"`
-	IP           string     `json:"ip"`
-	Port         string     `json:"port"`
-	Protocol     string     `json:"protocol"`
-	ReadTimeOut  int        `json:"readtimeout"`
-	WriteTimeOut int        `json:"writetimeout"`
-	HeaderSize   int        `json:"headersize"`
-	Log          assets.Log `json:"log"`
-	Status       int
-}
-
-type Engine struct {
-	Name    string `json:"name"`
-	Source  string `json:"source"`
-	Library string `json:"library"`
-	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
-	Status int
-}
-
-type Engines []Engine
+type Components []assets.JComponent
+type Engines []assets.JEngine
 type Hosts []assets.Host
-type Listeners []Listener
+type Listeners []assets.Listener
 
-type WEngines []Engine
+type WComponents []assets.JComponent
+type WEngines []assets.JEngine
 type WHosts []assets.Host
-type WListeners []Listener
+type WListeners []assets.Listener
 
 type ConfigDef struct {
-	Version   string
-	File      string
-	Listeners Listeners  `json:"listeners"`
-	Hosts     Hosts      `json:"hosts"`
-	Engines   Engines    `json:"engines"`
-	Log       assets.Log `json:"log"`
-	Include   []string   `json:"include"`
+	Version    string
+	File       string
+	Listeners  Listeners  `json:"listeners"`
+	Hosts      Hosts      `json:"hosts"`
+	Components Components `json:"components"`
+	Engines    Engines    `json:"engines"`
+	Log        assets.Log `json:"log"`
+	Include    []string   `json:"include"`
 }
 
 var Config = &ConfigDef{}
 
-func EngineExists(ds []Engine, e Engine) bool {
+func ComponentExists(ds []assets.JComponent, e assets.JComponent) bool {
 	for _, dse := range ds {
 		if dse.Name == e.Name {
 			return true
 		}
 	}
 	return false
+}
+
+func EngineExists(ds []assets.JEngine, e assets.JEngine) bool {
+	for _, dse := range ds {
+		if dse.Name == e.Name {
+			return true
+		}
+	}
+	return false
+}
+
+func (cont *Components) UnmarshalJSON(buf []byte) error {
+	ar := WComponents{}
+	json.Unmarshal(buf, &ar)
+	for _, x := range ar {
+		if !ComponentExists(*cont, x) {
+			*cont = append(*cont, x)
+		}
+	}
+	return nil
 }
 
 func (cont *Engines) UnmarshalJSON(buf []byte) error {
@@ -92,7 +95,7 @@ func (cont *Hosts) UnmarshalJSON(buf []byte) error {
 	return nil
 }
 
-func ListenerExists(ds []Listener, e Listener) bool {
+func ListenerExists(ds []assets.Listener, e assets.Listener) bool {
 	for _, dse := range ds {
 		if dse.Name == e.Name {
 			return true
@@ -200,7 +203,7 @@ func (c *ConfigDef) SysLoad(file string) error {
 	return nil
 }
 
-func (c *ConfigDef) SearchListener(name string) *Listener {
+func (c *ConfigDef) SearchListener(name string) *assets.Listener {
 	for _, l := range c.Listeners {
 		if l.Name == name {
 			return &l
@@ -209,7 +212,7 @@ func (c *ConfigDef) SearchListener(name string) *Listener {
 	return nil
 }
 
-func (c *ConfigDef) GetListener(host string, port string, secure bool) (*assets.Host, *Listener) {
+func (c *ConfigDef) GetListener(host string, port string, secure bool) (*assets.Host, *assets.Listener) {
 	for _, h := range c.Hosts {
 		if utils.SearchInArray(host, h.HostNames) {
 			// search the actual active listener

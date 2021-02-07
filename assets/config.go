@@ -6,50 +6,20 @@ import (
 	"github.com/webability-go/xconfig"
 )
 
-type OriginDef struct {
-	MainDomains []string `json:"maindomains"`
-	Default     string   `json:"default"`
-	Methods     []string `json:"methods"`
-	Headers     []string `json:"headers"`
-	Credentials bool     `json:"credentials"`
+type JComponent struct {
+	Name    string `json:"name"`
+	Source  string `json:"source"`
+	Library string `json:"library"`
+	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
+	Status int
 }
 
-type Redirect struct {
-	Enabled bool   `json:"enabled"`
-	Scheme  string `json:"scheme"`
-	Host    string `json:"host"`
-}
-
-type Auth struct {
-	Enabled bool   `json:"enabled"`
-	Realm   string `json:"realm"`
-	User    string `json:"user"`
-	Pass    string `json:"pass"`
-}
-
-type Minify struct {
-	Enabled bool `json:"enabled"`
-	HTML    bool `json:"html"`
-	CSS     bool `json:"css"`
-	JS      bool `json:"js"`
-	JSON    bool `json:"json"`
-	SVG     bool `json:"svg"`
-	XML     bool `json:"xml"`
-}
-
-type GZip struct {
-	Enabled bool     `json:"enabled"`
-	Mimes   []string `json:"mimes"`
-	Files   []string `json:"files"`
-}
-
-type Browser struct {
-	UserAgent UserAgent `json:"useragent"`
-}
-
-type UserAgent struct {
-	Enabled bool     `json:"enabled"`
-	Devices []string `json:"devices"`
+type JEngine struct {
+	Name    string `json:"name"`
+	Source  string `json:"source"`
+	Library string `json:"library"`
+	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
+	Status int
 }
 
 type Log struct {
@@ -61,21 +31,33 @@ type Log struct {
 	Status  int
 }
 
+type Listener struct {
+	Name         string `json:"name"`
+	IP           string `json:"ip"`
+	Port         string `json:"port"`
+	Protocol     string `json:"protocol"`
+	ReadTimeOut  int    `json:"readtimeout"`
+	WriteTimeOut int    `json:"writetimeout"`
+	HeaderSize   int    `json:"headersize"`
+	Log          Log    `json:"log"`
+	Status       int
+}
+
 type Host struct {
-	Name         string     `json:"name"`
-	Listeners    []string   `json:"listeners"`
-	HostNames    []string   `json:"hostnames"`
-	Cert         string     `json:"cert"`
-	PrivateKey   string     `json:"key"`
-	ConfigFile   []string   `json:"config"`
-	StaticPath   string     `json:"static"`
-	Origin       *OriginDef `json:"origin"`
-	Redirect     Redirect   `json:"redirect"`
-	Auth         Auth       `json:"auth"`
-	Minify       Minify     `json:"minify"`
-	GZip         GZip       `json:"gzip"`
-	Browser      Browser    `json:"browser"`
-	Log          Log        `json:"log"`
+	Name         string   `json:"name"`
+	Listeners    []string `json:"listeners"`
+	HostNames    []string `json:"hostnames"`
+	Cert         string   `json:"cert"`
+	PrivateKey   string   `json:"key"`
+	ConfigFile   []string `json:"config"`
+	StaticPath   string   `json:"static"`
+	Origin       Origin   `json:"origin"`
+	Redirect     Redirect `json:"redirect"`
+	Auth         Auth     `json:"auth"`
+	Minify       Minify   `json:"minify"`
+	GZip         GZip     `json:"gzip"`
+	Browser      Browser  `json:"browser"`
+	Log          Log      `json:"log"`
 	Config       *xconfig.XConfig
 	Plugins      map[string]*plugin.Plugin
 	Applications map[string]Application

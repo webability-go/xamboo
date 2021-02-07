@@ -38,7 +38,7 @@ type SiteStat struct {
 	Requests       []*RequestStat // the last minute requests
 }
 
-type Stat struct {
+type MainStat struct {
 	Start          time.Time
 	RequestsTotal  int            // num requests total, anything included
 	LengthServed   int            // length total, anything included
@@ -50,11 +50,11 @@ type Stat struct {
 	mutex sync.RWMutex
 }
 
-var SystemStat *Stat
+var SystemStat *MainStat
 var RequestCounter uint64
 
-func CreateStat() *Stat {
-	s := &Stat{
+func CreateStat() *MainStat {
+	s := &MainStat{
 		Start:          time.Now(),
 		RequestsTotal:  0,
 		RequestsServed: make(map[int]int),
@@ -77,7 +77,7 @@ func Start() {
 	SystemStat = CreateStat()
 }
 
-func (s *Stat) Clean() {
+func (s *MainStat) Clean() {
 	// 1. clean Requests from stat
 	slogger := logger.GetCoreLogger("sys")
 	slogger.Println("Stats cleaner launched. Clean every minute.")

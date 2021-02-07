@@ -63,10 +63,10 @@ You can also link the master config.json to the mainconfig.json (commented lines
 Set the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
-Upgrade to the lastest version, then run the xamboo with master, admin and examples
+Upgrade to the lastest versions, then run the xamboo with master, admin and examples
 
 ```
-$ go get -u github.com/webability-go/xamboo
+$ go get -u
 $ start.sh
 ```
 
@@ -76,7 +76,7 @@ Edit start.sh, json config files and change the config file path.
 
 You can copy the example directory and change anything you need, or build from scratch.
 
-The master site is not necessary to make the CMS work. It's a helpfull tool to configure and install anything easier and edit the json config files.
+The master site is not necessary to make the Xamboo to work. It's a helpfull tool to configure and install anything easier and edit the json config files.
 
 Install the master site and install contexts with XModules for any site you need.
 
@@ -105,6 +105,7 @@ The config file is a JSON object which have 5 main sections.
   "include": [],
   "listeners": [],
   "hosts": [],
+  "components": [],
   "engines": []
 }
 ```
@@ -120,6 +121,7 @@ You may add other entries into each level for comments, they are going to be jus
   "include": [],
   "listeners": [],
   "hosts": [],
+  "components": [],
   "engines": []
 }
 ```
@@ -134,6 +136,7 @@ For instance if in the config for site1 you have listener1 and listener2, and ho
   "comments": "MAIN CONFIG",
   "log": {},
   "include": ["site1/config.json", "site2/config.json"],
+  "components": [],
   "engines": []
 }
 
@@ -156,6 +159,7 @@ the result configuration would be (as interpreted by Xamboo):
   "log": {},
   "listeners": [ <LISTENER1>, <LISTENER2>, <LISTENER3> ],
   "hosts": [ <HOST1>, <HOST2> ]
+  "components": [],
   "engines": []
 }
 ```
@@ -411,7 +415,35 @@ plugin.app.library=./example/app/app.so
 ```
 
 
-5. "engines" section
+5. "components" section
+
+The components section contains the following parameters:
+
+```
+{
+  "components": [
+    { "name": "stat", "source": "built-in" },
+    { "name": "redirect", "source": "built-in" },
+    { "name": "auth", "source": "built-in" },
+    { "name": "compress", "source": "built-in" },
+    { "name": "minify", "source": "built-in" },
+    { "name": "browser", "source": "built-in" },
+    { "name": "origin", "source": "built-in" }
+  ],
+  ...
+}
+```
+
+A component is a plugin module (built-in or external) that is called as a middleware on the server handler.
+The order of components is VERY IMPORTANT. Let them in this order unless you perfectly know what you are doing.
+
+When you want to add a hand made component, the syntax is:
+
+```
+  { "name": "mycomponent", "source": "extern", "library": "./path/to/your/mycomponent.so" },
+```
+
+6. "engines" section
 
 The engines are type of pages that can be called from the Xamboo server.
 There are 6 build-in engines for standard type of pages, and you can add as many engines as you need. (See Engine section of this manual to know how to build them)
@@ -601,6 +633,7 @@ It is a normalized structure to call the methods and link the contexts with host
 TO DO
 =======================
 
+- Makes LOG component
 - Stats module: set mask %ip %h %l %s etc from config file.
   Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
   Make stats more persistent with file write before clean every X timer.
@@ -611,10 +644,6 @@ TO DO
 - simple code server injector, finish all supported code.
 - xamboo local API to add/remove hosts, IPs, services ?.
 
-Note:
- When the .so is compile with a set of modules, the code is put into the .so but if the loader already use this code,
- the one in the .so will be ignored. The only problem is that the .so become really big when the system is complex and load lots of libraries.
-
 Maybe, analyze:
 - Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed.
 
@@ -622,11 +651,26 @@ Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
 - page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange).
 - hot-reload config (change config dynamically without restarting).
-- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.) and implement with interceptors.
 
 
 Version Changes Control
 =======================
+
+v1.5.0 - 2021-02-08
+-----------------------
+- The components have been totally rebuilt to be 'built-in' or external plugins so the programmer can add as many as needed components.
+- Every plugin can be enabled or disabled on each host.
+- The built-in components are:
+-- host: controls the dispatcher to call the correct Host as defined in the configuration (system component).
+-- stat: controls the statistics component, from system to host.
+-- redirect: controls the redirect mechanism on request headers.
+-- auth: controls the browser realm authotization login.
+-- compress: controls the gzip and deflate compression for response.
+-- minify: controls the minification of the code (HTML, XML, CSS, JS, JSON, SVG).
+-- origin: controls the cross origin headers (generally for APIs).
+-- browser: set the theme for pages calculation (is not a middleware, build in the server handler).
+- The external plugins components must obey the assets/Component interface.
+- All the config objects have been moved to assets (listener, engine, component, host..).
 
 v1.4.6 - 2021-01-19
 -----------------------

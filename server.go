@@ -3,19 +3,9 @@ package xamboo
 import (
 	"fmt"
 	"net/http"
-	"plugin"
-	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
-
-	"github.com/tdewolff/minify"
-	"github.com/tdewolff/minify/css"
-	"github.com/tdewolff/minify/html"
-	"github.com/tdewolff/minify/js"
-	"github.com/tdewolff/minify/json"
-	"github.com/tdewolff/minify/svg"
-	"github.com/tdewolff/minify/xml"
 
 	"github.com/webability-go/uasurfer"
 	"github.com/webability-go/xconfig"
@@ -23,55 +13,56 @@ import (
 
 	"github.com/webability-go/xamboo/assets"
 	"github.com/webability-go/xamboo/config"
-	"github.com/webability-go/xamboo/engines"
-	"github.com/webability-go/xamboo/engines/language"
-	"github.com/webability-go/xamboo/engines/library"
-	"github.com/webability-go/xamboo/engines/redirect"
-	"github.com/webability-go/xamboo/engines/simple"
-	"github.com/webability-go/xamboo/engines/template"
-	"github.com/webability-go/xamboo/engines/wajafapp"
 	"github.com/webability-go/xamboo/logger"
 	"github.com/webability-go/xamboo/utils"
+
+	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/engines"
 )
 
-var Engines = map[string]assets.Engine{}
+func serverHandler(w http.ResponseWriter, r *http.Request) {
 
-func LinkEngines(engines []config.Engine) {
-	xlogger := logger.GetCoreLogger("sys")
-	xlogger.Println("Build Engines Containers native and external")
-	Engines["redirect"] = redirect.Engine
-	Engines["simple"] = simple.Engine
-	Engines["language"] = language.Engine
-	Engines["template"] = template.Engine
-	Engines["library"] = library.Engine
-	Engines["wajafapp"] = wajafapp.Engine
-	xloggererror := logger.GetCoreLogger("errors")
-	for _, engine := range engines {
-		if engine.Source == "built-in" {
-			continue
-		}
-
-		// TODO(phil) Recompile the engine if not exists (*Plugin)
-
-		lib, err := plugin.Open(engine.Library)
-		if err != nil {
-			xloggererror.Println("Error loading engine library:", engine.Library, err)
-			continue
-		}
-
-		enginelink, err := lib.Lookup("Engine")
-		if err != nil {
-			xloggererror.Println("Error linking engine main funcion Engine:", err)
-			continue
-		}
-
-		interf, ok := enginelink.(assets.Engine)
-		if !ok {
-			xloggererror.Println("Error linking engine main funcion Engine, is not of type assets.Engine.")
-			continue
-		}
-		Engines[engine.Name] = interf
+	hw, ok := w.(host.HostWriter)
+	if !ok {
+		fmt.Println("ServerHandler ERROR DETECTED: the writer is not a HostWriter or the Listener/Host is not set (and that should not happen)", r, w)
+		http.Error(w, "ServerHandler Writer error", http.StatusInternalServerError)
+		return
 	}
+	listener := hw.GetListener()
+	host := hw.GetHost()
+	if listener == nil || host == nil {
+		fmt.Println("ServerHandler component: ERROR DETECTED: there is no HOST (and that should not happen)", r, w)
+		http.Error(w, "ServerHandler component: Writer error (see logs for more info)", http.StatusInternalServerError)
+		return
+	}
+
+	// IS it a static file to server ? (No dynamic CMS config available)
+	pagesdir, _ := host.Config.GetString("pagesdir")
+	mustservefile := false
+	if pagesdir == "" {
+		mustservefile = true
+	}
+
+	// 2 conditions: 1. Has an extension, 2. exists on file directory for this site
+	pospoint := strings.Index(r.URL.Path, ".")
+	posdoublepoint := strings.Index(r.URL.Path, "..")
+	if mustservefile || (pospoint >= 0 && posdoublepoint < 0 && len(host.StaticPath) > 0 && utils.FileExists(host.StaticPath+r.URL.Path)) {
+		http.FileServer(http.Dir(host.StaticPath)).ServeHTTP(w, r)
+		return
+	}
+
+	// SPLIT URI - QUERY to call the engine
+	server := &Server{
+		Method:        r.Method,
+		Page:          r.URL.Path,
+		Listener:      listener,
+		Host:          host,
+		PagesDir:      pagesdir,
+		Code:          http.StatusOK,
+		Recursivity:   map[string]int{},
+		GZipCandidate: false,
+	}
+	server.Start(w, r)
 }
 
 type Server struct {
@@ -79,7 +70,7 @@ type Server struct {
 	reader   *http.Request
 	Method   string
 	Page     string
-	Listener *config.Listener
+	Listener *assets.Listener
 	Host     *assets.Host
 
 	PagesDir      string
@@ -95,7 +86,7 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 		if r := recover(); r != nil {
 			hlogger := logger.GetHostLogger(s.Host.Name, "errors")
 			hlogger.Println("Recovered in Server.Start", r, string(debug.Stack()))
-			w.(*CoreWriter).RequestStat.Code = http.StatusInternalServerError
+			//			w.(*HostWriter).RequestStat.Code = http.StatusInternalServerError
 		}
 	}()
 
@@ -129,53 +120,54 @@ func (s *Server) Start(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		scode = fmt.Sprint(code)
 	}
+	/*
+		// Last pass: minify if necesary and gzip if necesary. Content type Should be set by the Run function, main page is always resolved to a content type
+		contenttype := s.writer.Header().Get("Content-Type")
 
-	// Last pass: minify if necesary and gzip if necesary. Content type Should be set by the Run function, main page is always resolved to a content type
-	contenttype := s.writer.Header().Get("Content-Type")
-
-	if s.Host.Minify.Enabled {
-		// check config if we will minify before sending code
-		m := minify.New()
-		if s.Host.Minify.CSS {
-			m.AddFunc("text/css", css.Minify)
+		if s.Host.Minify.Enabled {
+			// check config if we will minify before sending code
+			m := minify.New()
+			if s.Host.Minify.CSS {
+				m.AddFunc("text/css", css.Minify)
+			}
+			if s.Host.Minify.HTML {
+				html.DefaultMinifier.KeepDocumentTags = true
+				m.AddFunc("text/html", html.Minify)
+			}
+			if s.Host.Minify.SVG {
+				m.AddFunc("image/svg+xml", svg.Minify)
+			}
+			if s.Host.Minify.JS {
+				m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+			}
+			if s.Host.Minify.JSON {
+				m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+			}
+			if s.Host.Minify.XML {
+				m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
+			}
+			newcode, err := m.String(contenttype, scode)
+			if err != nil {
+				elogger := logger.GetHostLogger(s.Host.Name, "errors")
+				elogger.Println(err)
+			} else {
+				scode = newcode
+			}
 		}
-		if s.Host.Minify.HTML {
-			html.DefaultMinifier.KeepDocumentTags = true
-			m.AddFunc("text/html", html.Minify)
-		}
-		if s.Host.Minify.SVG {
-			m.AddFunc("image/svg+xml", svg.Minify)
-		}
-		if s.Host.Minify.JS {
-			m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
-		}
-		if s.Host.Minify.JSON {
-			m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
-		}
-		if s.Host.Minify.XML {
-			m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
-		}
-		newcode, err := m.String(contenttype, scode)
-		if err != nil {
-			elogger := logger.GetHostLogger(s.Host.Name, "errors")
-			elogger.Println(err)
-		} else {
-			scode = newcode
-		}
-	}
-
+	*/
 	// GZIPER based on content type?
-	if s.MainContext != nil && s.MainContext.IsGZiped {
-		s.writer.Header().Set("Content-Encoding", "gzip")
-	} else {
-		if s.GZipCandidate && utils.GzipMimeCandidate(s.Host.GZip.Mimes, contenttype) {
+	/*
+		if s.MainContext != nil && s.MainContext.IsGZiped {
 			s.writer.Header().Set("Content-Encoding", "gzip")
-			s.writer.(*CoreWriter).CreateGZiper()
+		} else {
+			if s.GZipCandidate && utils.GzipMimeCandidate(s.Host.GZip.Mimes, contenttype) {
+				s.writer.Header().Set("Content-Encoding", "gzip")
+				s.writer.(*HostWriter).CreateGZiper()
+			}
 		}
-	}
-
+	*/
 	if s.Code != http.StatusOK {
-		s.writer.(*CoreWriter).RequestStat.Code = s.Code
+		//		s.writer.(*HostWriter).RequestStat.Code = s.Code
 		s.writer.WriteHeader(s.Code)
 	}
 	s.writer.Write([]byte(scode))
@@ -281,7 +273,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 		ctx.Sessionparams = xconfig.New()
 		s.MainContext = ctx
 	}
-	s.writer.(*CoreWriter).RequestStat.Context = ctx
+	//	s.writer.(*HostWriter).RequestStat.Context = ctx
 
 	// 1. Build-in engines
 	var xdata string
@@ -293,7 +285,7 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 
 	// homologation of servers
 	// ===========================================================
-	engine, ok := Engines[tp]
+	engine, ok := engines.Engines[tp]
 	if !ok {
 		return s.launchError(page, http.StatusNotFound, !ctx.IsMainPage, "Error: Server "+tp+" does not exist")
 	}
@@ -383,11 +375,14 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	var languagedata *xcore.XLanguage = nil
 	if engineinstance.NeedLanguage() {
 		for _, n := range identities {
-			languageinstance := Engines["language"].GetInstance(s.Host.Name, s.PagesDir, P, n)
+			languageinstance := engines.Engines["language"].GetInstance(s.Host.Name, s.PagesDir, P, n)
 			if languageinstance != nil {
 				lang := languageinstance.Run(ctx, nil, nil, s)
 				if lang != nil {
-					languagedata = lang.(*xcore.XLanguage)
+					languagedata, ok = lang.(*xcore.XLanguage)
+					if !ok {
+						return s.launchError(page, http.StatusInternalServerError, !ctx.IsMainPage, "Error: the language file is not a valid XML language: "+P)
+					}
 					break
 				}
 			}
@@ -395,11 +390,14 @@ func (s *Server) Run(page string, innerpage bool, params interface{}, version st
 	}
 	if engineinstance.NeedTemplate() {
 		for _, n := range identities {
-			templateinstance := Engines["template"].GetInstance(s.Host.Name, s.PagesDir, P, n)
+			templateinstance := engines.Engines["template"].GetInstance(s.Host.Name, s.PagesDir, P, n)
 			if templateinstance != nil {
 				temp := templateinstance.Run(ctx, nil, nil, s)
 				if temp != nil {
-					templatedata = temp.(*xcore.XTemplate)
+					templatedata, ok = temp.(*xcore.XTemplate)
+					if !ok {
+						return s.launchError(page, http.StatusInternalServerError, !ctx.IsMainPage, "Error: the template file is not a valid template: "+P)
+					}
 					break
 				}
 			}
