@@ -1,7 +1,6 @@
 package components
 
 import (
-	"fmt"
 	"os"
 	"plugin"
 	"strings"
@@ -184,7 +183,6 @@ func Link() {
 				continue
 			}
 			Components[component.Name] = interf
-			fmt.Println("Starting component: ", component.Name)
 			interf.Start()
 			ComponentsOrder = append(ComponentsOrder, component.Name)
 		}
