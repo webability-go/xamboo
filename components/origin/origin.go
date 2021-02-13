@@ -12,11 +12,14 @@ var Component = &Origin{}
 
 type Origin struct{}
 
-func (auth *Origin) NeedHandler() bool {
+func (ori *Origin) Start() {
+}
+
+func (ori *Origin) NeedHandler() bool {
 	return true
 }
 
-func (auth *Origin) Handler(handler http.HandlerFunc) http.HandlerFunc {
+func (ori *Origin) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		hw, ok := w.(host.HostWriter)

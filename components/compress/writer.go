@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/webability-go/xamboo/assets"
+	"github.com/webability-go/xconfig"
+
+	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/utils"
 
 	"github.com/webability-go/xamboo/components/host"
@@ -22,10 +24,10 @@ var zippers = sync.Pool{New: func() interface{} {
 type writer struct {
 	writer host.HostWriter
 
-	wroteHeader bool
-	length      int
-	gzip        bool
-	gzipWriter  *gzip.Writer
+	wroteHeader    bool
+	length         int
+	compress       bool
+	compressWriter *gzip.Writer
 }
 
 func (w *writer) Header() http.Header {
@@ -36,20 +38,20 @@ func (w *writer) WriteHeader(status int) {
 
 	w.wroteHeader = true
 
-	if !w.gzip {
+	if !w.compress {
 		contenttype := w.writer.Header().Get("Content-Type")
 		host := w.writer.GetHost()
 		// check mime type
-		w.gzip = utils.GzipMimeCandidate(host.GZip.Mimes, contenttype)
+		w.compress = utils.GzipMimeCandidate(host.Compress.Mimes, contenttype)
 	}
 
-	if w.gzip {
+	if w.compress {
 		w.writer.Header().Del("Content-Length")           // very important or get a content length mismatch error with zipper
 		w.writer.Header().Set("Content-Encoding", "gzip") // result is gzipped
 		w.writer.Header().Add("Vary", "gzip")             // avoid caches corruption
 		gz := zippers.Get().(*gzip.Writer)
 		gz.Reset(w.writer)
-		w.gzipWriter = gz
+		w.compressWriter = gz
 	}
 	w.writer.WriteHeader(status)
 }
@@ -61,36 +63,36 @@ func (w *writer) Write(b []byte) (int, error) {
 
 	w.length += len(b)
 
-	if w.gzip {
-		i, e := w.gzipWriter.Write(b)
+	if w.compress {
+		i, e := w.compressWriter.Write(b)
 		return i, e
 	}
 	return w.writer.Write(b)
 }
 
 func (w *writer) Close() {
-	if w.gzip {
-		e := w.gzipWriter.Close()
+	if w.compress {
+		e := w.compressWriter.Close()
 		if e != nil {
 			fmt.Println("Error closing zipper: ", e)
 		}
-		zippers.Put(w.gzipWriter)
+		zippers.Put(w.compressWriter)
 	}
 }
 
-func (w *writer) SetListener(l *assets.Listener) {
+func (w *writer) SetListener(l *config.Listener) {
 	w.writer.SetListener(l)
 }
 
-func (w *writer) SetHost(h *assets.Host) {
+func (w *writer) SetHost(h *config.Host) {
 	w.writer.SetHost(h)
 }
 
-func (w *writer) GetListener() *assets.Listener {
+func (w *writer) GetListener() *config.Listener {
 	return w.writer.GetListener()
 }
 
-func (w *writer) GetHost() *assets.Host {
+func (w *writer) GetHost() *config.Host {
 	return w.writer.GetHost()
 }
 
@@ -100,4 +102,12 @@ func (w *writer) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 		return hj.Hijack()
 	}
 	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported in HostWriter") // should not happen
+}
+
+func (w *writer) GetParams() *xconfig.XConfig {
+	return w.writer.GetParams()
+}
+
+func (w *writer) SetParam(id string, value interface{}) {
+	w.writer.SetParam(id, value)
 }

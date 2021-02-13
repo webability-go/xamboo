@@ -12,6 +12,9 @@ var Component = &Auth{}
 
 type Auth struct{}
 
+func (auth *Auth) Start() {
+}
+
 func (auth *Auth) NeedHandler() bool {
 	return true
 }

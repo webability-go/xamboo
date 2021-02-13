@@ -1,7 +1,6 @@
 package stat
 
 import (
-	//	"fmt"
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
@@ -11,14 +10,19 @@ var Component = &Stat{}
 
 type Stat struct{}
 
-func (auth *Stat) NeedHandler() bool {
+func (st *Stat) Start() {
+	StartStat()
+}
+
+func (st *Stat) NeedHandler() bool {
 	return true
 }
 
-func (auth *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
+func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		hostdata := w.(host.HostWriter).GetHost()
+		hostwriter := w.(host.HostWriter)
+		hostdata := hostwriter.GetHost()
 
 		req := CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 		req.Hostname = hostdata.Name
@@ -30,5 +34,8 @@ func (auth *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 		req.UpdateStat(sw.status, sw.length)
 		req.End()
+		// Send the stats data to the Params of hostwriter
+		hostwriter.SetParam("requeststat", req)
+
 	}
 }

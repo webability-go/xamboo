@@ -14,11 +14,14 @@ var Component = &Compress{}
 
 type Compress struct{}
 
-func (auth *Compress) NeedHandler() bool {
+func (comp *Compress) Start() {
+}
+
+func (comp *Compress) NeedHandler() bool {
 	return true
 }
 
-func (auth *Compress) Handler(handler http.HandlerFunc) http.HandlerFunc {
+func (comp *Compress) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		hw, ok := w.(host.HostWriter)
@@ -34,21 +37,21 @@ func (auth *Compress) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// module not activated OR client not accepting gzip => normal server
+		// module not activated OR client not accepting Compress => normal server
 		// If upgrade asked => web socket, do not compress
 		// TODO(phil) Adds deflate too as compressor https://github.com/gorilla/handlers/blob/master/compress.go
-		if !host.GZip.Enabled || !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || r.Header.Get("Upgrade") != "" {
+		if !host.Compress.Enabled || !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || r.Header.Get("Upgrade") != "" {
 			handler.ServeHTTP(w, r) // normal serve
 			return
 		}
 
-		gzip := utils.GzipFileCandidate(host.GZip.Files, r.URL.Path)
+		compress := utils.GzipFileCandidate(host.Compress.Files, r.URL.Path)
 
-		gw := writer{writer: hw, gzip: gzip}
+		gw := writer{writer: hw, compress: compress}
 		handler.ServeHTTP(&gw, r)
 
 		gw.Close()
 
-		//		fmt.Println("Size before compress: ", gw.length)
+		hw.SetParam("bytestocompress", gw.length)
 	}
 }

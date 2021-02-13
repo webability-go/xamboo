@@ -20,11 +20,14 @@ var Component = &Minify{}
 
 type Minify struct{}
 
-func (auth *Minify) NeedHandler() bool {
+func (min *Minify) Start() {
+}
+
+func (min *Minify) NeedHandler() bool {
 	return true
 }
 
-func (auth *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
+func (min *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		hw, ok := w.(host.HostWriter)
@@ -69,7 +72,7 @@ func (auth *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 			mrw.Close()
 
-			//			fmt.Println("Size before minify: ", mw.length)
+			hw.SetParam("bytestominify", mw.length)
 
 		} else {
 			handler.ServeHTTP(w, r)

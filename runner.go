@@ -6,15 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/webability-go/xamboo/assets"
-	"github.com/webability-go/xamboo/config"
-	"github.com/webability-go/xamboo/logger"
-	"github.com/webability-go/xamboo/utils"
-
+	"github.com/webability-go/xamboo/applications"
+	"github.com/webability-go/xamboo/cms/engines"
 	"github.com/webability-go/xamboo/components"
 	"github.com/webability-go/xamboo/components/host"
-	"github.com/webability-go/xamboo/components/stat"
-	"github.com/webability-go/xamboo/engines"
+	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/loggers"
+	"github.com/webability-go/xamboo/utils"
 )
 
 func Run(file string) error {
@@ -22,33 +20,49 @@ func Run(file string) error {
 	// Load the language if needed for messages
 
 	// Link the engines
-	assets.EngineWrapper = wrapper
-	assets.EngineWrapperString = wrapperstring
+	//	assets.EngineWrapper = cms.Wrapper
+	//	assets.EngineWrapperString = cms.Wrapperstring
 
-	// Load the config
+	// Load the config, FIRST PASS
 	err := config.Config.Load(file)
 	if err != nil {
 		log.Println("Error parsing Config File: ", file, err)
 		return err
 	}
 	config.Config.Version = VERSION
+	// Launch the system based on Config
+	// Launch system wide Loggers
+	loggers.StartSystem()
+	// Link engines (load external apps and create linker matrix)
+	engines.Link()
+	// Link components and call Start to start them globally
+	components.Link()
+	// link Applications and call StartHost to start them on each Hosts
+	applications.Link()
+	// Launch remaining loggers: listeners, hosts (they may link to an application)
+	loggers.Start()
+	// Finally link the logs call for loggers
+	applications.LinkCalls()
 
-	logger.Start()
-	stat.Start()
-	components.Link(config.Config.Components)
-	engines.Link(config.Config.Engines)
+	/*
+		//	fmt.Printf("%#v\n", config.Config.Hosts[0])
+		fmt.Println(loggers.Loggers)
+		fmt.Println(engines.Engines)
+		fmt.Println(components.Components)
+		fmt.Println(applications.Applications)
+	*/
 
-	//	var handler = StatLoggerWrapper(mainHandler)
-
-	// The encapsilation system works as follow:
+	// The encapsulation system works as follow (all the layers are in order in the main config file):
 	// EXTERNAL LAYER:
 	//   The main listener/host dispatcher. Will create a core writer to link the listener and host to the request.
 	// COMPONENT LAYERS:
 	//   Every component will test if it is available on the host, and call it if yes.
 	// SERVER LAYER:
-	//   Will finally call the server layer to resolve the page or file.
+	//   Will call the server layer to resolve the page or file.
+	// ERROR LAYER:
+	//   Will finally call the error handler.
 
-	var handler = serverHandler
+	var handler http.HandlerFunc
 	// build Handlers
 	for _, componentid := range components.ComponentsOrder {
 		if components.Components[componentid].NeedHandler() {
@@ -60,12 +74,12 @@ func Run(file string) error {
 	http.HandleFunc("/", handler)
 
 	// build the different servers
-	xlogger := logger.GetCoreLogger("sys")
+	xlogger := loggers.GetCoreLogger("sys")
 	for _, l := range config.Config.Listeners {
 		xlogger.Println("Scanning Listener: L[" + l.Name + "]")
-		go func(listener assets.Listener) {
+		go func(listener config.Listener) {
 
-			llogger := logger.GetListenerLogger(listener.Name, "sys")
+			llogger := loggers.GetListenerLogger(listener.Name, "sys")
 
 			xlogger.Println("Launching Listener: L[" + listener.Name + "]")
 			server := &http.Server{
@@ -148,7 +162,6 @@ func Run(file string) error {
 				llogger.Fatal(http.ListenAndServe(listener.IP+":"+listener.Port, nil))
 			}
 		}(l)
-
 	}
 
 	finish := make(chan bool)

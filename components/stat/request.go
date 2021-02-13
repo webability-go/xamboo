@@ -5,9 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/webability-go/xamboo/assets"
 	"github.com/webability-go/xamboo/config"
-	"github.com/webability-go/xamboo/logger"
+	"github.com/webability-go/xamboo/loggers"
+
+	"github.com/webability-go/xamboo/cms/context"
 )
 
 /*
@@ -28,7 +29,7 @@ type RequestStat struct {
 	IP        string
 	Port      string
 	Alive     bool
-	Context   *assets.Context `json:"-"`
+	Context   *context.Context `json:"-"`
 }
 
 type SiteStat struct {
@@ -73,13 +74,13 @@ func CreateStat() *MainStat {
 	return s
 }
 
-func Start() {
+func StartStat() {
 	SystemStat = CreateStat()
 }
 
 func (s *MainStat) Clean() {
 	// 1. clean Requests from stat
-	slogger := logger.GetCoreLogger("sys")
+	slogger := loggers.GetCoreLogger("sys")
 	slogger.Println("Stats cleaner launched. Clean every minute.")
 	for {
 		n := time.Now()
@@ -145,7 +146,7 @@ func (r *RequestStat) UpdateStat(code int, length int) {
 
 	// Put the stat at the end of the pile.. it has been modified!
 	SystemStat.mutex.Lock()
-	// find the request. It is highly possible it's at the end of Pile
+	// find the request. It is highly possible it's near the end of Pile
 	for i := len(SystemStat.Requests) - 1; i >= 0; i-- {
 		if SystemStat.Requests[i] == r {
 			if i == len(SystemStat.Requests)-1 {
@@ -168,19 +169,21 @@ func (r *RequestStat) End() {
 
 	// Call stats ? (code entry)
 	// log the stat in pages and stat loggers
-	if r.Hostname == "" {
-		xlogger := logger.GetCoreLogger("errors")
-		xlogger.Println("Stat without hostname:", r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
-	} else {
-		hlogger := logger.GetHostLogger(r.Hostname, "pages")
-		slogger := logger.GetHostHook(r.Hostname, "stats")
-		if hlogger != nil {
-			hlogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+	/*
+		if r.Hostname == "" {
+			xlogger := logger.GetCoreLogger("errors")
+			xlogger.Println("Stat without hostname:", r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+		} else {
+			hlogger := logger.GetHostLogger(r.Hostname, "pages")
+			slogger := logger.GetHostHook(r.Hostname, "stats")
+			if hlogger != nil {
+				hlogger.Println(r.IP, r.Method, r.Protocol, r.Code, r.Request, r.Length, r.Duration)
+			}
+			if slogger != nil && r.Context != nil {
+				slogger(r.Context)
+			}
 		}
-		if slogger != nil && r.Context != nil {
-			slogger(r.Context)
-		}
-	}
+	*/
 
 	// closed case
 	r.Alive = false

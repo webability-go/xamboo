@@ -633,7 +633,7 @@ It is a normalized structure to call the methods and link the contexts with host
 TO DO
 =======================
 
-- Makes LOG component
+- Makes LOGs into Stat component
 - Stats module: set mask %ip %h %l %s etc from config file.
   Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
   Make stats more persistent with file write before clean every X timer.
@@ -662,15 +662,28 @@ v1.5.0 - 2021-02-08
 - Every plugin can be enabled or disabled on each host.
 - The built-in components are:
 -- host: controls the dispatcher to call the correct Host as defined in the configuration (system component).
+-- log: controls the loggers of pages, errors, sys, stat function call.
 -- stat: controls the statistics component, from system to host.
 -- redirect: controls the redirect mechanism on request headers.
 -- auth: controls the browser realm authotization login.
 -- compress: controls the gzip and deflate compression for response.
 -- minify: controls the minification of the code (HTML, XML, CSS, JS, JSON, SVG).
 -- origin: controls the cross origin headers (generally for APIs).
--- browser: set the theme for pages calculation (is not a middleware, build in the server handler).
+-- fileserver: controls the natural files server.
+-- cms: controls the Xamboo CMS, wrapper to ./cms system.
+--- browser: set the theme for pages calculation (is not a middleware, build in the CMS handler).
 - The external plugins components must obey the assets/Component interface.
 - All the config objects have been moved to assets (listener, engine, component, host..).
+- The CMS has been moved to ./cms . The engines have been moved to ./cms/engines .
+- The logs have now a format entry for pages log to define log format.
+- Minify and Compress engines let trace of quantity of bytes minified or compressed into HostWriter so they can be logged.
+- The plugins to load on sites are now into json config (Xamboo is the responsible to start and link plugins, not the CMS).
+- The funcion GetBuildID has been moved to utils.
+- The runner now link all the pieces of code based on configuration, the launch the listeners.
+- The external engines are how automatically compiled if the .so is not present.
+- The external components are how automatically compiled if the .so is not present.
+- The external applications (hosts plugins)  are how automatically compiled if the .so is not present.
+- Start() function added to the Component interface
 
 v1.4.6 - 2021-01-19
 -----------------------

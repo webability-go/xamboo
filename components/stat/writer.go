@@ -6,7 +6,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/webability-go/xamboo/assets"
+	"github.com/webability-go/xconfig"
+
+	"github.com/webability-go/xamboo/config"
 
 	"github.com/webability-go/xamboo/components/host"
 )
@@ -47,19 +49,19 @@ func (w *writer) Write(b []byte) (int, error) {
 	return n, err
 }
 
-func (w *writer) SetListener(l *assets.Listener) {
+func (w *writer) SetListener(l *config.Listener) {
 	w.writer.SetListener(l)
 }
 
-func (w *writer) SetHost(h *assets.Host) {
+func (w *writer) SetHost(h *config.Host) {
 	w.writer.SetHost(h)
 }
 
-func (w *writer) GetListener() *assets.Listener {
+func (w *writer) GetListener() *config.Listener {
 	return w.writer.GetListener()
 }
 
-func (w *writer) GetHost() *assets.Host {
+func (w *writer) GetHost() *config.Host {
 	return w.writer.GetHost()
 }
 
@@ -69,4 +71,12 @@ func (w *writer) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 		return hj.Hijack()
 	}
 	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported in HostWriter") // should not happen
+}
+
+func (w *writer) GetParams() *xconfig.XConfig {
+	return w.writer.GetParams()
+}
+
+func (w *writer) SetParam(id string, value interface{}) {
+	w.writer.SetParam(id, value)
 }

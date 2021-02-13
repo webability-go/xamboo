@@ -11,11 +11,14 @@ var Component = &Redirect{}
 
 type Redirect struct{}
 
-func (auth *Redirect) NeedHandler() bool {
+func (red *Redirect) Start() {
+}
+
+func (red *Redirect) NeedHandler() bool {
 	return true
 }
 
-func (auth *Redirect) Handler(handler http.HandlerFunc) http.HandlerFunc {
+func (red *Redirect) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		hw, ok := w.(host.HostWriter)
