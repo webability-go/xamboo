@@ -24,9 +24,12 @@ func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		hostwriter := w.(host.HostWriter)
 		hostdata := hostwriter.GetHost()
 
+		hw := w.(host.HostWriter)
+
 		req := CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 		req.Hostname = hostdata.Name
-		sw := writer{writer: w.(host.HostWriter), RequestStat: req}
+		sw := writer{writer: hw, RequestStat: req}
+		hw.SetParam("RequestStat", req)
 
 		//		fmt.Println("PRE STAT HANDLER")
 		handler.ServeHTTP(&sw, r)

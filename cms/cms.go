@@ -327,9 +327,10 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 
 	// Call StartContext of each applications, only on main page
 	if !innerpage {
-		//		for _, app := range s.Host.Applications {
-		//			app.StartContext(ctx)
-		//		}
+		for _, plg := range s.Host.Plugins {
+			app := applications.GetApplication(plg.Id)
+			app.StartContext(ctx)
+		}
 	}
 
 	data := engineinstance.Run(ctx, templatedata, languagedata, s)

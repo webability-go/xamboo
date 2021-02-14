@@ -44,14 +44,6 @@ func Run(file string) error {
 	// Finally link the logs call for loggers
 	applications.LinkCalls()
 
-	/*
-		//	fmt.Printf("%#v\n", config.Config.Hosts[0])
-		fmt.Println(loggers.Loggers)
-		fmt.Println(engines.Engines)
-		fmt.Println(components.Components)
-		fmt.Println(applications.Applications)
-	*/
-
 	// The encapsulation system works as follow (all the layers are in order in the main config file):
 	// EXTERNAL LAYER:
 	//   The main listener/host dispatcher. Will create a core writer to link the listener and host to the request.
@@ -62,7 +54,9 @@ func Run(file string) error {
 	// ERROR LAYER:
 	//   Will finally call the error handler.
 
-	var handler http.HandlerFunc
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "404 Not Found", http.StatusNotFound)
+	}
 	// build Handlers
 	for _, componentid := range components.ComponentsOrder {
 		if components.Components[componentid].NeedHandler() {

@@ -25,7 +25,6 @@ func (w *Worker) Compile(ctx *context.Context, plugin *Plugin) {
 	plugin.Version++
 	plugin.PluginVPath = plugin.PluginPath + "." + fmt.Sprint(plugin.Version)
 	plugin.Error = nil
-
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin.PluginVPath, plugin.SourcePath)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
