@@ -1098,7 +1098,10 @@ v1.5.0 - 2021-02-15
 - The external engines are how automatically compiled if the .so is not present.
 - The external components are how automatically compiled if the .so is not present.
 - The external applications (hosts plugins)  are how automatically compiled if the .so is not present.
-- Start() function added to the Component interface
+- Start() function added to the Component interface.
+- Reference manual modified to be compliant with code.
+- LICENCE file added.
+
 
 v1.4.6 - 2021-01-19
 -----------------------
