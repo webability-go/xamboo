@@ -4,113 +4,24 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"plugin"
 
 	"github.com/webability-go/xconfig"
 
-	"github.com/webability-go/xamboo/assets"
 	"github.com/webability-go/xamboo/utils"
 )
 
-type Listener struct {
-	Name         string     `json:"name"`
-	IP           string     `json:"ip"`
-	Port         string     `json:"port"`
-	Protocol     string     `json:"protocol"`
-	ReadTimeOut  int        `json:"readtimeout"`
-	WriteTimeOut int        `json:"writetimeout"`
-	HeaderSize   int        `json:"headersize"`
-	Log          assets.Log `json:"log"`
-	Status       int
-}
-
-type Engine struct {
-	Name    string `json:"name"`
-	Source  string `json:"source"`
-	Library string `json:"library"`
-	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
-	Status int
-}
-
-type Engines []Engine
-type Hosts []assets.Host
-type Listeners []Listener
-
-type WEngines []Engine
-type WHosts []assets.Host
-type WListeners []Listener
-
 type ConfigDef struct {
-	Version   string
-	File      string
-	Listeners Listeners  `json:"listeners"`
-	Hosts     Hosts      `json:"hosts"`
-	Engines   Engines    `json:"engines"`
-	Log       assets.Log `json:"log"`
-	Include   []string   `json:"include"`
+	Version    string
+	File       string
+	Listeners  ListenerList  `json:"listeners"`
+	Hosts      HostList      `json:"hosts"`
+	Components ComponentList `json:"components"`
+	Engines    EngineList    `json:"engines"`
+	Log        Log           `json:"log"`
+	Include    []string      `json:"include"`
 }
 
 var Config = &ConfigDef{}
-
-func EngineExists(ds []Engine, e Engine) bool {
-	for _, dse := range ds {
-		if dse.Name == e.Name {
-			return true
-		}
-	}
-	return false
-}
-
-func (cont *Engines) UnmarshalJSON(buf []byte) error {
-	ar := WEngines{}
-	json.Unmarshal(buf, &ar)
-	for _, x := range ar {
-		if !EngineExists(*cont, x) {
-			*cont = append(*cont, x)
-		}
-	}
-	return nil
-}
-
-func HostExists(ds []assets.Host, e assets.Host) bool {
-	for _, dse := range ds {
-		if dse.Name == e.Name {
-			return true
-		}
-	}
-	return false
-}
-
-func (cont *Hosts) UnmarshalJSON(buf []byte) error {
-	ar := WHosts{}
-	json.Unmarshal(buf, &ar)
-	for _, x := range ar {
-		if !HostExists(*cont, x) {
-			*cont = append(*cont, x)
-		}
-	}
-	return nil
-}
-
-func ListenerExists(ds []Listener, e Listener) bool {
-	for _, dse := range ds {
-		if dse.Name == e.Name {
-			return true
-		}
-	}
-	return false
-}
-
-func (cont *Listeners) UnmarshalJSON(buf []byte) error {
-	ar := WListeners{}
-	json.Unmarshal(buf, &ar)
-	for _, x := range ar {
-		if !ListenerExists(*cont, x) {
-			*cont = append(*cont, x)
-		}
-	}
-	return nil
-}
 
 // Then main xamboo runner
 func (c *ConfigDef) Load(file string) error {
@@ -121,56 +32,62 @@ func (c *ConfigDef) Load(file string) error {
 		return err
 	}
 
-	// Parse the XConfig file
+	// Build REMAINING and load missing data
+	// External Components config & CMS config files
 	if c.Hosts != nil {
 		for i := range c.Hosts {
-			if c.Hosts[i].ConfigFile != nil {
+			if c.IsComponentLoaded("cms") && c.Hosts[i].CMS.Enabled {
 				lc := xconfig.New()
 				// adapt this to multiple config files. They are all replaced by default, consider + on parameters to merge them
-				for j := range c.Hosts[i].ConfigFile {
-					lc.LoadFile(c.Hosts[i].ConfigFile[j])
+				for j := range c.Hosts[i].CMS.ConfigFiles {
+					lc.LoadFile(c.Hosts[i].CMS.ConfigFiles[j])
 				}
-				c.Hosts[i].Config = lc
+				c.Hosts[i].CMS.Config = lc
+			}
 
-				// creates user plugins
-				plugins, _ := c.Hosts[i].Config.Get("plugin")
-				if plugins != nil {
-					c.Hosts[i].Plugins = make(map[string]*plugin.Plugin)
-					c.Hosts[i].Applications = make(map[string]assets.Application)
-					c_plugins := plugins.(*xconfig.XConfig)
-					for app := range c_plugins.Parameters {
-						plugindata, _ := c_plugins.Get(app)
-						if plugindata != nil {
-							c_plugindata := plugindata.(*xconfig.XConfig)
+			c.Hosts[i].Components = map[string]ComponentDef{}
+			var alldata map[string]interface{}
+			err := json.Unmarshal(c.Hosts[i].Remaining, &alldata)
+			if err != nil {
+				return err
+			}
 
-							p1, _ := c_plugindata.GetString("library")
-							lib, err := plugin.Open(p1)
-							if err != nil {
-								return err
-							}
-
-							// TODO(phil) Is not exists try to recompile (*Plugin)
-
-							application, err := lib.Lookup("Application")
-							if err != nil {
-								return err
-							}
-							interf, ok := application.(assets.Application)
-							if !ok {
-								return errors.New("Error linking application main interface Application, is not of type assets.Application.")
-							}
-
-							c.Hosts[i].Plugins[app] = lib
-							c.Hosts[i].Applications[app] = interf
-							interf.StartHost(c.Hosts[i])
+			for _, component := range c.Components {
+				if component.Source == "extern" {
+					var cdata map[string]interface{}
+					enabled := false
+					if alldata[component.Name] != nil {
+						cdata, ok := alldata[component.Name].(map[string]interface{})
+						if !ok {
+							return errors.New("Error: the external component configuration is not a map[string]interface{} in host " + c.Hosts[i].Name)
+						}
+						enabled, ok = cdata["enabled"].(bool)
+						if !ok {
+							return errors.New("Error: the external component configuration does not contain a boolean 'enabled' entry in host " + c.Hosts[i].Name)
 						}
 					}
+					ec := ComponentDef{
+						Name:    component.Name,
+						Enabled: enabled,
+						Status:  0,
+						Params:  cdata,
+					}
+					c.Hosts[i].Components[component.Name] = ec
 				}
 			}
+			c.Hosts[i].Remaining = nil
 		}
 	}
-
 	return nil
+}
+
+func (c *ConfigDef) IsComponentLoaded(name string) bool {
+	for _, component := range c.Components {
+		if component.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *ConfigDef) SysLoad(file string) error {
@@ -209,7 +126,7 @@ func (c *ConfigDef) SearchListener(name string) *Listener {
 	return nil
 }
 
-func (c *ConfigDef) GetListener(host string, port string, secure bool) (*assets.Host, *Listener) {
+func (c *ConfigDef) GetListener(host string, port string, secure bool) (*Host, *Listener) {
 	for _, h := range c.Hosts {
 		if utils.SearchInArray(host, h.HostNames) {
 			// search the actual active listener

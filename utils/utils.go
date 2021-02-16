@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -67,4 +68,14 @@ func GzipMimeCandidate(patterns []string, mime string) bool {
 		}
 	}
 	return false
+}
+
+func GetBuildId(path string) (string, error) {
+	cmd := exec.Command("go", "tool", "buildid", path)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		// log error ?
+		return "", err
+	}
+	return string(out), nil
 }

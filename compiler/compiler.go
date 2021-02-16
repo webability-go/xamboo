@@ -9,8 +9,7 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/webability-go/xamboo/assets"
-	//	"github.com/webability-go/xamboo/logger"
+	"github.com/webability-go/xamboo/cms/context"
 )
 
 type Worker struct {
@@ -18,26 +17,27 @@ type Worker struct {
 	Subscribers []chan bool
 }
 
-func (w *Worker) Compile(ctx *assets.Context, plugin *assets.Plugin) {
+func (w *Worker) Compile(ctx *context.Context, plugin *Plugin) {
 
 	messages := "Recompiling: " + plugin.SourcePath + "\n"
 
 	// Change version +1
 	plugin.Version++
 	plugin.PluginVPath = plugin.PluginPath + "." + fmt.Sprint(plugin.Version)
-
+	plugin.Error = nil
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin.PluginVPath, plugin.SourcePath)
-	//	cmd.Stdout = ctx.LoggerError.Writer()
-	//	cmd.Stderr = ctx.LoggerError.Writer()
-	//	err := cmd.Run()
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		messages += "Error running go build:\n" + fmt.Sprint(err)
+		plugin.Status = 2
+		plugin.Error = err
 	}
 	messages += string(out)
 
 	plugin.Messages += messages
-	ctx.LoggerError.Println(messages)
+	if ctx != nil {
+		ctx.LoggerError.Println(messages)
+	}
 	w.ready <- true
 	w.Broadcast()
 }
@@ -63,7 +63,7 @@ type Pile struct {
 
 var CPile *Pile
 
-func (p *Pile) createCompiler(ctx *assets.Context, plugin *assets.Plugin) *Worker {
+func (p *Pile) createCompiler(ctx *context.Context, plugin *Plugin) *Worker {
 
 	// we have to check we are not "already" compiling this code. In this case, we just wait it ends instead of launch another compiler
 	w := &Worker{ready: make(chan bool), Subscribers: []chan bool{}}
@@ -72,7 +72,7 @@ func (p *Pile) createCompiler(ctx *assets.Context, plugin *assets.Plugin) *Worke
 	return w
 }
 
-func (p *Pile) PleaseCompile(ctx *assets.Context, plugin *assets.Plugin) error {
+func (p *Pile) PleaseCompile(ctx *context.Context, plugin *Plugin) error {
 
 	p.mutex.Lock()
 	worker, ok := p.Workers[plugin.SourcePath]
@@ -92,10 +92,10 @@ func (p *Pile) PleaseCompile(ctx *assets.Context, plugin *assets.Plugin) error {
 		delete(p.Workers, plugin.SourcePath)
 		p.mutex.Unlock()
 	}
-	return nil
+	return plugin.Error
 }
 
-func PleaseCompile(ctx *assets.Context, plugin *assets.Plugin) error {
+func PleaseCompile(ctx *context.Context, plugin *Plugin) error {
 	if CPile == nil {
 		CPile = &Pile{Workers: map[string]*Worker{}}
 	}

@@ -18,6 +18,10 @@ The Xamboo server works only on Unix systems, since it makes a heavy use of plug
 INSTALATION AND COMPILATION
 =============================
 
+To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
+
+You need GO 1.15 installed and working on your server.
+
 Create a new directory for your Xamboo Server, for instance /home/sites/server
 
 ```
@@ -37,7 +41,7 @@ Then pull the last version of Xamboo Ready to use environment project for Xamboo
 $ git pull https://github.com/webability-go/xamboo-env.git
 ```
 
-You may also add the master site for web administration of the Xamboo:
+You may also add the master site for web administration of the Xamboo (optional):
 
 ```
 $ mkdir /home/sites/server/master
@@ -47,7 +51,7 @@ $ git pull https://github.com/webability-go/xamboo-master.git
 $ cd ..
 ```
 
-And also add the administration site for your application, installation and administration of the xmodules:
+And also add the administration site for your application, installation and administration of the xmodules (optional):
 
 ```
 $ mkdir /home/sites/server/admin
@@ -59,33 +63,39 @@ $ cd ..
 
 You need to edit each .json files to adapt it to your own IP and ports
 You can also link the master config.json to the mainconfig.json (commented lines)
+You can also link the admin config.json to the mainconfig.json (commented lines)
 
 Set the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
-Upgrade to the lastest version, then run the xamboo with master, admin and examples
+Upgrade to the lastest versions, then run the xamboo with master, admin and examples
 
 ```
-$ go get -u github.com/webability-go/xamboo
+$ go get -u
 $ start.sh
 ```
 
 
 To build your own server:
+
 Edit start.sh, json config files and change the config file path.
 
 You can copy the example directory and change anything you need, or build from scratch.
 
-The master site is not necessary to make the CMS work. It's a helpfull tool to configure and install anything easier and edit the json config files.
+The master site is not necessary to make the Xamboo to work. It's a helpfull tool to configure and install anything easier and edit the json config files.
+
+The admin site is not necessary but is a good start to build your own administration system for your site if you need one.
 
 Install the master site and install contexts with XModules for any site you need.
 
 You can compile xamboo to an executable with:
+
 ```
 go build xamboo.go
 ```
 
-You do not need to recompile any app and page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity.
+You do not need to recompile any component, engine, app or page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity, but it is not necessary. The xamboo will do automatically.
+
 You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo-env.
 
 You may attach the xamboo to an OS/service, calling the start.sh
@@ -98,18 +108,19 @@ Starting the Xamboo, you need to pass a configuration JSON file to the applicati
 
 You may use absolute paths, but it's very recommended to use only relative paths for portability. All the path you will use are relative to the directory where you launch your xamboo application.
 
-The config file is a JSON object which have 5 main sections.
+The config file is a JSON object which have 6 main sections.
 ```
 {
   "log": {},
   "include": [],
   "listeners": [],
   "hosts": [],
+  "components": [],
   "engines": []
 }
 ```
 
-You may add other entries into each level for comments, they are going to be just ignored.
+You may add other entries into each level for comments, they are just going to be ignored.
 ```
 {
   "comments": "This comment entry will be ignored by the xamboo",
@@ -120,6 +131,7 @@ You may add other entries into each level for comments, they are going to be jus
   "include": [],
   "listeners": [],
   "hosts": [],
+  "components": [],
   "engines": []
 }
 ```
@@ -134,6 +146,7 @@ For instance if in the config for site1 you have listener1 and listener2, and ho
   "comments": "MAIN CONFIG",
   "log": {},
   "include": ["site1/config.json", "site2/config.json"],
+  "components": [],
   "engines": []
 }
 
@@ -156,13 +169,15 @@ the result configuration would be (as interpreted by Xamboo):
   "log": {},
   "listeners": [ <LISTENER1>, <LISTENER2>, <LISTENER3> ],
   "hosts": [ <HOST1>, <HOST2> ]
+  "components": [],
   "engines": []
 }
 ```
 
 1. "log" section
+-----------------------------
 
-The log section contains the following parameters:
+The log section may contains the following parameters:
 
 ```
 {
@@ -170,6 +185,7 @@ The log section contains the following parameters:
     "enabled": true,
     "sys": "file:./example/logs/xamboo-sys.log",
     "pages": "file:./example/logs/developers.log",
+    "pagesformat": "%requestid% %clientip% %method% %protocol% %code% %request% %duration% %bytesout% %bytestocompress% %bytestominify%",
     "errors": "file:./example/logs/xamboo-error.log",
     "stats": "discard",
   },
@@ -181,15 +197,15 @@ The log section is present in the root of the config file (main log), and also i
 
 * Main log:
 
-Only "sys" and "errors" logs are used
+Only "sys" and "errors" logs are used, "enabled" is ignored
 
 * Listener log:
 
-Only "sys" log is used
+Only "sys" log is used, "enabled" is ignored
 
 * Host log:
 
-"enabled" (true/false) parameter, and "sys", "pages", "errors" and "stats" logs are used.
+"enabled" (true/false) parameter, and "sys", "pages", "pagesformat", "errors" and "stats" logs are used.
 
 Any other entry is ignored.
 
@@ -198,7 +214,7 @@ Any other entry is ignored.
 The "sys" logs will log anything "normal" for the object, for instance all the http.net server messages from TLS , startup, shutdown, etc.
 The "errors" logs will always receive any errors that may happen in the system, from main thread up to each hit on server (even panic errors and recovered errors.)
 The "pages" logs will log any hit on any pages and files for the host.
-Finally, the "stat" log will call any file or function at the same time as the "pages" log, but you are free to call a function with the whole context to log anything you need to.
+Finally, the "stat" log will call any file or function at the same time as the "pages" log, but you are free to call a function with the whole context to log anything anywhere you need to.
 
 Each log entry can be one of:
 
@@ -210,18 +226,19 @@ Each log entry can be one of:
 The stat log can also be "call:<app plugin>:<entry function>".
 The function will be called for each hit on the host, with the server context so you can log anything you want anywhere you want to.
 
-The function must be publicly exported like this:
+The function must be publicly exported like this in your application plugin:
 
 ```
-import "github.com/webability-go/xamboo/assets"
+import "github.com/webability-go/xamboo/cms/context"
 
-func Log(ctx *assets.Context) {
+func Log(ctx *context.Context) {
 	// do the log
 }
 ```
 
 
 2. "listeners" section
+-----------------------------
 
 The listener is the thread charged to listen to a specific IP:Port on the server, with some metrics and logs.
 
@@ -252,7 +269,7 @@ Where each parameter is:
 - IP: is the IP to listen to. If the IP is empty "", then the server will listen to all the available IPs on the server.
 - PORT: is the port to listen to.
 - PROTOCOL: is the protocol to listen to. For now, Xamboo knows http and https only.
-- TIMEOUT: is a number between 0 and 65535, the time is in seconds.
+- TIMEOUT: is a number between 0 and 65535, the time is in seconds. Recommended values are 120 seconds (2 minutes)
 - SIZE: is a number between 4096 and 65535, the size is in bytes.
 - the SYSLOG is explained in the log section.
 
@@ -288,13 +305,14 @@ Example of a working real listeners for HTTP and HTTPS:
 ```
 
 3. "hosts" section
+-----------------------------
 
 A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
 Any host can listen on any listener, and respond to any domain in the configuration.
 
-A Host may have modules activated, like gzip response, compress HTML/CSS/JS response, Basic Auth, Redirect, etc.
+A Host may have components activated, like compressed response, minify HTML/CSS/JS response, Basic Auth, Redirect, etc.
 
-Note: Modules are still not programmable, but will be soon.
+The components can be built-in or programmed.
 
 The general syntax is:
 
@@ -304,48 +322,16 @@ The general syntax is:
     "name": "developers",
     "listeners": [ "http", "https" ],
     "hostnames": [ "developers.webability.info", "www.webability.info", "webability.info", "webability.org" ],
-    "config": [ "./example/application/config/example.conf" ],
     "cert": "./example/ssl/cert.pem",
     "key": "./example/ssl/privkey.pem",
-    "static": "./example/repository/public/static",
-    "browser": {
-      "useragent": {
-        "enabled": true,
-        "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
+    "plugins": [
+      { "Name":"app",
+        "Library": "./example/app/app.so"
       }
-    },
-    "gzip": {
-      "enabled": true,
-      "mimes": [
-        "text/html",
-        "text/css"
-      ],
-      "files": [
-        "*.ico",
-        "*.css",
-        "*.js",
-        "*.html"
-      ]
-    },
-    "minify": {
-      "enabled": true,
-      "html": true,
-      "css": true,
-      "js": true,
-      "json": true,
-      "svg": true,
-      "xml": true
-    },
-    "auth": {
-      "enabled": false
-    },
-    "log": {
-      "enabled": true,
-      "pages": "file:./example/logs/developers.log",
-      "errors": "file:./example/logs/developers-error.log",
-      "sys": "file:./example/logs/developers-sys.log",
-      "stats": "discard"
-    }
+    ],
+
+    "COMPONENT-NAME": { COMPONENT-CONFIG }
+
   },
   ...
   ]
@@ -358,22 +344,361 @@ The hostnames section contains all the host names (domain names) that will answe
 The cert and key is the SSL certificate for the site, only if there is any listener on HTTPS protocol.
 The cert should include all the hostname you declare for this site.
 
-The config file is the configuration for the Host. See the following section for configuration
+The plugins are the external .so libraries to load with the host. See the programmation section to build them.
 
-The available modules (hard-wired for now) are:
+The available built-in components are:
 
-- Browser (set the page version to the type of device)
-- GZip (gzip output if authorized type of file or mime)
-- Minify (minify output html, css, json if authorized type of file or mime)
-- Auth  (basic realm authorization to access site)
-- Logs  (log the errors, hits, stats)
+- log: will log the system statistics into the declared logs into the configuration.
+- stat: will store all the system statistics and also the requests (used by log).
+- redirect: will control the called domain and port, and redirect to the correct one if it is any other variant.
+- auth: will control the access with a username and password for basic realm authorization to access site.
+- compress: will compress the content as asked by the client (gzip or deflate) based on mime content
+- minify: will minify the html, css, javascript, json, xml text files if authorized type of file or mime.
+- origin: will set authorized headers for cros origin APIs based on rules.
+- fileserver: will serve static files from a static directory.
+- cms: will build the pages based on the Xamboo CMS. Have a browser sub module.
+-- browser: will set the page version to the type of device.
+- error: will serve a 404 error.
 
-Each module can be enabled or disabled.
+Each component can be enabled or disabled. See the following section.
+
+4. Components
+-----------------------------
+
+4.1. Definition and loading the components
+-----------------------------
+
+The main components section follow the following structure:
+
+```
+{
+  "components": [
+    { "name": "log", "source": "built-in" },
+    { "name": "stat", "source": "built-in" },
+    { "name": "redirect", "source": "built-in" },
+    { "name": "auth", "source": "built-in" },
+    { "name": "compress", "source": "built-in" },
+    { "name": "minify", "source": "built-in" },
+    { "name": "origin", "source": "built-in" },
+    { "name": "fileserver", "source": "built-in" },
+    { "name": "cms", "source": "built-in" },
+    { "name": "error", "source": "built-in" },
+    { "name": "myhandler", "source": "extern", "library": "./example/components/myhandler/myhandler.so" }
+  ],
+  ...
+}
+```
+
+A component is a plugin module (built-in or external) that is called as a middleware on the server handler.
+The order of components is VERY IMPORTANT. Let them in this order unless you perfectly know what you are doing.
+
+When you want to add a hand made component, the syntax is:
+
+```
+  { "name": "mycomponent", "source": "extern", "library": "./path/to/your/mycomponent.so" },
+```
+
+You may need to developp a new components for instance to replace a built-in one, or add new components.
+
+For instance if you need a "auth" component based on a database for users, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
+
+Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
+
+4.2. List of build-in components
+-----------------------------
+
+4.2.1. log
+-----------------------------
+
+The log configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "log": {
+      "enabled": true,
+      "pages": "file:./example/logs/developers.log",
+      "pagesformat": "%requestid% %clientip% %method% %protocol% %code% %request% %duration% %bytesout% %bytestocompress% %bytestominify%",
+      "errors": "file:./example/logs/developers-error.log",
+      "sys": "file:./example/logs/developers-sys.log",
+      "stats": "discard"
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the log system.
+
+pages: the file or stream to send the statistics of requests.
+
+pages-format: is the format to log the requests. The list of known parameters are:
+- %bytesout%: The quantity of bytes sent to the client (header not included)
+- %bytestocompress%: The quantity of bytes before compressing the data sent to the client
+- %bytestominify%: The quantity of bytes before minifying the data sent to the client
+- %clientip%: The client IP
+- %clientport%: The client Port
+- %code%: The return code (200, 404, etc)
+- %duration%: The duration of the data calculation, from receiving the request up to send it to the client
+- %hostid%: The ID of the host serving the request
+- %listenerid%: The ID of the listener serving the request
+- %listenerip%: The IP of the listener serving the request
+- %listenerport%: The Port of the listener serving the request
+- %protocol%: The requested protocol (HTTP, HTTPS, WS, WSS)
+- %method%: The requested method (GET, POST, PUT, HEAD, OPTION, DELETE, ...)
+- %request%: The full string request from the client
+- %starttime%: The start time when the request has been received
+- %endtime%: The end time when the request is finished to be calculated and sent to the client
+- %requestid%": The Unique Internal ID of the request
+
+If a parameter have an empty value, it is replace with a - (dash)
+
+errors: the file or stream to send the errors happening in the system. Note: a 404 is not an error per se and will be logged into pages log.
+
+sys: the file or stream to send the internal messages.
+
+stat: the function to call when a request is done and executed in the listener/host.
+
+The stat function is a public function from any of your loaded plugins.
+
+The general syntax is:
+
+```
+import "github.com/webability-go/xamboo/cms/context"
+
+func Log(ctx *context.Context) {
+	// do the log
+}
+```
+
+4.2.2. stat
+-----------------------------
+
+This component is used to build the request parameters and statictics so the log component can use it.
+
+It cannot be disabled.
+
+It will also store all the system stats like total request per minute, total lifetime requests served, quantity of requests by type,
+system global stats.
+
+It is used by the master environment to display all realtime statistics of the server.
+
+4.2.3. redirect
+-----------------------------
+
+The redirect configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "redirect": {
+      "enabled": true,
+      "scheme": "https",
+      "host": "developers.webability.info:83"
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the redirect component.
+
+If the request does not correspond to the default configured scheme and host, the request will be automatically
+redirected to the correct URL with a 301 status code.
+
+4.2.4. auth
+-----------------------------
+
+The auth configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "auth": {
+      "enabled": true,
+      "realm": "Xamboo Env test (xamboo/xamboo)",
+      "user": "xamboo",
+      "pass": "xamboo"
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the auth component.
+
+The realm is the title of the real that should be displayed on the user login form of the browser.
+
+User and pass are the expected data to be captured to authorized the use of the host.
+
+If the user and pass are wrong, the system returns a 401 unauthorized status.
 
 
+4.2.5. compress
+-----------------------------
+
+The compress configuration parameters are
+```
+"hosts": [
+  {
+    ...
+
+    "compress": {
+      "enabled": true,
+      "mimes": [
+        "text/html",
+        "text/css",
+        "application/javascript"
+      ],
+      "files": [
+        "*.ico",
+        "*.css",
+        "*.js",
+        "*.html"
+      ]
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the compress component.
+
+The component will listen to the request and compress the information to send back only if:
+- The client ask for a compressed content (deflate or gzip)
+- The information mime correspond to the authorized mimes to compress
+- The requested file (fileserver type) correspond to the authorized extentions
+
+mimes is the list of authorized mimes to compress. If the information is any other type of mime, it will not be compressed.
+
+files is the list of filters on file names to compress. They are normal file names, with files joker (* and ?)
 
 
-4. Host Configuration file
+4.2.6. minify
+-----------------------------
+
+The minify configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "minify": {
+      "enabled": true,
+      "html": true,
+      "css": true,
+      "js": true,
+      "json": true,
+      "svg": true,
+      "xml": true
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the minify component.
+
+The component will minify the type of generated code (based on mime).
+Activate or deactivate each type of information.
+
+
+4.2.7. origin
+-----------------------------
+
+The origin configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "origin": {
+      "enabled": true,
+      "maindomains": ["webability.info"],
+      "default": "https://developers.webability.info",
+      "methods": ["GET", "POST", "OPTIONS", "HEAD"],
+      "headers": ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Origin", "X-Requested-With", "Method"],
+      "credentials": true
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the origin component.
+
+The component will identify an OPTIONS or HEAD request and distribute the correct headers to authorize cross origin of requests.
+
+You should use this component only when you program some REST API or so.
+
+
+4.2.8. fileserver
+-----------------------------
+
+The fileserver configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "fileserver": {
+      "enabled": true,
+      "takeover": false,
+      "static": "./example/repository/public/static"
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the fileserver component.
+
+If the takeover is true, then the host will server only files. If a file does not exists, then the 404 is launched by the file server.
+
+If the takeover is false, when a file does not exists, the next handler will be called. This is perfect to serve static files on a CMS or so.
+
+The static directy is where the static files are.
+
+
+4.2.9. cms
+-----------------------------
+
+The CMS is a full content mamagement system with meta language, to build powerfull dynamic sites, with business rules implemented directly into pages and code.
+
+The full CMS manuals and references are below this manual.
+
+The cms configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "cms": {
+      "enabled": true,
+      "config": [
+        "./example/application/config/example.conf"
+      ],
+      "engines": {
+        "simple": true,
+        "library": true,
+        "template": true,
+        "language": true,
+        "wajafapp": true,
+        "box": true
+      },
+      "browser": {
+        "enabled": true,
+        "useragent": {
+          "enabled": true,
+          "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
+        }
+      }
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the cms component.
+
+CMS Configuration files
+-----------------------------
 
 Wait, why an extra configuration file?
 
@@ -404,37 +729,159 @@ language=en
 # boolean: yes/no, true/false, 0/1
 acceptpathparameters=yes
 
-# Preload some libraries for this site (note: should be in config.json)
-# You can put more than one plugin, one on each line
-# Syntax: plugin.<Plugin name>.library = the library to load (one occurence)
-plugin.app.library=./example/app/app.so
 ```
+
+engines: The authorized engines to be used by the CMS on this host.
+You may deactivate any not used engine for pages calculation, setting the parameter to false.
+
+browser: This is a sub component for the cms engine.
+
+browser>enabled: true/false, to activate or de-activate the browser sub component.
+
+browser>useragent: will be able to replace the browser type into the version of the page so you can build version of pages based on the type of browser.
+Known types of browsers are:
+- pc, mobile, tablet, tv, console, wearable, base
+
+The base template is used if the type of browser is unknown.
+
+Then CMS makes a full takeover on the handlers, so none of the following handlers will be called.
+
+
+4.2.10. error
+-----------------------------
+
+The error component will only returns a 404 errors. You may want to build your own error component to personalize the returned data.
+
+The error configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "error": {
+      "enabled": false
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the error component.
+
+
+4.3. Reference to build a new component
+-----------------------------
+
+To build your own component, you need a public exported variable called Component and it must meet the xamboo/components/assets.Component interface definition.
+
+So it needs 3 functions to be callable by the components system:
+```
+type Component interface {
+	Start()
+	NeedHandler() bool
+	Handler(handler http.HandlerFunc) http.HandlerFunc
+}
+```
+
+For instance this is the simplest error system component:
+
+```
+package mycomponent
+
+import (
+	"net/http"
+)
+
+var Component = &MyComponent{}
+
+type MyComponent struct{}
+
+func (mc *MyComponent) Start() {
+}
+
+func (mc *MyComponent) NeedHandler() bool {
+	return true
+}
+
+func (mc *MyComponent) Handler(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+    http.Error(w, "404 Not Found", http.StatusNotFound)
+  }
+}
+```
+
+You may add as much as code you need before and after the handler call.
+
+Start is called when the component is loaded for the first time by the system (like an init, but once the system is loaded).
+
+NeedHandler must return true to be considered by the components system.
+
+Finally the Handler function returns the handler that will encapsulate next handler in chain, and encapsulated by previous handler in chain.
+
+If the handler is not enabled or activated by your configuration on the host, you need to directly call the handler parameter of Handler function.
 
 
 5. "engines" section
+-----------------------------
+
+5.1. Definition and loading the engines
+-----------------------------
+
+The main engines section follow the following structure:
+
+```
+{
+  "engines":
+  [
+    { "name": "redirect", "source": "built-in" },
+    { "name": "simple", "source": "built-in" },
+    { "name": "library", "source": "built-in" },
+    { "name": "template", "source": "built-in" },
+    { "name": "language", "source": "built-in" },
+    { "name": "wajafapp", "source": "built-in" }
+  ],
+  ...
+}
+```
 
 The engines are type of pages that can be called from the Xamboo server.
 There are 6 build-in engines for standard type of pages, and you can add as many engines as you need. (See Engine section of this manual to know how to build them)
 
-The engines syntax is:
-
-```
-"engines":
-[
-  { "name": "redirect", "source": "built-in" },
-  { "name": "simple", "source": "built-in" },
-  { "name": "library", "source": "built-in" },
-  { "name": "template", "source": "built-in" },
-  { "name": "language", "source": "built-in" },
-  { "name": "wajafapp", "source": "built-in" }
-]
-```
-
-When you want to add a hand made engine, the syntax is:
+When you want to add a hand made external engine, the syntax is:
 
 ```
   { "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" },
 ```
+
+You may need to developp a new components for instance to replace a built-in one, or add new components.
+
+For instance if you need a "auth" component based on a database for users, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
+
+Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
+
+5.2. List of build-in components
+-----------------------------
+
+5.2.1. redirect engine
+
+5.2.2. simple engine
+
+5.2.3. library engine
+
+5.2.4. template engine
+
+5.2.5. language engine
+
+5.2.6. wajafapp engine
+
+
+5.3. Reference to build a new engine
+-----------------------------
+
+
+
+CMS REFERENCE
+=============================
+
 
 PAGES
 =============================
@@ -579,13 +1026,21 @@ When the system loads the Application, it will check the existence of the export
 
 The Application is the entry point to load the XModules.
 
-1. Datasource
+The applications will need to deal with the following objects:
 
-2. Compiled Module
+1. CMS
 
-3. Context
+2. DatasourceContainer
 
-4. Bridge
+3. Datasource
+
+4. ModuleContainer
+
+5. Module
+
+6. Context
+
+7. Bridge
 
 
 XMODULES
@@ -595,38 +1050,58 @@ The XModules are all the modules that are build within the Xamboo applications a
 
 It is a normalized structure to call the methods and link the contexts with hosts and applications.
 
-
+See the xmodules reference to see which ones are available and how to use them.
 
 
 TO DO
 =======================
 
-- Stats module: set mask %ip %h %l %s etc from config file.
-  Pages format log with template. If there is no format, the basic "{ip} {pr} {mt} {cd} {ur} {sz} {tm}" is used.
-  Make stats more persistent with file write before clean every X timer.
+- Make stats more persistent with file write before clean every X timer.
 - Implement i18n and languages for messages.
-- Moves the modules.so load to config.json, not anymore into site config.conf
 
-- BasicAuth should support an app function entry to call to verify user (not only user/pass into config file).
 - simple code server injector, finish all supported code.
 - xamboo local API to add/remove hosts, IPs, services ?.
 
-Note:
- When the .so is compile with a set of modules, the code is put into the .so but if the loader already use this code,
- the one in the .so will be ignored. The only problem is that the .so become really big when the system is complex and load lots of libraries.
-
-Maybe, analyze:
-- Clone the server.Host and config, so each thread is free to modify server/host/listener variables if needed.
-
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
-- page library and snippets JS-compatible code ? (check go call NODE with pipe data interchange).
+- page library and snippets JS-compatible code ? (check go call NODE.JS with pipe data interchange).
 - hot-reload config (change config dynamically without restarting).
-- Modularize components (stat, rewrite, browser, fastCGI, auth, etc.) and implement with interceptors.
 
 
 Version Changes Control
 =======================
+
+v1.5.0 - 2021-02-15
+-----------------------
+- The components have been totally rebuilt to be 'built-in' or external plugins so the programmer can add as many as needed components.
+- Every plugin can be enabled or disabled on each host.
+- The built-in components are:
+-- host: controls the dispatcher to call the correct Host as defined in the configuration (system component).
+-- log: controls the loggers of pages, errors, sys, stat function call.
+-- stat: controls the statistics component, from system to host.
+-- redirect: controls the redirect mechanism on request headers.
+-- auth: controls the browser realm authotization login.
+-- compress: controls the gzip and deflate compression for response.
+-- minify: controls the minification of the code (HTML, XML, CSS, JS, JSON, SVG).
+-- origin: controls the cross origin headers (generally for APIs).
+-- fileserver: controls the natural files server.
+-- cms: controls the Xamboo CMS, wrapper to ./cms system.
+--- browser: set the theme for pages calculation (is not a middleware, build in the CMS handler).
+- The external plugins components must obey the assets/Component interface.
+- All the config objects have been moved to assets (listener, engine, component, host..).
+- The CMS has been moved to ./cms . The engines have been moved to ./cms/engines .
+- The logs have now a format entry for pages log to define log format.
+- Minify and Compress engines let trace of quantity of bytes minified or compressed into HostWriter so they can be logged.
+- The plugins to load on sites are now into json config (Xamboo is the responsible to start and link plugins, not the CMS).
+- The funcion GetBuildID has been moved to utils.
+- The runner now link all the pieces of code based on configuration, the launch the listeners.
+- The external engines are how automatically compiled if the .so is not present.
+- The external components are how automatically compiled if the .so is not present.
+- The external applications (hosts plugins)  are how automatically compiled if the .so is not present.
+- Start() function added to the Component interface.
+- Reference manual modified to be compliant with code.
+- LICENCE file added.
+
 
 v1.4.6 - 2021-01-19
 -----------------------
