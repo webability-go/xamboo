@@ -1061,12 +1061,10 @@ TO DO
 - Implement deflate in compress component.
 
 - simple code server injector, finish all supported code.
-- xamboo local API to add/remove hosts, IPs, services ?.
 
 Extras:
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
 - page library and snippets JS-compatible code ? (check go call NODE.JS with pipe data interchange).
-- hot-reload config (change config dynamically without restarting).
 
 
 Version Changes Control
@@ -1074,9 +1072,12 @@ Version Changes Control
 
 v1.5.1 - 2021-02-15
 -----------------------
-- The config system van now reload the hosts and component configuration without restarting the server.
+- The config system can now reload the hosts and component configuration without restarting the server.
   Configuration changes will apply inmediatly at reload and affect all the new requests.
-
+- Manual enhanced with new changes
+- Added function StartHost to Component interface, called when the host is started up (only once)
+- List of components of Host is now a map[string]*ComponentDef to modify the components dynamically
+- New GetHost function added to the config
 
 v1.5.0 - 2021-02-15
 -----------------------
@@ -1087,7 +1088,7 @@ v1.5.0 - 2021-02-15
 -- log: controls the loggers of pages, errors, sys, stat function call.
 -- stat: controls the statistics component, from system to host.
 -- redirect: controls the redirect mechanism on request headers.
--- auth: controls the browser realm authotization login.
+-- auth: controls the browser realm authorization login.
 -- compress: controls the gzip and deflate compression for response.
 -- minify: controls the minification of the code (HTML, XML, CSS, JS, JSON, SVG).
 -- origin: controls the cross origin headers (generally for APIs).
@@ -1100,7 +1101,7 @@ v1.5.0 - 2021-02-15
 - The logs have now a format entry for pages log to define log format.
 - Minify and Compress engines let trace of quantity of bytes minified or compressed into HostWriter so they can be logged.
 - The plugins to load on sites are now into json config (Xamboo is the responsible to start and link plugins, not the CMS).
-- The funcion GetBuildID has been moved to utils.
+- The function GetBuildID has been moved to utils.
 - The runner now link all the pieces of code based on configuration, the launch the listeners.
 - The external engines are how automatically compiled if the .so is not present.
 - The external components are how automatically compiled if the .so is not present.
@@ -1122,17 +1123,17 @@ v1.4.5 - 2021-01-17
 
 v1.4.4 - 2020-09-28
 -----------------------
-- Correction of a bug on the library engine using an inexistant error while verifying the called library.
+- Correction of a bug on the library engine using an no existing error while verifying the called library.
 
 v1.4.3 - 2020-09-18
 -----------------------
-- Compiler supervisor and log removed because they are not used, creation of compiler pile dynamicly when needed.
-- Manual enchanced (config -- Host, and config -- Host config file).
+- Compiler supervisor and log removed because they are not used, creation of compiler pile dynamically when needed.
+- Manual enhanced (config -- Host, and config -- Host config file).
 
 v1.4.2 - 2020-08-22
 -----------------------
 - Race condition corrected on the compiler and library engine when 2 sites with different ID try to compile the same page (and finally breaks the page)
-- Manual enchanced (Page resolution)
+- Manual enhanced (Page resolution)
 
 v1.4.1 - 2020-08-18
 -----------------------
