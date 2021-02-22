@@ -8,6 +8,7 @@ import (
 	"github.com/webability-go/xamboo/utils"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Compress{}
@@ -15,6 +16,9 @@ var Component = &Compress{}
 type Compress struct{}
 
 func (comp *Compress) Start() {
+}
+
+func (comp *Compress) StartHost(host *config.Host) {
 }
 
 func (comp *Compress) NeedHandler() bool {

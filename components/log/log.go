@@ -10,6 +10,7 @@ import (
 
 	"github.com/webability-go/xamboo/components/host"
 	"github.com/webability-go/xamboo/components/stat"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Log{}
@@ -17,6 +18,9 @@ var Component = &Log{}
 type Log struct{}
 
 func (log *Log) Start() {
+}
+
+func (log *Log) StartHost(host *config.Host) {
 }
 
 func (log *Log) ConfigEntry() string {

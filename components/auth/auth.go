@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Auth{}
@@ -13,6 +14,9 @@ var Component = &Auth{}
 type Auth struct{}
 
 func (auth *Auth) Start() {
+}
+
+func (auth *Auth) StartHost(host *config.Host) {
 }
 
 func (auth *Auth) NeedHandler() bool {

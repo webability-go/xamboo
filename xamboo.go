@@ -20,7 +20,10 @@
 //
 // https://www.github.com/webability-go/xamboo
 //
+// The runner:
+//
+// Will launch the system, load the configuration, start loggers, engines, components, listeners and link the handlers.
 package xamboo
 
 // VERSION last oficial published version of the xamboo on github.com
-const VERSION = "1.5.0"
+const VERSION = "1.5.1"

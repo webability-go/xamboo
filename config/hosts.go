@@ -40,7 +40,7 @@ type Host struct {
 	CMS        CMS        `json:"cms"`
 	// External components
 	Remaining  []byte
-	Components map[string]ComponentDef
+	Components map[string]*ComponentDef
 }
 type THost Host
 
@@ -173,4 +173,5 @@ type ComponentDef struct {
 	Status  int
 
 	Params map[string]interface{}
+	Config interface{}
 }

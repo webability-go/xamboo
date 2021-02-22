@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Error{}
@@ -12,6 +13,9 @@ var Component = &Error{}
 type Error struct{}
 
 func (err *Error) Start() {
+}
+
+func (err *Error) StartHost(host *config.Host) {
 }
 
 func (err *Error) NeedHandler() bool {

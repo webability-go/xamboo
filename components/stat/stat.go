@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Stat{}
@@ -12,6 +13,9 @@ type Stat struct{}
 
 func (st *Stat) Start() {
 	StartStat()
+}
+
+func (st *Stat) StartHost(host *config.Host) {
 }
 
 func (st *Stat) NeedHandler() bool {
