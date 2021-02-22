@@ -1070,7 +1070,7 @@ Extras:
 Version Changes Control
 =======================
 
-v1.5.1 - 2021-02-15
+v1.5.1 - 2021-02-21
 -----------------------
 - The config system can now reload the hosts and component configuration without restarting the server.
   Configuration changes will apply inmediatly at reload and affect all the new requests.
