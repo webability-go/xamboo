@@ -7,6 +7,7 @@ import (
 	"github.com/webability-go/xamboo/cms"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &CMS{}
@@ -15,6 +16,9 @@ type CMS struct{}
 
 func (cm *CMS) Start() {
 	cms.Start()
+}
+
+func (cm *CMS) StartHost(host *config.Host) {
 }
 
 func (cm *CMS) NeedHandler() bool {

@@ -45,7 +45,7 @@ func (c *ConfigDef) Load(file string) error {
 				c.Hosts[i].CMS.Config = lc
 			}
 
-			c.Hosts[i].Components = map[string]ComponentDef{}
+			c.Hosts[i].Components = map[string]*ComponentDef{}
 			var alldata map[string]interface{}
 			err := json.Unmarshal(c.Hosts[i].Remaining, &alldata)
 			if err != nil {
@@ -56,8 +56,9 @@ func (c *ConfigDef) Load(file string) error {
 				if component.Source == "extern" {
 					var cdata map[string]interface{}
 					enabled := false
+					var ok bool
 					if alldata[component.Name] != nil {
-						cdata, ok := alldata[component.Name].(map[string]interface{})
+						cdata, ok = alldata[component.Name].(map[string]interface{})
 						if !ok {
 							return errors.New("Error: the external component configuration is not a map[string]interface{} in host " + c.Hosts[i].Name)
 						}
@@ -66,7 +67,7 @@ func (c *ConfigDef) Load(file string) error {
 							return errors.New("Error: the external component configuration does not contain a boolean 'enabled' entry in host " + c.Hosts[i].Name)
 						}
 					}
-					ec := ComponentDef{
+					ec := &ComponentDef{
 						Name:    component.Name,
 						Enabled: enabled,
 						Status:  0,
@@ -139,4 +140,13 @@ func (c *ConfigDef) GetListener(host string, port string, secure bool) (*Host, *
 		}
 	}
 	return nil, nil
+}
+
+func (c *ConfigDef) GetHost(id string) *Host {
+	for _, h := range c.Hosts {
+		if h.Name == id {
+			return &h
+		}
+	}
+	return nil
 }

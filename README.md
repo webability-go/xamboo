@@ -1058,6 +1058,7 @@ TO DO
 
 - Make stats more persistent with file write before clean every X timer.
 - Implement i18n and languages for messages.
+- Implement deflate in compress component.
 
 - simple code server injector, finish all supported code.
 - xamboo local API to add/remove hosts, IPs, services ?.
@@ -1070,6 +1071,12 @@ Extras:
 
 Version Changes Control
 =======================
+
+v1.5.1 - 2021-02-15
+-----------------------
+- The config system van now reload the hosts and component configuration without restarting the server.
+  Configuration changes will apply inmediatly at reload and affect all the new requests.
+
 
 v1.5.0 - 2021-02-15
 -----------------------

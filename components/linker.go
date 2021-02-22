@@ -194,3 +194,13 @@ func Link() {
 		ComponentsOrder[i], ComponentsOrder[j] = ComponentsOrder[j], ComponentsOrder[i]
 	}
 }
+
+func StartHost() {
+	for id := range config.Config.Hosts {
+
+		// call Starts
+		for _, componentid := range ComponentsOrder {
+			Components[componentid].StartHost(&config.Config.Hosts[id])
+		}
+	}
+}

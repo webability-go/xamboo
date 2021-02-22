@@ -8,6 +8,7 @@ import (
 	"github.com/webability-go/xamboo/utils"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &FileServer{}
@@ -15,6 +16,9 @@ var Component = &FileServer{}
 type FileServer struct{}
 
 func (fs *FileServer) Start() {
+}
+
+func (fs *FileServer) StartHost(host *config.Host) {
 }
 
 func (fs *FileServer) NeedHandler() bool {

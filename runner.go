@@ -43,6 +43,8 @@ func Run(file string) error {
 	loggers.Start()
 	// Finally link the logs call for loggers
 	applications.LinkCalls()
+	// And call hosts starts for components
+	components.StartHost()
 
 	// The encapsulation system works as follow (all the layers are in order in the main config file):
 	// EXTERNAL LAYER:

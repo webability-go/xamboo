@@ -14,6 +14,7 @@ import (
 	"github.com/tdewolff/minify/xml"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Minify{}
@@ -21,6 +22,9 @@ var Component = &Minify{}
 type Minify struct{}
 
 func (min *Minify) Start() {
+}
+
+func (min *Minify) StartHost(host *config.Host) {
 }
 
 func (min *Minify) NeedHandler() bool {

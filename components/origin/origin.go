@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Origin{}
@@ -13,6 +14,9 @@ var Component = &Origin{}
 type Origin struct{}
 
 func (ori *Origin) Start() {
+}
+
+func (ori *Origin) StartHost(host *config.Host) {
 }
 
 func (ori *Origin) NeedHandler() bool {

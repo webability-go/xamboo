@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/config"
 )
 
 var Component = &Redirect{}
@@ -12,6 +13,9 @@ var Component = &Redirect{}
 type Redirect struct{}
 
 func (red *Redirect) Start() {
+}
+
+func (red *Redirect) StartHost(host *config.Host) {
 }
 
 func (red *Redirect) NeedHandler() bool {
