@@ -164,3 +164,13 @@ func Run(file string) error {
 	<-finish // never finish by itself for now (OS will take care of this)
 	return nil
 }
+
+func OverLoad() error {
+	err := config.OverLoad(config.Config.File)
+	if err != nil {
+		return err
+	}
+	// restart Hosts
+	components.StartHost()
+	return nil
+}
