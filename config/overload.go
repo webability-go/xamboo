@@ -4,7 +4,7 @@ import (
 //	"fmt"
 )
 
-var overConfig = &ConfigDef{}
+var overConfig *ConfigDef
 
 // Overload will load the new config and add, modify, remove hosts and components config
 // - Listeners, engines and list of components are not supported for now
@@ -26,6 +26,9 @@ var overConfig = &ConfigDef{}
 // * Load new Engines
 // * Load new components, rebuild encapsulate handlers on listeners
 func OverLoad(file string) error {
+
+	overConfig = &ConfigDef{}
+
 	err := overConfig.Load(file)
 	if err != nil {
 		return err
@@ -62,6 +65,6 @@ func OverLoad(file string) error {
 	}
 
 	Config.Hosts = overConfig.Hosts
-
+	overConfig = nil
 	return nil
 }

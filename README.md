@@ -858,7 +858,7 @@ For instance if you need a "auth" component based on a database for users, you m
 
 Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
 
-5.2. List of build-in components
+5.2. List of build-in engines
 -----------------------------
 
 5.2.1. redirect engine
@@ -882,11 +882,61 @@ Another example would be a component to verify security and SQL injection and re
 CMS REFERENCE
 =============================
 
+The CMS code is contained into a directory that will contain a structure of directories and files that will follow the URLs called by the clients.
+
+For instance, if your code container have a directory /blog/[some files] you may call from the web  https://mysite/blog
+
+Some considerations:
+
+- The root directory container is pointed by the 'pagesdir' config parameter.
+- The home page is always a sub directory pointed by the 'mainpage' config parameter. The root directory files will be ignored.
+- You need errorblock and errorpage directories created and working as a CMS page. They are pointed by 'errorblock' and 'errorpage' config parameters.
 
 PAGES
 =============================
 
 1. What is a page: Engines, Instances, Languages and Versions.
+
+A CMS page is one unique URL or a group of URLs with the same root. It corresponde to one library code into the server.
+
+For example:
+
+https://www.mysite.com/login   is a unique page for login on your site.
+
+https://www.mysite.com/blog, https://www.mysite.com/blog/channel1, https://www.mysite.com/blog/article1, ...
+
+are a group of URLs with a unique root https://www.mysite.com/blog
+
+The code of the root will resolve which data to send to the client based on the URL.
+
+This is considered a CMS page.
+
+--
+
+A CMS page will always output a some compatible code (call it HTML, JS, CSS, Image, Video etc.) but the way to achieve it may be very different, that's why there are several engines to build the page.
+
+The built-in engines are decribed later in this document.
+
+There can be template engines, GO code engines, file server engines, redirection engines, etc.
+So evey page has a "type" of page which means which engine to use to build the page.
+
+--
+
+Every page may have a combination of versions and languages.
+For example you may have your home page in spanish and english, for PC and for mobile.
+You could obviously have your pages code N version * M languages, but that would be extremelly dificult to manage, so Xamboo hay many tools to only work with templates without languages, and tables of string in various languages to inject into the templates.
+
+For instance, lets say you have 5 versions for pages:
+- PC, mobile, print, smart watch and tablet.
+An you have 10 languages to support:
+- es, en, fr, jp, ar, pt, it, de, ru, cn
+
+Instead of having 50 pages code ready to serve, you will only have 5 HTML templates and 10 languages XML files with compabible entries, and the engines will be in charge to build anything with that.
+
+Every one of those 50 possible pages are called an instance.
+You can have one instance per page, or have group of instances per page.
+You may also define a set of parameters for each instance or group of instances.
+
 
 2. Page resolution
 
@@ -926,9 +976,11 @@ a. Locate the folder path directly as it comes from the URI. (with a protection 
     a.2.ii. If the file exists, verify it with status 'published'
       a.2.ii.1. If not 'published', follows in step b.
       a.2.ii.2. If published, calculates and returns page.
-b. Not Found page. Removes the last folder URI
+b. Not Found page. Removes the last folder from URI
   b.1. There are still folders, continues in step a.
-  b.2. No more folders, terminate with an error
+  b.2. No more folders, home page accept path parameters?
+    b.2.1 No: terminate with an error
+    b.2.2 Yes: serve home page.
 ```
 
 In short, it is the first folder found on the route from the end to be executed. In other words, you can add whatever after the official route will be ignored and taken to the page found as a number of parameters.
@@ -960,21 +1012,142 @@ In general, these parameters are words used for SEO, variables, names of items, 
 
 3. .page file, type, status, template and others
 
+The .page file must have the name of the directory where is it into.
+
+For instance:
+
+```
+./home/home.page
+./blog/channel/channel.page
+```
+
+Into the page directory, the first file to find is the .page file. If the file exists, it must contain parameters=vale entries, readable by a XConfig configuration file.
+
+There are 2 mandatory parameters and others depend on the page type.
+
+```
+# type is the name of the engine to call, to build and resolve this page.
+# redirect: used to redirect the page with a 301, 302 code
+# simple: a simple page based on a metalanguage and output code
+# template: a template to use with something else
+# language: a language to use with something else
+# library: a .go code, injected with a template and a language, build for native client code
+# wajafapp: an administration page with a .go code, injected with a template and a language, build for JSON
+type=simple
+
+# status is:
+# hidden: can never be seen (even if called from somewhere else), default value if no status
+# published: can be seen from outside (main called page)
+# template: it's a template, not visible from outside
+# block: it's a building block to use in another page
+# folder: it's a folder (no code, no nothing, just have sub pages)
+status=published
+```
+
+The behaviour of the page and the other parameters will depend on the type and status.
+See next chapter for information of each page type.
+
+If you add an external engine, you will call it with the name of the engine as defined into the Xamboo configuration files, into the 'engines' entries.
+
 4. Instances of a page
 
-5. Type of pages
+For all the types of pages except redirect, you will need a .instance file.
+The instance files are a set of parameters defined for each version and languages if you need different behaviours based on those.
 
-  3.1 Redirect page
+The default language and version are defined into the configuration file, into 'language' and 'verion' entries.
 
-  3.2 Simple Page
+This means, if the system cannot resolve the client language or version of file to use, it will set them with those values.
 
-  3.3 Library Page
+By default, Xamboo will not resolve automatically the language (you must set it by code) and the version can be set to the device type, activating the CMS browser sub module.
 
-  3.4 WajafApp Page
+You may build a component that can set those parameters automatically.
 
-  3.5 Template Page
+All the .instance files have the following name conventions:
 
-  3.6 Language Page
+[page-name].[version].[language].instance
+[page-name].[version].instance
+[page-name].instance
+
+The page-name must be the same as the directory where the file is into
+
+The set [version].[language] is called the identity of the instance.
+
+Resolution of .instance file, will search, in order:
+The first one found will be used:
+
+```
+[current-version].[current-language]
+[current-version].[default-language]
+[current-version]
+[default-version].[current-language]
+[default-version].[default-language]
+<none>
+```
+
+For instance if your current language is fr, default language is en, current version if mobile and default version is base:
+it will search, in order:
+
+```
+mypage.mobile.fr.instance
+mypage.mobile.en.instance
+mypage.mobile.instance
+mypage.base.fr.instance
+mypage.base.en.instance
+mypage.instance
+```
+
+It is mandatory to always have at least one file available for the page to work.
+Have always the last one available, even if empty, and create others only if really need.
+
+You may put into this file caches parameters, parameters to inject into the code or template code, parameters to use into the .go libraries etc.
+
+5. Type of pages and complementary files
+
+  5.1 Redirect page
+
+Redirect page:
+- You will need 2 more parameters:
+
+```
+redirecturl=/other-url
+# Moved permanently
+redirectcode=301
+```
+
+- redirecturl can be relative, absolute or to another domain.
+- redirectcode should be 301 or 302, but you may use any other code too.
+
+A redirect page should always be published or it will not work (it's a redirect for your client browser, not for internal code creation)
+A redirect page does not need other files.
+
+  4.2 Simple Page
+
+The simple page is the basic CMS page, with a mix of output code and meta language to inject and build the correct output.
+
+A simple page will need one or more .instance files, and one or more .code files.
+
+The .page may have 2 more parameters:
+- template
+- acceptpathparameters
+
+The template is the page to call, to embed this page into it.
+
+If your page will receive a "group of URLs", you may activate acceptpathparameters to 'on', 'true' or '1'
+
+The .code files follow exactly the same resolution as the .instance files.
+
+The reference of .code files is explained later in this manual in the "CMS AND META LANGUAGE" chapter
+
+
+  4.3 Template Page
+
+  4.4 Language Page
+
+  4.5 Library Page
+
+  4.6 WajafApp Page
+
+
 
 
 ENGINES
@@ -1043,6 +1216,42 @@ The applications will need to deal with the following objects:
 7. Bridge
 
 
+CMS AND META LANGUAGE
+========================
+
+
+Types of pages:
+=======================
+
+Simple Page (.code)
+-----------------------
+
+The type of the page in the .page file must be
+type=simple
+
+The code of the page is your native code (for instance HTML) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
+
+* Meta language for Simple Page:
+
+- [[URLPARAMS]]
+- [[URLPARAM,(.*?)]]
+- [[VAR,(.*?)]]
+- [[PARAM,(.*?)]]
+- [[SYSPARAM,(.*?)]]
+- [[PAGEPARAM,(.*?)]]
+- [[LOCALPAGEPARAM,(.*?)]]
+- [[INSTANCEPARAM,(.*?)]]
+- [[LOCALINSTANCEPARAM,(.*?)]]
+- [[JS,(.*?)]]
+- [[CSS,(.*?)]]
+- [[CALL,(.*?)(:(.*?)){0,1}]]
+- ##   ##
+- %--   --%
+- [[BOX,(.*?):
+- BOX]]
+
+
+
 XMODULES
 =============================
 
@@ -1070,7 +1279,12 @@ Extras:
 Version Changes Control
 =======================
 
-v1.5.1 - 2021-02-15
+v1.5.2 - 2021-02-24
+-----------------------
+- Bug corrected when overloading the new configuration
+- Manual enchanced (page types, .page files, .instance files, .code files)
+
+v1.5.1 - 2021-02-21
 -----------------------
 - The config system can now reload the hosts and component configuration without restarting the server.
   Configuration changes will apply inmediatly at reload and affect all the new requests.
@@ -1515,49 +1729,3 @@ Manual:
 
 - If you want to help converting the manual from text into .md file, you are most welcome.
 - Translations are also welcome
-
-Installation:
-=======================
-
-
-Configuration:
-=======================
-
-
-Running the examples:
-=======================
-
-
-Building your site:
-=======================
-
-
-Types of pages:
-=======================
-
-Simple Page (.code)
------------------------
-
-The type of the page in the .page file must be
-type=simple
-
-The code of the page is your native code (for instance HTML) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
-
-* Meta language for Simple Page:
-
-- [[URLPARAMS]]
-- [[URLPARAM,(.*?)]]
-- [[VAR,(.*?)]]
-- [[PARAM,(.*?)]]
-- [[SYSPARAM,(.*?)]]
-- [[PAGEPARAM,(.*?)]]
-- [[LOCALPAGEPARAM,(.*?)]]
-- [[INSTANCEPARAM,(.*?)]]
-- [[LOCALINSTANCEPARAM,(.*?)]]
-- [[JS,(.*?)]]
-- [[CSS,(.*?)]]
-- [[CALL,(.*?)(:(.*?)){0,1}]]
-- ##   ##
-- %--   --%
-- [[BOX,(.*?):
-- BOX]]
