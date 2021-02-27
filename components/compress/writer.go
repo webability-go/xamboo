@@ -38,11 +38,16 @@ func (w *writer) WriteHeader(status int) {
 
 	w.wroteHeader = true
 
-	if !w.compress {
-		contenttype := w.writer.Header().Get("Content-Type")
-		host := w.writer.GetHost()
-		// check mime type
-		w.compress = utils.GzipMimeCandidate(host.Compress.Mimes, contenttype)
+	// check status, it may NOT have body (Body for 2XX and 4XX)
+	if status < 200 || (status >= 300 && status < 400) || (status >= 500) {
+		w.compress = false
+	} else {
+		if !w.compress {
+			contenttype := w.writer.Header().Get("Content-Type")
+			host := w.writer.GetHost()
+			// check mime type
+			w.compress = utils.GzipMimeCandidate(host.Compress.Mimes, contenttype)
+		}
 	}
 
 	if w.compress {
@@ -74,7 +79,7 @@ func (w *writer) Close() {
 	if w.compress {
 		e := w.compressWriter.Close()
 		if e != nil {
-			fmt.Println("Error closing zipper: ", e)
+			fmt.Println("Error closing zipper: ", e, w.length)
 		}
 		zippers.Put(w.compressWriter)
 	}

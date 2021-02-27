@@ -1279,6 +1279,15 @@ Extras:
 Version Changes Control
 =======================
 
+v1.5.3 - 2021-02-26
+-----------------------
+- new debug flag into host config. When the debug flag is set,, the path of the code will be traced and written into the host sys log.
+  This is usefull when you developp your own components or you have a bug somewhere in the encapsulators.
+- All the components were modified to implement the debug mode: host, log, stat, redirect, auth, compress, minify, origin, fileserver, cms, error.
+- Main CMS server modified to verify if plugins are OK before calling them.
+- Some errors corrected on stat component.
+- Error struct created for error component on Hosts in config, and correction of component code to use the structure.
+
 v1.5.2 - 2021-02-24
 -----------------------
 - Bug corrected when overloading the new configuration
