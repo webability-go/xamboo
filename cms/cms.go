@@ -163,7 +163,9 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 	ctx.Plugins = map[string]*plugin.Plugin{}
 	for _, p := range s.Host.Plugins {
 		plg := applications.GetApplicationPlugin(p.Id)
-		ctx.Plugins[p.Name] = plg
+		if plg != nil {
+			ctx.Plugins[p.Name] = plg
+		}
 	}
 	if innerpage {
 		ctx.IsMainPage = false
@@ -327,9 +329,13 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 
 	// Call StartContext of each applications, only on main page
 	if !innerpage {
+		// verify apps are OK and working, or ERROR
 		for _, plg := range s.Host.Plugins {
 			app := applications.GetApplication(plg.Id)
-			app.StartContext(ctx)
+			// error already logged when creating plugin if it does not exist or could not be loaded
+			if app != nil {
+				app.StartContext(ctx)
+			}
 		}
 	}
 

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/loggers"
 )
 
 func Handler(handler http.HandlerFunc) http.HandlerFunc {
@@ -34,10 +35,20 @@ func Handler(handler http.HandlerFunc) http.HandlerFunc {
 		}
 		hostdef, listenerdef := config.Config.GetListener(host, port, secure)
 		if listenerdef != nil && hostdef != nil {
+			lg := loggers.GetHostLogger(hostdef.Name, "sys")
+
 			hw := writer{writer: w, host: hostdef, listener: listenerdef} // is a HostWriter
+			if hostdef.Debug {
+				lg.Println("C[host] Host found, debug enabled. We are going to serve the handler:", hostdef.Name)
+			}
 			handler.ServeHTTP(&hw, r)
+			if hostdef.Debug {
+				lg.Println("C[host] We have served the handler:", hostdef.Name)
+			}
 		} else {
-			// ERROR: NO LISTENER DEFINED
+			// ERROR: NO LISTENER/HOST DEFINED
+			slg := loggers.GetCoreLogger("errors")
+			slg.Println("C[host] No host or site found:", host, port, r.URL)
 			http.Error(w, "Error, no site found", http.StatusNotImplemented)
 		}
 	}

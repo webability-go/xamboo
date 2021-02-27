@@ -1,7 +1,6 @@
 package minify
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -15,6 +14,7 @@ import (
 
 	"github.com/webability-go/xamboo/components/host"
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/loggers"
 )
 
 var Component = &Minify{}
@@ -33,18 +33,24 @@ func (min *Minify) NeedHandler() bool {
 
 func (min *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		slg := loggers.GetCoreLogger("errors")
 
 		hw, ok := w.(host.HostWriter)
 		if !ok {
-			fmt.Println("Minify component: ERROR DETECTED: the writer is not a HostWriter or the Listener/Host is not set (and that should not happen)", r, w)
-			http.Error(w, "Minify component: Writer error", http.StatusInternalServerError)
+			slg.Println("C[minify]: Critical error: the writer is not a HostWriter (and that should not happen)", r, w)
+			http.Error(w, "C[minify]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
 		}
 		host := hw.GetHost()
 		if host == nil {
-			fmt.Println("Minify component: ERROR DETECTED: there is no HOST (and that should not happen)", r, w)
-			http.Error(w, "Minify component: Writer error (see logs for more info)", http.StatusInternalServerError)
+			slg.Println("C[minify]: Critical error: there is no HOST in the host writer (and that should not happen)", r, w)
+			http.Error(w, "C[minify]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
+		}
+
+		lg := loggers.GetHostLogger(host.Name, "sys")
+		if host.Debug {
+			lg.Println("C[minify]: We are going to verify the minify, enabled:", host.Minify.Enabled)
 		}
 
 		if host.Minify.Enabled {
@@ -69,6 +75,10 @@ func (min *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
 				m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
 			}
 
+			if host.Debug {
+				lg.Println("C[minify]: We are going to create the minifywriter, then serve the handler.")
+			}
+
 			mrw := m.ResponseWriter(w, r)
 			mw := writer{writer: hw, minifyWriter: mrw}
 
@@ -78,8 +88,18 @@ func (min *Minify) Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 			hw.SetParam("bytestominify", mw.length)
 
-		} else {
-			handler.ServeHTTP(w, r)
+			if host.Debug {
+				lg.Println("C[minify]: We have served the handler.")
+			}
+			return
+		}
+
+		if host.Debug {
+			lg.Println("C[minify]: No minifying needed. We are going to serve the handler.")
+		}
+		handler.ServeHTTP(w, r)
+		if host.Debug {
+			lg.Println("C[minify]: We have served the handler.")
 		}
 	}
 }

@@ -1,5 +1,5 @@
 
-Xamboo for GO v1
+# Xamboo for GO v1
 =============================
 
 Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
@@ -15,7 +15,11 @@ Xamboo works on sites currently distributing more than **90 millions web pages m
 
 The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
 
-INSTALATION AND COMPILATION
+
+- If you want to help with the code, modules, translations, debug, test code, you are most welcome. Just contact me here.
+
+
+# INSTALATION AND COMPILATION
 =============================
 
 To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
@@ -101,7 +105,7 @@ You will need the original code so the compiler is able to compile pages and lib
 You may attach the xamboo to an OS/service, calling the start.sh
 
 
-CONFIGURATION FILES
+# CONFIGURATION FILES
 =============================
 
 Starting the Xamboo, you need to pass a configuration JSON file to the application with --config=[config path]
@@ -174,8 +178,7 @@ the result configuration would be (as interpreted by Xamboo):
 }
 ```
 
-1. "log" section
------------------------------
+## 1. "log" section
 
 The log section may contains the following parameters:
 
@@ -237,8 +240,7 @@ func Log(ctx *context.Context) {
 ```
 
 
-2. "listeners" section
------------------------------
+## 2. "listeners" section
 
 The listener is the thread charged to listen to a specific IP:Port on the server, with some metrics and logs.
 
@@ -304,8 +306,7 @@ Example of a working real listeners for HTTP and HTTPS:
 ]
 ```
 
-3. "hosts" section
------------------------------
+## 3. "hosts" section
 
 A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
 Any host can listen on any listener, and respond to any domain in the configuration.
@@ -362,11 +363,9 @@ The available built-in components are:
 
 Each component can be enabled or disabled. See the following section.
 
-4. Components
------------------------------
+## 4. Components
 
-4.1. Definition and loading the components
------------------------------
+### 4.1. Definition and loading the components
 
 The main components section follow the following structure:
 
@@ -404,11 +403,9 @@ For instance if you need a "auth" component based on a database for users, you m
 
 Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
 
-4.2. List of build-in components
------------------------------
+### 4.2. List of build-in components
 
-4.2.1. log
------------------------------
+#### 4.2.1. log
 
 The log configuration parameters are
 ```
@@ -471,8 +468,7 @@ func Log(ctx *context.Context) {
 }
 ```
 
-4.2.2. stat
------------------------------
+#### 4.2.2. stat
 
 This component is used to build the request parameters and statictics so the log component can use it.
 
@@ -483,8 +479,12 @@ system global stats.
 
 It is used by the master environment to display all realtime statistics of the server.
 
-4.2.3. redirect
------------------------------
+#### 4.2.3. redirect
+
+The redirect engine is a very simple redirect mechanism that ensure to redirect multiple domain entries to a single official domain.
+
+It is very usefull where you listen to different domains or sub domains and/or different protocols or ports on the same host, to
+be sure this is always the official protocol/domain/port that will be used.
 
 The redirect configuration parameters are
 ```
@@ -503,11 +503,10 @@ The redirect configuration parameters are
 
 enabled: true/false, to activate or de-activate the redirect component.
 
-If the request does not correspond to the default configured scheme and host, the request will be automatically
+If the request does not correspond to the default configured protocol, domain and port, the request will be automatically
 redirected to the correct URL with a 301 status code.
 
-4.2.4. auth
------------------------------
+#### 4.2.4. auth
 
 The auth configuration parameters are
 ```
@@ -534,8 +533,7 @@ User and pass are the expected data to be captured to authorized the use of the 
 If the user and pass are wrong, the system returns a 401 unauthorized status.
 
 
-4.2.5. compress
------------------------------
+#### 4.2.5. compress
 
 The compress configuration parameters are
 ```
@@ -574,8 +572,7 @@ mimes is the list of authorized mimes to compress. If the information is any oth
 files is the list of filters on file names to compress. They are normal file names, with files joker (* and ?)
 
 
-4.2.6. minify
------------------------------
+#### 4.2.6. minify
 
 The minify configuration parameters are
 ```
@@ -602,8 +599,7 @@ The component will minify the type of generated code (based on mime).
 Activate or deactivate each type of information.
 
 
-4.2.7. origin
------------------------------
+#### 4.2.7. origin
 
 The origin configuration parameters are
 ```
@@ -630,8 +626,7 @@ The component will identify an OPTIONS or HEAD request and distribute the correc
 You should use this component only when you program some REST API or so.
 
 
-4.2.8. fileserver
------------------------------
+#### 4.2.8. fileserver
 
 The fileserver configuration parameters are
 ```
@@ -657,8 +652,7 @@ If the takeover is false, when a file does not exists, the next handler will be 
 The static directy is where the static files are.
 
 
-4.2.9. cms
------------------------------
+#### 4.2.9. cms
 
 The CMS is a full content mamagement system with meta language, to build powerfull dynamic sites, with business rules implemented directly into pages and code.
 
@@ -747,8 +741,7 @@ The base template is used if the type of browser is unknown.
 Then CMS makes a full takeover on the handlers, so none of the following handlers will be called.
 
 
-4.2.10. error
------------------------------
+#### 4.2.10. error
 
 The error component will only returns a 404 errors. You may want to build your own error component to personalize the returned data.
 
@@ -768,8 +761,7 @@ The error configuration parameters are
 enabled: true/false, to activate or de-activate the error component.
 
 
-4.3. Reference to build a new component
------------------------------
+### 4.3. Reference to build a new component
 
 To build your own component, you need a public exported variable called Component and it must meet the xamboo/components/assets.Component interface definition.
 
@@ -820,10 +812,9 @@ Finally the Handler function returns the handler that will encapsulate next hand
 If the handler is not enabled or activated by your configuration on the host, you need to directly call the handler parameter of Handler function.
 
 
-5. "engines" section
------------------------------
+## 5. "engines" section
 
-5.1. Definition and loading the engines
+### 5.1. Definition and loading the engines
 -----------------------------
 
 The main engines section follow the following structure:
@@ -858,29 +849,113 @@ For instance if you need a "auth" component based on a database for users, you m
 
 Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
 
-5.2. List of build-in engines
------------------------------
+### 5.2. List of build-in engines
 
-5.2.1. redirect engine
+#### 5.2.1. redirect engine
 
-5.2.2. simple engine
+The redirect engine is made to automatically redirect a page to a new page, with a redirect code.
 
-5.2.3. library engine
+#### 5.2.2. simple engine
 
-5.2.4. template engine
+The simple engine is charged to integrate a code page (generally HTML, JS, CSS etc) with parameters and business rules.
 
-5.2.5. language engine
+#### 5.2.3. library engine
 
-5.2.6. wajafapp engine
+The library engine is made to compile and call pages as plugin. That is, a GO code compile as a plugin to serve your page.
+The library detects any changes in the code and automatically recompile the page.
+
+#### 5.2.4. template engine
+
+The template engine is used to serve and dispatch XCore v2 XTemplate, generally for other pages to inject code into them.
+
+#### 5.2.5. language engine
+
+The language engine is used to serve and dispatch XCore v2 XLanguage, generally for other pages to inject code with them.
+
+#### 5.2.6. wajafapp engine
+
+The Wajaf App is a special engine to build administration code as plugin, with a special layer to build Wajaf Application, integrate XML to JSON, encode JSON, listen to events and so on.
+
+This is the engine to integrate the github.com/webability-go/wajaf libraries to build powerfull one page applications for administration system.
+
+### 5.3. Reference to build a new engine
+
+To build your own engine, you need 2 public exported variables called Engine and EngineInstance and they must meet the xamboo/cms/engines/assets.Engine and xamboo/cms/engines/assets.EngineInstance interfaces definitions.
+
+So it needs 6 functions to be callable by the engines system:
+```
+type Engine interface {
+	NeedInstance() bool
+	GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) EngineInstance
+	Run(ctx *context.Context, e interface{}) interface{}
+}
+
+type EngineInstance interface {
+	NeedLanguage() bool
+	NeedTemplate() bool
+	Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{}
+}
+```
+
+For instance this is the simplest engine:
+
+```
+package myengine
+
+var Engine = MyEngine{}
+
+type MyEngine struct{}
+
+func (re *MyEngine) NeedInstance() bool {
+
+	return false
+	// return true mean you will create the boxengineinstance and the result will be served through it
+}
+
+func (re *MyEngine) GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) assets.EngineInstance {
+
+	data := &MyEngineInstance{}
+	return data
+}
+
+func (se *MyEngine) Run(ctx *context.Context, s interface{}) interface{} {
+
+	return "<div style=\"border: 3px solid red;\">This is a code generated by MyEngine from the engine itself<br />(only .page is necesary and NeedInstance must return false)</div>"
+}
+
+type MyEngineInstance struct {
+}
+
+func (p *MyEngineInstance) NeedLanguage() bool {
+	return false
+}
+
+func (p *MyEngineInstance) NeedTemplate() bool {
+	return false
+}
+
+// context contains all the page context and history
+// params are an array of strings (if page from outside) or a mapped array of data (inner pages)
+func (p *MyEngineInstance) Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+
+	return "<div style=\"border: 3px solid red;\">This is a code generated by the BOX engine as an instance<br />(You need .instance file and NeedInstance must return true)</div>"
+}
+
+```
+
+You may add as much as code you need to make your engine work.
+
+The CMS will first call NeedInstance to know if the engine needs to build an instance (for each .instance possible file)
+An instance is based on parameters that may vary for languages, devices, version of page etc.
+
+If the engine does not need an instance, the Engine.Run funcion will be called.
+
+If the engine needs and instance then the GetInstance function will be called to get the instance.
+Then it will call NeedTemplate to know if it needs to load a local template, NeedLanguage to know if it needs to load a local language.
+Finally the CMS will call the Instance.Run function to create the code.
 
 
-5.3. Reference to build a new engine
------------------------------
-
-
-
-CMS REFERENCE
-=============================
+# CMS REFERENCE
 
 The CMS code is contained into a directory that will contain a structure of directories and files that will follow the URLs called by the clients.
 
@@ -892,10 +967,10 @@ Some considerations:
 - The home page is always a sub directory pointed by the 'mainpage' config parameter. The root directory files will be ignored.
 - You need errorblock and errorpage directories created and working as a CMS page. They are pointed by 'errorblock' and 'errorpage' config parameters.
 
-PAGES
-=============================
+# PAGES
 
-1. What is a page: Engines, Instances, Languages and Versions.
+
+## 1. What is a page: Engines, Instances, Languages and Versions.
 
 A CMS page is one unique URL or a group of URLs with the same root. It corresponde to one library code into the server.
 
@@ -938,7 +1013,7 @@ You can have one instance per page, or have group of instances per page.
 You may also define a set of parameters for each instance or group of instances.
 
 
-2. Page resolution
+## 2. Page resolution
 
 Xamboo separates the path of the URI first. Leave the / at the beginning and removes the last /.
 
@@ -1010,7 +1085,7 @@ The complement of the path is passed to the page and can be used as an array of 
 In general, these parameters are words used for SEO, variables, names of items, etc.
 ```
 
-3. .page file, type, status, template and others
+## 3. .page file, type, status, template and others
 
 The .page file must have the name of the directory where is it into.
 
@@ -1049,7 +1124,7 @@ See next chapter for information of each page type.
 
 If you add an external engine, you will call it with the name of the engine as defined into the Xamboo configuration files, into the 'engines' entries.
 
-4. Instances of a page
+## 4. Instances of a page
 
 For all the types of pages except redirect, you will need a .instance file.
 The instance files are a set of parameters defined for each version and languages if you need different behaviours based on those.
@@ -1101,9 +1176,9 @@ Have always the last one available, even if empty, and create others only if rea
 
 You may put into this file caches parameters, parameters to inject into the code or template code, parameters to use into the .go libraries etc.
 
-5. Type of pages and complementary files
+## 5. Type of pages and complementary files
 
-  5.1 Redirect page
+### 5.1 Redirect page
 
 Redirect page:
 - You will need 2 more parameters:
@@ -1120,7 +1195,7 @@ redirectcode=301
 A redirect page should always be published or it will not work (it's a redirect for your client browser, not for internal code creation)
 A redirect page does not need other files.
 
-  4.2 Simple Page
+### 5.2 Simple Page
 
 The simple page is the basic CMS page, with a mix of output code and meta language to inject and build the correct output.
 
@@ -1139,33 +1214,32 @@ The .code files follow exactly the same resolution as the .instance files.
 The reference of .code files is explained later in this manual in the "CMS AND META LANGUAGE" chapter
 
 
-  4.3 Template Page
+### 5.3 Template Page
 
-  4.4 Language Page
+### 5.4 Language Page
 
-  4.5 Library Page
+### 5.5 Library Page
 
-  4.6 WajafApp Page
-
-
+### 5.6 WajafApp Page
 
 
-ENGINES
-=============================
 
-1. Redirect page
 
-2. Simple page
+# ENGINES
 
-3. Library page
+## 1. Redirect page
 
-4. Template page
+## 2. Simple page
 
-5. Language page
+## 3. Library page
 
-6. WajafApp page
+## 4. Template page
 
-7. User made Engines
+## 5. Language page
+
+## 6. WajafApp page
+
+## 7. User made Engines
 
 An Engine must meet the assets.Engine and assets.EngineInstance interfaces to be used by the Xamboo.
 
@@ -1185,8 +1259,7 @@ It is common to have a unique code with different languages tables (.language fi
 
 The instance Run function will pass the template and language corresponding to the client parameters, i.e. language and version (generally the device) template
 
-APPLICATION
-=============================
+# APPLICATION
 
 An Application must meet the assets.Application interface to be used by the Xamboo.
 
@@ -1201,27 +1274,24 @@ The Application is the entry point to load the XModules.
 
 The applications will need to deal with the following objects:
 
-1. CMS
+## 1. CMS
 
-2. DatasourceContainer
+## 2. DatasourceContainer
 
-3. Datasource
+## 3. Datasource
 
-4. ModuleContainer
+## 4. ModuleContainer
 
-5. Module
+## 5. Module
 
-6. Context
+## 6. Context
 
-7. Bridge
-
-
-CMS AND META LANGUAGE
-========================
+## 7. Bridge
 
 
-Types of pages:
-=======================
+# CMS AND META LANGUAGE
+
+## Types of pages:
 
 Simple Page (.code)
 -----------------------
@@ -1252,8 +1322,7 @@ The code of the page is your native code (for instance HTML) and you can use a M
 
 
 
-XMODULES
-=============================
+# XMODULES
 
 The XModules are all the modules that are build within the Xamboo applications and pages.
 
@@ -1262,8 +1331,8 @@ It is a normalized structure to call the methods and link the contexts with host
 See the xmodules reference to see which ones are available and how to use them.
 
 
-TO DO
-=======================
+# TO DO
+
 
 - Make stats more persistent with file write before clean every X timer.
 - Implement i18n and languages for messages.
@@ -1276,8 +1345,18 @@ Extras:
 - page library and snippets JS-compatible code ? (check go call NODE.JS with pipe data interchange).
 
 
-Version Changes Control
-=======================
+# Version Changes Control
+
+v1.5.3 - 2021-02-26
+-----------------------
+- new debug flag into host config. When the debug flag is set,, the path of the code will be traced and written into the host sys log.
+  This is usefull when you developp your own components or you have a bug somewhere in the encapsulators.
+- All the components were modified to implement the debug mode: host, log, stat, redirect, auth, compress, minify, origin, fileserver, cms, error.
+- Main CMS server modified to verify if plugins are OK before calling them.
+- Some errors corrected on stat component.
+- Error struct created for error component on Hosts in config, and correction of component code to use the structure.
+- Manual enhanced (built-in engines and external engines creation guide)
+- Manual formatting
 
 v1.5.2 - 2021-02-24
 -----------------------
@@ -1720,12 +1799,3 @@ V0.0.1 - 2018-11-06
 -----------------------
 > Uses XConfig 0.0.1
 - First commit, still not fully working
-
-
-
-
-Manual:
-=======================
-
-- If you want to help converting the manual from text into .md file, you are most welcome.
-- Translations are also welcome

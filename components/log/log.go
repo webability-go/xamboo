@@ -6,11 +6,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/webability-go/xamboo/loggers"
-
 	"github.com/webability-go/xamboo/components/host"
 	"github.com/webability-go/xamboo/components/stat"
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/loggers"
 )
 
 var Component = &Log{}
@@ -40,28 +39,37 @@ func (log *Log) Handler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// LOG will take data from params of Host, set by other modules
+		slg := loggers.GetCoreLogger("errors")
 
 		hw, ok := w.(host.HostWriter)
 		if !ok {
-			fmt.Println("Log component: ERROR DETECTED: the writer is not a HostWriter or the Listener/Host is not set (and that should not happen)", r, w)
-			http.Error(w, "Log component: Writer error", http.StatusInternalServerError)
+			slg.Println("C[log]: Critical error: the writer is not a HostWriter (and that should not happen)", r, w)
+			http.Error(w, "C[log]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
 		}
 		host := hw.GetHost()
 		if host == nil {
-			fmt.Println("Log component: ERROR DETECTED: there is no HOST (and that should not happen)", r, w)
-			http.Error(w, "Log component: Writer error (see logs for more info)", http.StatusInternalServerError)
+			slg.Println("C[log]: Critical error: there is no HOST in the host writer (and that should not happen)", r, w)
+			http.Error(w, "C[log]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
+		}
+
+		lg := loggers.GetHostLogger(host.Name, "sys")
+		if host.Debug {
+			lg.Println("C[log]: We are going to serve the handler.")
 		}
 
 		handler.ServeHTTP(w, r)
 
+		if host.Debug {
+			lg.Println("C[log]: We have served the handler, log enabled:", host.Log.Enabled)
+		}
 		if host.Log.Enabled {
 			// Read the PARAMS
 			// Read the loggers
 			// Log the data
 			p := hw.GetParams()
-			ireq, _ := p.Get("requeststat")
+			ireq, _ := p.Get("RequestStat")
 			req := ireq.(*stat.RequestStat)
 
 			hlogger := loggers.GetHostLogger(req.Hostname, "pages")
@@ -72,9 +80,7 @@ func (log *Log) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			if slogger != nil && req.Context != nil {
 				slogger(req.Context)
 			}
-
 		}
-
 	}
 }
 
@@ -88,7 +94,7 @@ func buildLogParams(hw host.HostWriter) map[string]string {
 	params := hw.GetParams()
 
 	for id, p := range params.Parameters {
-		if id == "requeststat" {
+		if id == "RequestStat" {
 			if p.Value != nil {
 				req, ok := p.Value.(*stat.RequestStat)
 				if ok {

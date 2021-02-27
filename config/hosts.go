@@ -23,6 +23,7 @@ type Host struct {
 	HostNames  []string `json:"hostnames"`
 	Cert       string   `json:"cert"`
 	PrivateKey string   `json:"key"`
+	Debug      bool     `json:"debug"`
 	Plugins    Plugins  `json:"plugins"`
 	Log        Log      `json:"log"`
 
@@ -38,6 +39,7 @@ type Host struct {
 	Origin     Origin     `json:"origin"`
 	FileServer FileServer `json:"fileserver"`
 	CMS        CMS        `json:"cms"`
+	Error      Error      `json:"error"`
 	// External components
 	Remaining  []byte
 	Components map[string]*ComponentDef
@@ -83,6 +85,7 @@ func (hc *Host) UnmarshalJSON(buf []byte) error {
 	hc.HostNames = thc.HostNames
 	hc.Cert = thc.Cert
 	hc.PrivateKey = thc.PrivateKey
+	hc.Debug = thc.Debug
 	hc.Plugins = thc.Plugins
 	hc.Log = thc.Log
 	hc.Stat = thc.Stat
@@ -153,6 +156,10 @@ type CMS struct {
 	Browser     Browser         `json:"browser"`
 	ConfigFiles []string        `json:"config"`
 	Config      *xconfig.XConfig
+}
+
+type Error struct {
+	Enabled bool `json:"enabled"`
 }
 
 type Browser struct {
