@@ -50,7 +50,7 @@ func LastPath(path string) string {
 	return xpath[len(xpath)-1]
 }
 
-func GzipFileCandidate(patterns []string, filename string) bool {
+func CompressFileCandidate(patterns []string, filename string) bool {
 	for _, pattern := range patterns {
 		name := filepath.Base(filename)
 		matched, _ := filepath.Match(pattern, name)
@@ -61,7 +61,7 @@ func GzipFileCandidate(patterns []string, filename string) bool {
 	return false
 }
 
-func GzipMimeCandidate(patterns []string, mime string) bool {
+func CompressMimeCandidate(patterns []string, mime string) bool {
 	for _, pattern := range patterns {
 		if strings.Contains(mime, pattern) {
 			return true

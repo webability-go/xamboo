@@ -20,6 +20,8 @@ import (
 	"github.com/webability-go/xamboo/cms/engines"
 	"github.com/webability-go/xamboo/cms/engines/assets"
 	"github.com/webability-go/xamboo/cms/identity"
+	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/components/stat"
 )
 
 func Start() {
@@ -196,7 +198,18 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 		ctx.Sessionparams = xconfig.New()
 		s.MainContext = ctx
 	}
-	//	s.writer.(*HostWriter).RequestStat.Context = ctx
+	// Assign the context to the statwriter parameters if it exists and is a correct RequestStat
+	hw := s.writer.(host.HostWriter)
+	p := hw.GetParams()
+	if p != nil {
+		ireq, _ := p.Get("RequestStat")
+		if ireq != nil {
+			req, ok := ireq.(*stat.RequestStat)
+			if ok {
+				req.Context = ctx
+			}
+		}
+	}
 
 	// 1. Build-in engines
 	var xdata string
@@ -210,7 +223,7 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 	// ===========================================================
 	engine, ok := engines.Engines[tp]
 	if !ok {
-		return s.launchError(page, http.StatusNotFound, !ctx.IsMainPage, "Error: Server "+tp+" does not exist")
+		return s.launchError(page, http.StatusNotFound, !ctx.IsMainPage, "Error: Engine "+tp+" does not exist")
 	}
 
 	if !engine.NeedInstance() {

@@ -2,8 +2,10 @@ package compress
 
 import (
 	"bufio"
+	"compress/flate"
 	"compress/gzip"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"sync"
@@ -17,7 +19,13 @@ import (
 )
 
 var zippers = sync.Pool{New: func() interface{} {
-	return gzip.NewWriter(nil)
+	z, _ := gzip.NewWriterLevel(nil, gzip.DefaultCompression)
+	return z
+}}
+
+var flaters = sync.Pool{New: func() interface{} {
+	z, _ := flate.NewWriter(nil, flate.DefaultCompression)
+	return z
 }}
 
 // must be a hostwriter
@@ -27,7 +35,8 @@ type writer struct {
 	wroteHeader    bool
 	length         int
 	compress       bool
-	compressWriter *gzip.Writer
+	encoding       string
+	compressWriter io.WriteCloser
 }
 
 func (w *writer) Header() http.Header {
@@ -46,17 +55,24 @@ func (w *writer) WriteHeader(status int) {
 			contenttype := w.writer.Header().Get("Content-Type")
 			host := w.writer.GetHost()
 			// check mime type
-			w.compress = utils.GzipMimeCandidate(host.Compress.Mimes, contenttype)
+			w.compress = utils.CompressMimeCandidate(host.Compress.Mimes, contenttype)
 		}
 	}
 
 	if w.compress {
-		w.writer.Header().Del("Content-Length")           // very important or get a content length mismatch error with zipper
-		w.writer.Header().Set("Content-Encoding", "gzip") // result is gzipped
-		w.writer.Header().Add("Vary", "gzip")             // avoid caches corruption
-		gz := zippers.Get().(*gzip.Writer)
-		gz.Reset(w.writer)
-		w.compressWriter = gz
+		w.writer.Header().Del("Content-Length")               // very important or get a content length mismatch error with zipper
+		w.writer.Header().Set("Content-Encoding", w.encoding) // result is gzipped
+		w.writer.Header().Add("Vary", w.encoding)             // avoid caches corruption
+		switch w.encoding {
+		case "gzip":
+			gz := zippers.Get().(*gzip.Writer)
+			gz.Reset(w.writer)
+			w.compressWriter = gz
+		case "deflate":
+			fz := flaters.Get().(*flate.Writer)
+			fz.Reset(w.writer)
+			w.compressWriter = fz
+		}
 	}
 	w.writer.WriteHeader(status)
 }
@@ -81,7 +97,12 @@ func (w *writer) Close() {
 		if e != nil {
 			fmt.Println("Error closing zipper: ", e, w.length)
 		}
-		zippers.Put(w.compressWriter)
+		switch w.encoding {
+		case "gzip":
+			zippers.Put(w.compressWriter)
+		case "deflate":
+			flaters.Put(w.compressWriter)
+		}
 	}
 }
 

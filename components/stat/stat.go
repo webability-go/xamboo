@@ -1,7 +1,6 @@
 package stat
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/webability-go/xamboo/components/host"
@@ -59,7 +58,7 @@ func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		handler.ServeHTTP(&sw, r)
 		//		fmt.Println("POST STAT HANDLER: ", sw.status, sw.length, sw.lengthnotcompressed, sw.lengthnotminified)
 		if host.Debug {
-			fmt.Println("C[stat]: We have served the handler. Stats will be updated and request ended.")
+			lg.Println("C[stat]: We have served the handler. Stats will be updated and request ended.")
 		}
 
 		req.UpdateStat(sw.status, sw.length)

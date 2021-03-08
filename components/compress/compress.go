@@ -45,10 +45,18 @@ func (comp *Compress) Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 		lg := loggers.GetHostLogger(host.Name, "sys")
 
+		// priority> first gzip, more reliable
+		acceptencoding := []string{"gzip", "deflate"}
+		encoding := ""
+		for _, enc := range acceptencoding {
+			if strings.Contains(r.Header.Get("Accept-Encoding"), enc) {
+				encoding = enc
+				break
+			}
+		}
 		// module not activated OR client not accepting Compress => normal server
 		// If upgrade asked => web socket, do not compress
-		// TODO(phil) Adds deflate too as compressor https://github.com/gorilla/handlers/blob/master/compress.go
-		if !host.Compress.Enabled || !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || r.Header.Get("Upgrade") != "" {
+		if !host.Compress.Enabled || encoding == "" || r.Header.Get("Upgrade") != "" {
 			if host.Debug {
 				lg.Println("C[compress]: No compression needed. We are going to serve the handler.")
 			}
@@ -59,13 +67,13 @@ func (comp *Compress) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		compress := utils.GzipFileCandidate(host.Compress.Files, r.URL.Path)
+		compress := utils.CompressFileCandidate(host.Compress.Files, r.URL.Path)
 
 		if host.Debug {
-			lg.Println("C[compress]: We are going to create the compresswriter, then serve the handler.")
+			lg.Println("C[compress]: We are going to create the compresswriter, then serve the handler, method:", encoding)
 		}
 
-		gw := writer{writer: hw, compress: compress}
+		gw := writer{writer: hw, compress: compress, encoding: encoding}
 		handler.ServeHTTP(&gw, r)
 
 		gw.Close()
