@@ -49,7 +49,7 @@ func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		req := CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
 		req.Hostname = host.Name
 		sw := writer{writer: hw, RequestStat: req}
-		hw.SetParam("RequestStat", req)
+		hw.SetParam("requeststat", req)
 
 		if host.Debug {
 			lg.Println("C[stat]: statwriter created, we are going to serve the handler.")
@@ -64,6 +64,6 @@ func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		req.UpdateStat(sw.status, sw.length)
 		req.End()
 		// Send the final stats data to the Params of hostwriter
-		hw.SetParam("RequestStat", req)
+		hw.SetParam("requeststat", req)
 	}
 }

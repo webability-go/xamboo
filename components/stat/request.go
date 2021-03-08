@@ -7,8 +7,7 @@ import (
 
 	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/loggers"
-
-	"github.com/webability-go/xamboo/cms/context"
+	//	"github.com/webability-go/xamboo/cms/context"
 )
 
 /*
@@ -29,7 +28,6 @@ type RequestStat struct {
 	IP        string
 	Port      string
 	Alive     bool
-	Context   *context.Context `json:"-"`
 }
 
 type SiteStat struct {

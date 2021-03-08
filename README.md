@@ -461,10 +461,11 @@ The stat function is a public function from any of your loaded plugins.
 The general syntax is:
 
 ```
-import "github.com/webability-go/xamboo/cms/context"
+import "github.com/webability-go/xamboo/components/host"
 
-func Log(ctx *context.Context) {
+func Log(hw *host.HostWriter) {
 	// do the log
+  // The RequestStat and the Context objects are into the HostWriter parameters
 }
 ```
 
@@ -1414,6 +1415,15 @@ Extras:
 
 
 # Version Changes Control
+
+v1.5.5 - 2021-03-08
+-----------------------
+- Change of logstat function definition, for log:stat:call:app:logstat it is now func(host.HostWriter).
+- The stat component sets the RequestStat en the HostWriter params.
+- The cms component sets the Context en the HostWriter params.
+- The HostWriter should contain the requeststat and the context object in the parameters, if needed.
+- The loggers Hook function is now an interface{} that should be a func(host.HostWriter) compatible function.
+- Reference manual (this document) modified to meet the changes.
 
 v1.5.4 - 2021-03-08
 -----------------------

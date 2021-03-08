@@ -47,38 +47,44 @@ func (log *Log) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			http.Error(w, "C[log]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
 		}
-		host := hw.GetHost()
-		if host == nil {
+		hwhost := hw.GetHost()
+		if hwhost == nil {
 			slg.Println("C[log]: Critical error: there is no HOST in the host writer (and that should not happen)", r, w)
 			http.Error(w, "C[log]: Writer error (see logs for more info)", http.StatusInternalServerError)
 			return
 		}
 
-		lg := loggers.GetHostLogger(host.Name, "sys")
-		if host.Debug {
+		lg := loggers.GetHostLogger(hwhost.Name, "sys")
+		if hwhost.Debug {
 			lg.Println("C[log]: We are going to serve the handler.")
 		}
 
 		handler.ServeHTTP(w, r)
 
-		if host.Debug {
-			lg.Println("C[log]: We have served the handler, log enabled:", host.Log.Enabled)
+		if hwhost.Debug {
+			lg.Println("C[log]: We have served the handler, log enabled:", hwhost.Log.Enabled)
 		}
-		if host.Log.Enabled {
+		if hwhost.Log.Enabled {
 			// Read the PARAMS
 			// Read the loggers
 			// Log the data
 			p := hw.GetParams()
-			ireq, _ := p.Get("RequestStat")
-			req := ireq.(*stat.RequestStat)
-
-			hlogger := loggers.GetHostLogger(req.Hostname, "pages")
-			if hlogger != nil {
-				hlogger.Println(BuildLogLine(host.Log.PagesFormat, buildLogParams(hw)))
-			}
-			slogger := loggers.GetHostHook(req.Hostname, "stats")
-			if slogger != nil && req.Context != nil {
-				slogger(req.Context)
+			ireq, _ := p.Get("requeststat")
+			if ireq != nil {
+				req, ok := ireq.(*stat.RequestStat)
+				if ok {
+					hlogger := loggers.GetHostLogger(req.Hostname, "pages")
+					if hlogger != nil {
+						hlogger.Println(BuildLogLine(hwhost.Log.PagesFormat, buildLogParams(hw)))
+					}
+					islogger := loggers.GetHostHook(req.Hostname, "stats")
+					if islogger != nil {
+						slogger, ok := islogger.(func(host.HostWriter))
+						if ok {
+							slogger(hw)
+						}
+					}
+				}
 			}
 		}
 	}
@@ -94,7 +100,10 @@ func buildLogParams(hw host.HostWriter) map[string]string {
 	params := hw.GetParams()
 
 	for id, p := range params.Parameters {
-		if id == "RequestStat" {
+		if id == "context" {
+			continue
+		}
+		if id == "requeststat" {
 			if p.Value != nil {
 				req, ok := p.Value.(*stat.RequestStat)
 				if ok {

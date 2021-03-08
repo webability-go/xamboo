@@ -1,7 +1,6 @@
 package applications
 
 import (
-	//	"fmt"
 	"os"
 	"plugin"
 	"strings"
@@ -9,8 +8,8 @@ import (
 
 	"github.com/webability-go/xcore/v2"
 
-	"github.com/webability-go/xamboo/cms/context"
 	"github.com/webability-go/xamboo/compiler"
+	"github.com/webability-go/xamboo/components/host"
 	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/loggers"
 	"github.com/webability-go/xamboo/utils"
@@ -146,23 +145,23 @@ func LinkCalls() {
 	xlogger := loggers.GetCoreLogger("sys")
 	xlogger.Println("Build Applications External")
 	xloggererror := loggers.GetCoreLogger("errors")
-	for _, host := range config.Config.Hosts {
+	for _, cfhost := range config.Config.Hosts {
 
-		if len(host.Log.Stats) > 6 {
-			logdata := strings.Split(host.Log.Stats, ":")
+		if len(cfhost.Log.Stats) > 6 {
+			logdata := strings.Split(cfhost.Log.Stats, ":")
 			if len(logdata) == 3 && logdata[0] == "call" {
-				lib := GetApplicationPlugin(host.Name + "|" + logdata[1])
+				lib := GetApplicationPlugin(cfhost.Name + "|" + logdata[1])
 				if lib == nil {
-					xloggererror.Println("Error, the host application to call in the stat log does not exists: " + host.Log.Stats)
+					xloggererror.Println("Error, the host application to call in the stat log does not exists: " + cfhost.Log.Stats)
 					continue
 				}
 				ihook, err := lib.Lookup(logdata[2])
-				hook, ok := ihook.(func(*context.Context))
+				hook, ok := ihook.(func(host.HostWriter))
 				if err != nil || !ok {
 					xloggererror.Println("Failed to find stat call function:", logdata[1], logdata[2], err)
 					continue
 				}
-				loggers.SetHostHook(host.Name, "stats", hook)
+				loggers.SetHostHook(cfhost.Name, "stats", hook)
 			}
 		}
 	}
