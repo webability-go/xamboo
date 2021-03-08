@@ -945,14 +945,22 @@ func (p *MyEngineInstance) Run(ctx *context.Context, template *xcore.XTemplate, 
 
 You may add as much as code you need to make your engine work.
 
-The CMS will first call NeedInstance to know if the engine needs to build an instance (for each .instance possible file)
-An instance is based on parameters that may vary for languages, devices, version of page etc.
+The engine will work in 2 step.
+  a. When the xamboo detect a page with the type of the engine, it will call the Engine.NeedInstance() function to know if the engines needs to build an instance to work (returns true/false).
+    a.1 If the engine does not need an instance, the server will call Engine.Run() function to get the result of the calculated page.
+    a.2 If the engine needs an instance, the server will call Engine.GetInstance() function to get the instance.
+  b. Call Instance.NeedTemplate and Instance.NeedLanguage to know if the Run function need local templates or languages
+  c. When and instance is created it will call Instance.Run() function to get the result of the calculated page.
 
-If the engine does not need an instance, the Engine.Run funcion will be called.
+- Important Considerations:
 
-If the engine needs and instance then the GetInstance function will be called to get the instance.
-Then it will call NeedTemplate to know if it needs to load a local template, NeedLanguage to know if it needs to load a local language.
-Finally the CMS will call the Instance.Run function to create the code.
+An Engine is a plugin (go --buildmode=plugin) loadable by the Server. The server will compile automatically the engines at start.
+
+When the system loads the engine, it will check the existence of the exported variable Engine, that must meet the assets.Engine interface.
+
+A page with instance may have as many instances as needed. Each instance normally have different parameters, most common parameters are language and type of connected device. Try to build instance only on 1 parameter or you will rapidly have a matrix of instances impossible to maintain.
+
+It is common to have a unique code with different languages tables (.language files), or have different templates for PC and Mobile for instance.
 
 
 # CMS REFERENCE
@@ -967,10 +975,11 @@ Some considerations:
 - The home page is always a sub directory pointed by the 'mainpage' config parameter. The root directory files will be ignored.
 - You need errorblock and errorpage directories created and working as a CMS page. They are pointed by 'errorblock' and 'errorpage' config parameters.
 
-# PAGES
+
+## 1. PAGES
 
 
-## 1. What is a page: Engines, Instances, Languages and Versions.
+### 1.1. What is a page: Engines, Instances, Languages and Versions.
 
 A CMS page is one unique URL or a group of URLs with the same root. It corresponde to one library code into the server.
 
@@ -1013,7 +1022,7 @@ You can have one instance per page, or have group of instances per page.
 You may also define a set of parameters for each instance or group of instances.
 
 
-## 2. Page resolution
+### 1.2. Page resolution
 
 Xamboo separates the path of the URI first. Leave the / at the beginning and removes the last /.
 
@@ -1085,7 +1094,7 @@ The complement of the path is passed to the page and can be used as an array of 
 In general, these parameters are words used for SEO, variables, names of items, etc.
 ```
 
-## 3. .page file, type, status, template and others
+### 1.3. .page file, type, status, template and others
 
 The .page file must have the name of the directory where is it into.
 
@@ -1124,7 +1133,7 @@ See next chapter for information of each page type.
 
 If you add an external engine, you will call it with the name of the engine as defined into the Xamboo configuration files, into the 'engines' entries.
 
-## 4. Instances of a page
+### 1.4. Instances of a page
 
 For all the types of pages except redirect, you will need a .instance file.
 The instance files are a set of parameters defined for each version and languages if you need different behaviours based on those.
@@ -1176,12 +1185,12 @@ Have always the last one available, even if empty, and create others only if rea
 
 You may put into this file caches parameters, parameters to inject into the code or template code, parameters to use into the .go libraries etc.
 
-## 5. Type of pages and complementary files
+### 1.5. Type of pages and complementary files
 
-### 5.1 Redirect page
+#### 1.5.1 Redirect page
 
 Redirect page:
-- You will need 2 more parameters:
+- You will need 2 more parameters into the .page file:
 
 ```
 redirecturl=/other-url
@@ -1195,7 +1204,7 @@ redirectcode=301
 A redirect page should always be published or it will not work (it's a redirect for your client browser, not for internal code creation)
 A redirect page does not need other files.
 
-### 5.2 Simple Page
+#### 1.5.2 Simple Page
 
 The simple page is the basic CMS page, with a mix of output code and meta language to inject and build the correct output.
 
@@ -1214,50 +1223,139 @@ The .code files follow exactly the same resolution as the .instance files.
 The reference of .code files is explained later in this manual in the "CMS AND META LANGUAGE" chapter
 
 
-### 5.3 Template Page
+#### 1.5.3 Template Page
 
-### 5.4 Language Page
+The template page is a page based on a .template file, that contains a xcore/v2 XTemplate data.
 
-### 5.5 Library Page
+A template page should not be published and be used by other library pages.
 
-### 5.6 WajafApp Page
+You may have as many .template files you need, the good one will be loaded with the rules described before.
+You also may have as many .instance files you need to set context parameters.
 
 
+#### 1.5.4 Language Page
+
+The language page is a page based on a .language file, that contains a xcore/v2 XLanguage data.
+
+A language page should not be published and be used by other library pages.
+
+You may have as many .language files you need, the good one will be loaded with the rules described before.
+You also may have as many .instance files you need to set context parameters.
 
 
-# ENGINES
+#### 1.5.5 Library Page
 
-## 1. Redirect page
+The library page is a unique .go file to build a library plugin. The library must contain a Run function. (See library page reference)
 
-## 2. Simple page
+You may have as many .template and .language files you need, the good one will be loaded with the rules described before.
+You also may have as many .instance files you need to set context parameters.
 
-## 3. Library page
+The .page may have 2 more parameters:
+- template
+- acceptpathparameters
 
-## 4. Template page
+Is your page will listen to a list of sub pages, acceptpathparameters should be set to true.
 
-## 5. Language page
+#### 1.5.6 WajafApp Page
 
-## 6. WajafApp page
+The library page is a unique .go file to build a library plugin for administation. The library plugin must contain a Run funcion, and as many function as you need to call the page events. (See library page reference)
 
-## 7. User made Engines
+You may have as many .template and .language files you need, the good one will be loaded with the rules described before.
+You also may have as many .instance files you need to set context parameters.
 
-An Engine must meet the assets.Engine and assets.EngineInstance interfaces to be used by the Xamboo.
+The .page may have 2 more parameters:
+- template
+- acceptpathparameters set to true (mandatory)
 
-An Engine is a plugin (go --buildmode=plugin) loadable by the Server.
 
-When the system loads the engine, it will check the existence of the exported variable Engine, that must meet the assets.Engine interface.
+# CMS AND META LANGUAGE
 
-The engine will work in 2 step.
-  a. When the xamboo detect a page with the type of the engine, it will call the Engine.NeedInstance() function to know if the engines needs to build an instance to work (returns true/false).
-    a.1 If the engine does not need an instance, the server will call Engine.Run() function to get the result of the calculated page.
-    a.2 If the engine needs an instance, the server will call Engine.GetInstance() function to get the instance.
-  b. When and instance is created it will call Instance.Run() function to get the result of the calculated page.
+## Types of pages:
 
-A page with instance may have as many instances as needed. Each instance normally have different parameters, most common parameters are language and type of connected device. Try to build instance only on 1 parameter or you will rapidly have a matrix of instances impossible to maintain.
+Simple Page (.code)
+-----------------------
 
-It is common to have a unique code with different languages tables (.language files), or have different templates for PC and Mobile for instance.
+The type of the page in the .page file must be
+type=simple
 
-The instance Run function will pass the template and language corresponding to the client parameters, i.e. language and version (generally the device) template
+The code of the page is your native code (for instance HTML, JS, CSS, etc) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
+
+* Meta language for Simple Page:
+
+The meta language is a set of [[KEYWORDS]] to be replaced by different rules.
+
+### 1. Comments %-- --%
+
+The comments will be discarded immediately at the compilation of the code and do not interfere with the rest of your code.
+
+Example:
+
+```
+%-- This is a comment. It will not appear in the final code. --%
+
+%--
+This subtemplate will not be compiled, usable or even visible since it is into a comment
+[[BOX,/box:
+Anything here
+BOX]]
+--%
+```
+
+### 2. Language insertion ##id##
+
+The ##id## keyword will insert a string identified by 'id' in the .language file of the page, corresponding to the client language.
+If the client language is not supported, the fallback default .language file should be used.
+
+Example:
+
+```
+<div style="background-color: blue;">
+##welcome##<br />
+You may use the same parameter as many time you wish.<br />
+<span onclick="alert('##hello##');" class="button">##clickme##!</span>
+<span onclick="alert('##helloagain##');" class="button">##clickme## ##again##!</span>
+</div>
+```
+
+With data to inject:
+
+mypage.language: (default language fallback, generally english)
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="mypage" lang="en">
+  <entry id="welcome">Welcome to</entry>
+  <entry id="clickme">Click me</entry>
+  <entry id="again">Again</entry>
+</language>
+```
+
+mypage.base.fr.language:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="mypage" lang="fr">
+  <entry id="welcome">Bienvenue</entry>
+  <entry id="clickme">Clique sur moi</entry>
+  <entry id="again">de nouveau</entry>
+</language>
+```
+
+
+- [[URLPARAMS]]
+- [[URLPARAM,(.*?)]]
+- [[VAR,(.*?)]]
+- [[PARAM,(.*?)]]
+- [[SYSPARAM,(.*?)]]
+- [[PAGEPARAM,(.*?)]]
+- [[LOCALPAGEPARAM,(.*?)]]
+- [[INSTANCEPARAM,(.*?)]]
+- [[LOCALINSTANCEPARAM,(.*?)]]
+- [[JS,(.*?)]]
+- [[CSS,(.*?)]]
+- [[CALL,(.*?)(:(.*?)){0,1}]]
+- [[BOX,(.*?):
+- BOX]]
+
+
 
 # APPLICATION
 
@@ -1274,7 +1372,7 @@ The Application is the entry point to load the XModules.
 
 The applications will need to deal with the following objects:
 
-## 1. CMS
+## 1. Interaction with the CMS
 
 ## 2. DatasourceContainer
 
@@ -1289,38 +1387,6 @@ The applications will need to deal with the following objects:
 ## 7. Bridge
 
 
-# CMS AND META LANGUAGE
-
-## Types of pages:
-
-Simple Page (.code)
------------------------
-
-The type of the page in the .page file must be
-type=simple
-
-The code of the page is your native code (for instance HTML) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
-
-* Meta language for Simple Page:
-
-- [[URLPARAMS]]
-- [[URLPARAM,(.*?)]]
-- [[VAR,(.*?)]]
-- [[PARAM,(.*?)]]
-- [[SYSPARAM,(.*?)]]
-- [[PAGEPARAM,(.*?)]]
-- [[LOCALPAGEPARAM,(.*?)]]
-- [[INSTANCEPARAM,(.*?)]]
-- [[LOCALINSTANCEPARAM,(.*?)]]
-- [[JS,(.*?)]]
-- [[CSS,(.*?)]]
-- [[CALL,(.*?)(:(.*?)){0,1}]]
-- ##   ##
-- %--   --%
-- [[BOX,(.*?):
-- BOX]]
-
-
 
 # XMODULES
 
@@ -1333,19 +1399,27 @@ See the xmodules reference to see which ones are available and how to use them.
 
 # TO DO
 
+- Reload config: rebuild listeners, engines, apps, etc
 
 - Make stats more persistent with file write before clean every X timer.
 - Implement i18n and languages for messages.
-- Implement deflate in compress component.
 
 - simple code server injector, finish all supported code.
 
 Extras:
+- Check implementation of brotli compress (google one) https://github.com/google/brotli/tree/master/go/cbrotli
 - page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
 - page library and snippets JS-compatible code ? (check go call NODE.JS with pipe data interchange).
 
 
+
 # Version Changes Control
+
+v1.5.4 - 2021-03-08
+-----------------------
+- deflate encoder implemented into compress component
+- Manual enhanced with engines, pages, files.
+- Error corrected in stat log assignment and set the correct Context object in the RequestStat object.
 
 v1.5.3 - 2021-02-26
 -----------------------

@@ -162,7 +162,7 @@ func LinkCalls() {
 					xloggererror.Println("Failed to find stat call function:", logdata[1], logdata[2], err)
 					continue
 				}
-				loggers.SetHostHook(host.Name, "stat", hook)
+				loggers.SetHostHook(host.Name, "stats", hook)
 			}
 		}
 	}

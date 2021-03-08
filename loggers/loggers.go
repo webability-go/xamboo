@@ -1,6 +1,7 @@
 package loggers
 
 import (
+	//	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
