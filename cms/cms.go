@@ -21,7 +21,7 @@ import (
 	"github.com/webability-go/xamboo/cms/engines/assets"
 	"github.com/webability-go/xamboo/cms/identity"
 	"github.com/webability-go/xamboo/components/host"
-	"github.com/webability-go/xamboo/components/stat"
+	//	"github.com/webability-go/xamboo/components/stat"
 )
 
 func Start() {
@@ -200,16 +200,7 @@ func (s *CMS) Run(page string, innerpage bool, params interface{}, version strin
 	}
 	// Assign the context to the statwriter parameters if it exists and is a correct RequestStat
 	hw := s.writer.(host.HostWriter)
-	p := hw.GetParams()
-	if p != nil {
-		ireq, _ := p.Get("RequestStat")
-		if ireq != nil {
-			req, ok := ireq.(*stat.RequestStat)
-			if ok {
-				req.Context = ctx
-			}
-		}
-	}
+	hw.SetParam("context", ctx)
 
 	// 1. Build-in engines
 	var xdata string

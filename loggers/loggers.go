@@ -1,14 +1,12 @@
 package loggers
 
 import (
-	//	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/webability-go/xamboo/cms/context"
 	"github.com/webability-go/xamboo/config"
 )
 
@@ -16,7 +14,7 @@ type Logger struct {
 	TypeOfLogger string
 	File         string
 	Logger       *log.Logger
-	Hook         func(*context.Context)
+	Hook         interface{}
 }
 
 var Loggers = map[string]*Logger{}
@@ -129,11 +127,11 @@ func GetHostLogger(id string, cat string) *log.Logger {
 	return Loggers["H["+id+"]["+cat+"]"].Logger
 }
 
-func GetHostHook(id string, cat string) func(*context.Context) {
+func GetHostHook(id string, cat string) interface{} {
 	return Loggers["H["+id+"]["+cat+"]"].Hook
 }
 
-func SetHostHook(id string, cat string, h func(*context.Context)) {
+func SetHostHook(id string, cat string, h interface{}) {
 	if Loggers["H["+id+"]["+cat+"]"] != nil {
 		Loggers["H["+id+"]["+cat+"]"].Hook = h
 	}
