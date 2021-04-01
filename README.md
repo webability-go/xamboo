@@ -2,7 +2,11 @@
 # Xamboo for GO v1
 =============================
 
-Highlights:
+Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
+=======
+Xamboo is a very high quality framework for CMS in GO 1.14 or higher.
+
+__Highlights__:
 
 - Build Static, Dynamic Pages, RestAPIs, GraphAPIs, on multisites and virtual hosts.
 - Support Auth, SSL, Minifying of code, Compress and many other components, also personalized components.
@@ -16,8 +20,6 @@ Highlights:
 - Available under the liberal MIT license.
 
 Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
-
-It is a very high quality framework for CMS, made in GO 1.14 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
 Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
