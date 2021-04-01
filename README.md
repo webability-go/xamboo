@@ -2,15 +2,21 @@
 # Xamboo for GO v1
 =============================
 
-Xamboo is a very high quality framework for CMS in GO 1.14 or higher.
+Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
+Xamboo is a very high quality framework for CMS in GO 1.16 or higher.
 
 __Highlights__:
-- fully object-oriented.
-- optimized for content distribution to portals with heavy load.
-- content-format agnostic: content can be HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc,
-- no database dependency, although it is possible to use a database if wished.
-- can handle __millions__ of pages per month (~500 pages per second).
-- available under the liberal MIT license.
+
+- Build Static, Dynamic Pages, RestAPIs, GraphAPIs, on multisites and virtual hosts.
+- Support Auth, SSL, Minifying of code, Compress and many other components, also personalized components.
+- Contains many types of engines and personalized engines to distribute code.
+- Auto Compile new pages and apps in GO without restarting the server (as plugin modules).
+- Contains a CMS with advanced Meta language.
+- Optimized for content distribution to portals with heavy load.
+- Content-format agnostic: content can be HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc,
+- No database dependency, although it is possible to use a database if wished.
+- Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
+- Available under the liberal MIT license.
 
 Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.14+
 
@@ -1439,7 +1445,7 @@ v1.6.0 - 2021-03-31
 - Added constants PROTOCOL_HTTP and PROTOCOL_HTTPS into config.
 - Internationalization of all messages, in english, french and spanish (partially translated).
 - The Run function now accept the language as optional parameter for backyard compatibility. The language is a language.Tag type. Default language is EN.
-- Loggers protocol names are now into Constants PROTOCOL_*.
+- Loggers stream names are now into Constants STREAM_*.
 - Bug corrected, the default version is now considered into the browser sub module of CMS for unknown devices (bots mainly).
 
 v1.5.5 - 2021-03-08
