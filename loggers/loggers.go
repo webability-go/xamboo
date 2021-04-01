@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	PROTOCOL_STDOUT  = "stdout:"
-	PROTOCOL_STDERR  = "stderr:"
-	PROTOCOL_DISCARD = "discard"
-	PROTOCOL_FILE    = "file"
-	PROTOCOL_CALL    = "call"
+	STREAM_STDOUT  = "stdout:"
+	STREAM_STDERR  = "stderr:"
+	STREAM_DISCARD = "discard"
+	STREAM_FILE    = "file"
+	STREAM_CALL    = "call"
 )
 
 type Logger struct {
@@ -70,11 +70,11 @@ func Create(id string, typeoflogger string, explain *log.Logger, host *config.Ho
 	var err error
 	// scan typeoflogger
 	switch typeoflogger {
-	case PROTOCOL_STDOUT:
+	case STREAM_STDOUT:
 		writer = os.Stdout
-	case PROTOCOL_STDERR:
+	case STREAM_STDERR:
 		writer = os.Stderr
-	case PROTOCOL_DISCARD:
+	case STREAM_DISCARD:
 		writer = ioutil.Discard
 	default:
 		N := strings.Index(typeoflogger, ":")
@@ -82,13 +82,13 @@ func Create(id string, typeoflogger string, explain *log.Logger, host *config.Ho
 			log.Fatalf(i18n.Get("logger.protocolerror"), typeoflogger)
 		}
 		protocol = typeoflogger[:N]
-		if protocol == PROTOCOL_FILE {
+		if protocol == STREAM_FILE {
 			file = typeoflogger[strings.Index(typeoflogger, ":")+1:]
 			writer, err = os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 			if err != nil {
 				log.Fatalf(i18n.Get("logger.fileerror"), id, file, err)
 			}
-		} else if protocol == PROTOCOL_CALL {
+		} else if protocol == STREAM_CALL {
 			// only stat on Host can use this one. Any other will be ignored
 			// Will be linked by the config and applications at start
 			if host != nil {
