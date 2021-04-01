@@ -3,10 +3,12 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/webability-go/xconfig"
 
+	"github.com/webability-go/xamboo/i18n"
 	"github.com/webability-go/xamboo/utils"
 )
 
@@ -60,11 +62,11 @@ func (c *ConfigDef) Load(file string) error {
 					if alldata[component.Name] != nil {
 						cdata, ok = alldata[component.Name].(map[string]interface{})
 						if !ok {
-							return errors.New("Error: the external component configuration is not a map[string]interface{} in host " + c.Hosts[i].Name)
+							return errors.New(fmt.Sprintf(i18n.Get("config.errorconfigcomponent"), c.Hosts[i].Name))
 						}
 						enabled, ok = cdata["enabled"].(bool)
 						if !ok {
-							return errors.New("Error: the external component configuration does not contain a boolean 'enabled' entry in host " + c.Hosts[i].Name)
+							return errors.New(fmt.Sprintf(i18n.Get("config.errorconfigenadled"), c.Hosts[i].Name))
 						}
 					}
 					ec := &ComponentDef{
