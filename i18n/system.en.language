@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="system" lang="en">
+  <entry id="config.error"><![CDATA[Error parsing Config File: %s %s]]></entry>
+  <entry id="listener.scan"><![CDATA[Scanning Listener: L[%s].]]></entry>
+  <entry id="listener.launch"><![CDATA[Launching Listener: L[%s].]]></entry>
+  <entry id="host.link"><![CDATA[Link Host H[%s] to L[%s] Done.]]></entry>
+  <entry id="logger.start"><![CDATA[Logger starting...]]></entry>
+  <entry id="logger.protocolerror"><![CDATA[Log protocol not known: %s.]]></entry>
+  <entry id="logger.statcalllinkerror"><![CDATA[Failed to link stat call function: %s.]]></entry>
+  <entry id="logger.statcallnotfound"><![CDATA[Failed to find stat call function: %s %s %s.]]></entry>
+  <entry id="logger.fileerror"><![CDATA[Failed to open log file: %s %s %s.]]></entry>
+  <entry id="logger.explain"><![CDATA[Link Log %s to %s]]></entry>
+  <entry id="config.errorconfigcomponent"><![CDATA[Error: the external component configuration is not a map[string]interface{} in host %s]]></entry>
+  <entry id="config.errorconfigenadled"><![CDATA[Error: the external component configuration does not contain a boolean 'enabled' entry in host %s]]></entry>
+  <entry id="compiler.builderror"><![CDATA[Error running go build:\n%s\n]]></entry>
+</language>

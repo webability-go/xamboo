@@ -1,6 +1,6 @@
 module github.com/webability-go/xamboo
 
-go 1.15
+go 1.16
 
 require (
 	github.com/alexbrainman/sspi v0.0.0-20210105120005-909beea2cc74 // indirect

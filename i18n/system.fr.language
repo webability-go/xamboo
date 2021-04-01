@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="system" lang="fr">
+  <entry id="config.error"><![CDATA[Erreur en lisant le fichier de configuration: %s %s]]></entry>
+  <entry id="listener.scan"><![CDATA[Analyse du Listener: L[%s].]]></entry>
+  <entry id="listener.launch"><![CDATA[Lancement du Listener: L[%s].]]></entry>
+</language>

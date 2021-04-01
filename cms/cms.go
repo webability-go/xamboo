@@ -482,6 +482,8 @@ func (s *CMS) verifyRecursion(page string, pagedata *xconfig.XConfig) (bool, int
 
 func (s *CMS) analyzeUserAgent() string {
 
+	def, _ := s.Host.CMS.Config.GetString("version")
+
 	devices := map[uasurfer.DeviceType]string{
 		uasurfer.DeviceComputer: "pc",
 		uasurfer.DevicePhone:    "mobile",
@@ -489,7 +491,7 @@ func (s *CMS) analyzeUserAgent() string {
 		uasurfer.DeviceTV:       "tv",
 		uasurfer.DeviceConsole:  "console",
 		uasurfer.DeviceWearable: "wearable",
-		uasurfer.DeviceUnknown:  "base",
+		uasurfer.DeviceUnknown:  def,
 	}
 
 	useragent := s.reader.UserAgent()

@@ -8,6 +8,15 @@ import (
 	"strings"
 
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/i18n"
+)
+
+const (
+	PROTOCOL_STDOUT  = "stdout:"
+	PROTOCOL_STDERR  = "stderr:"
+	PROTOCOL_DISCARD = "discard"
+	PROTOCOL_FILE    = "file"
+	PROTOCOL_CALL    = "call"
 )
 
 type Logger struct {
@@ -58,60 +67,55 @@ func Create(id string, typeoflogger string, explain *log.Logger, host *config.Ho
 	var writer io.Writer
 	protocol := typeoflogger
 	file := ""
-	textexplain := "Link Log " + id + " to "
 	var err error
 	// scan typeoflogger
 	switch typeoflogger {
-	case "stdout:":
+	case PROTOCOL_STDOUT:
 		writer = os.Stdout
-		textexplain += "stdout:"
-	case "stderr:":
+	case PROTOCOL_STDERR:
 		writer = os.Stderr
-		textexplain += "stderr:"
-	case "discard":
+	case PROTOCOL_DISCARD:
 		writer = ioutil.Discard
-		textexplain += "discard:"
 	default:
-		protocol = typeoflogger[:strings.Index(typeoflogger, ":")]
-		if protocol == "file" {
+		N := strings.Index(typeoflogger, ":")
+		if N < 0 {
+			log.Fatalf(i18n.Get("logger.protocolerror"), typeoflogger)
+		}
+		protocol = typeoflogger[:N]
+		if protocol == PROTOCOL_FILE {
 			file = typeoflogger[strings.Index(typeoflogger, ":")+1:]
-
-			textexplain += "file: " + file
-
 			writer, err = os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 			if err != nil {
-				log.Fatalln("Failed to open log file:", id, file, err)
+				log.Fatalf(i18n.Get("logger.fileerror"), id, file, err)
 			}
-		} else if protocol == "call" {
+		} else if protocol == PROTOCOL_CALL {
 			// only stat on Host can use this one. Any other will be ignored
 			// Will be linked by the config and applications at start
 			if host != nil {
 				xlogger := strings.Split(typeoflogger, ":")
 				if len(xlogger) == 3 {
-					textexplain += "call: " + xlogger[1] + "." + xlogger[2]
-
 					if err != nil {
-						log.Fatalln("Failed to find stat call function:", xlogger[1], xlogger[2], err)
+						log.Fatalf(i18n.Get("logger.statcallnotfound"), xlogger[1], xlogger[2], err)
 					} else {
 						l := &Logger{TypeOfLogger: protocol, File: xlogger[1] + "." + xlogger[2], Hook: nil}
 						return l
 					}
 				} else {
-					log.Fatalln("Failed to link stat call function:", typeoflogger)
+					log.Fatalf(i18n.Get("logger.statcalllinkerror"), typeoflogger)
 				}
 			}
 		} else {
-			log.Fatalln("Log protocol not known:", protocol)
+			log.Fatalf(i18n.Get("logger.protocolerror"), protocol)
 		}
 	}
 
 	if explain != nil {
-		explain.Println(textexplain)
+		explain.Printf(i18n.Get("logger.explain"), id, typeoflogger)
 	}
 
 	nlogger := log.New(writer, id+": ", log.LstdFlags)
 	l := &Logger{TypeOfLogger: protocol, File: file, Logger: nlogger}
-	nlogger.Println("Logger starting...")
+	nlogger.Printf(i18n.Get("logger.start"))
 	return l
 }
 

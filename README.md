@@ -23,8 +23,14 @@ Xamboo works on sites currently distributing more than **90 millions web pages m
 
 The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
 
+- What you can do to be part of the project:
+  + Improvement of the Core of Xamboo.
+  + Translation of messages and manuals, in all the languages.
+  + Improvement of the Master site tools (administration of web interface for configuration)
+  + Improvement of the Admin site tools (administration of xmodules and own modules)
+  + Developement of XModules (All purpose modules, from user administation up to ecommerce, acountability, CRM, ERP, etc.)
 
-- If you want to help with the code, modules, translations, debug, test code, you are most welcome. Just contact me here.
+- If you want to help with the code, modules, translations, debug, test code, you are most welcome. Just insert an issue here or on reddit.
 
 
 # INSTALATION AND COMPILATION
@@ -1408,12 +1414,16 @@ See the xmodules reference to see which ones are available and how to use them.
 
 # TO DO
 
+- Make HTTP protocol work on components, it serves only on http for now
+
 - Reload config: rebuild listeners, engines, apps, etc
 
 - Make stats more persistent with file write before clean every X timer.
-- Implement i18n and languages for messages.
-
+- Make stats=enabled/disabled, with level of stat = full, count, none
 - simple code server injector, finish all supported code.
+
+- Security component: max rate limit x IP, attacks, injections, etc
+- Redirect component: set up redirect rules based on reg exp etc.
 
 Extras:
 - Check implementation of brotli compress (google one) https://github.com/google/brotli/tree/master/go/cbrotli
@@ -1423,6 +1433,14 @@ Extras:
 
 
 # Version Changes Control
+
+v1.6.0 - 2021-03-31
+-----------------------
+- Added constants PROTOCOL_HTTP and PROTOCOL_HTTPS into config.
+- Internationalization of all messages, in english, french and spanish (partially translated).
+- The Run function now accept the language as optional parameter for backyard compatibility. The language is a language.Tag type. Default language is EN.
+- Loggers protocol names are now into Constants PROTOCOL_*.
+- Bug corrected, the default version is now considered into the browser sub module of CMS for unknown devices (bots mainly).
 
 v1.5.5 - 2021-03-08
 -----------------------

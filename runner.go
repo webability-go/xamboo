@@ -6,18 +6,27 @@ import (
 	"net/http"
 	"time"
 
+	"golang.org/x/text/language"
+
 	"github.com/webability-go/xamboo/applications"
 	"github.com/webability-go/xamboo/cms/engines"
 	"github.com/webability-go/xamboo/components"
 	"github.com/webability-go/xamboo/components/host"
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/i18n"
 	"github.com/webability-go/xamboo/loggers"
 	"github.com/webability-go/xamboo/utils"
 )
 
-func Run(file string) error {
+func Run(file string, args ...interface{}) error {
 
 	// Load the language if needed for messages
+	if len(args) > 0 {
+		lang, haslang := args[0].(language.Tag)
+		if haslang {
+			i18n.Load(lang)
+		}
+	}
 
 	// Link the engines
 	//	assets.EngineWrapper = cms.Wrapper
@@ -26,7 +35,7 @@ func Run(file string) error {
 	// Load the config, FIRST PASS
 	err := config.Config.Load(file)
 	if err != nil {
-		log.Println("Error parsing Config File: ", file, err)
+		log.Printf(i18n.Get("config.error"), file, err)
 		return err
 	}
 	config.Config.Version = VERSION
@@ -57,7 +66,7 @@ func Run(file string) error {
 	//   Will finally call the error handler.
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "404 Not Found", http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 	// build Handlers
 	for _, componentid := range components.ComponentsOrder {
@@ -72,12 +81,12 @@ func Run(file string) error {
 	// build the different servers
 	xlogger := loggers.GetCoreLogger("sys")
 	for _, l := range config.Config.Listeners {
-		xlogger.Println("Scanning Listener: L[" + l.Name + "]")
+		xlogger.Printf(i18n.Get("listener.scan"), l.Name)
 		go func(listener config.Listener) {
 
 			llogger := loggers.GetListenerLogger(listener.Name, "sys")
 
-			xlogger.Println("Launching Listener: L[" + listener.Name + "]")
+			xlogger.Printf(i18n.Get("listener.launch"), listener.Name)
 			server := &http.Server{
 				Addr:              ":" + listener.Port,
 				ErrorLog:          llogger,
@@ -89,7 +98,7 @@ func Run(file string) error {
 			}
 
 			// If the server is protocol HTTPS, we have to scan all the certificates for this listener
-			if listener.Protocol == "https" {
+			if listener.Protocol == config.PROTOCOL_HTTPS {
 				numcertificates := 0
 				// We search for all the hosts on this listener
 				for _, host := range config.Config.Hosts {
@@ -137,7 +146,7 @@ func Run(file string) error {
 						if certerror != nil {
 							llogger.Fatal(certerror)
 						}
-						xlogger.Println("Link Host H[" + host.Name + "] to L[" + listener.Name + "] Done")
+						xlogger.Printf(i18n.Get("host.link"), host.Name, listener.Name)
 						i++
 					}
 				}
@@ -161,7 +170,7 @@ func Run(file string) error {
 	}
 
 	finish := make(chan bool)
-	<-finish // never finish by itself for now (OS will take care of this)
+	<-finish // never finish by itself for now (OS will take care of this with systemctl or KILL -9)
 	return nil
 }
 

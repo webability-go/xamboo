@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/webability-go/xamboo/cms/context"
+	"github.com/webability-go/xamboo/i18n"
 )
 
 type Worker struct {
@@ -28,7 +29,7 @@ func (w *Worker) Compile(ctx *context.Context, plugin *Plugin) {
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin.PluginVPath, plugin.SourcePath)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		messages += "Error running go build:\n" + fmt.Sprint(err)
+		messages += fmt.Sprintf(i18n.Get("compiler.builderror"), err)
 		plugin.Status = 2
 		plugin.Error = err
 	}
