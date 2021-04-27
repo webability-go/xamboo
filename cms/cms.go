@@ -494,6 +494,16 @@ func (s *CMS) analyzeUserAgent() string {
 		uasurfer.DeviceUnknown:  def,
 	}
 
+	for p, v := range devices {
+		if p == uasurfer.DeviceUnknown {
+			continue
+		}
+		newv, _ := s.Host.CMS.Config.GetString(v)
+		if newv != "" {
+			devices[p] = newv
+		}
+	}
+
 	useragent := s.reader.UserAgent()
 	// Detect if PC or Mobile
 	ua := uasurfer.Parse(useragent)

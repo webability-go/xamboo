@@ -1439,6 +1439,11 @@ Extras:
 
 # Version Changes Control
 
+v1.6.1 - 2021-04-27
+-----------------------
+- The device resolution can now be replaced with the version of the programmer choice to call the correct templates. Add version=newversion into the cms configuration file.
+  For instance tablet=pc (use the pc version if a tablet has been detected)
+
 v1.6.0 - 2021-03-31
 -----------------------
 - Added constants PROTOCOL_HTTP and PROTOCOL_HTTPS into config.
