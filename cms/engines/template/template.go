@@ -60,11 +60,12 @@ func (p *TemplateEngineInstance) NeedTemplate() bool {
 
 // context contains all the page context and history
 // params are an array of strings (if page from outside) or a mapped array of data (inner pages)
+// template may be modified, we need to CLONE it
 func (p *TemplateEngineInstance) Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
 	cdata, _ := TemplateCache.Get(p.FilePath)
 	if cdata != nil {
-		return cdata.(*xcore.XTemplate)
+		return cdata.(*xcore.XTemplate).Clone()
 	}
 
 	if utils.FileExists(p.FilePath) {
@@ -73,7 +74,7 @@ func (p *TemplateEngineInstance) Run(ctx *context.Context, template *xcore.XTemp
 		data.LoadFile(p.FilePath)
 
 		TemplateCache.Set(p.FilePath, data)
-		return data
+		return data.Clone()
 	}
 	return nil
 }
