@@ -34,6 +34,7 @@ type Host struct {
 	Stat       Stat       `json:"stat"`
 	Redirect   Redirect   `json:"redirect"`
 	Auth       Auth       `json:"auth"`
+	Prot       Prot       `json:"prot"`
 	Compress   Compress   `json:"compress"`
 	Minify     Minify     `json:"minify"`
 	Origin     Origin     `json:"origin"`
@@ -91,6 +92,7 @@ func (hc *Host) UnmarshalJSON(buf []byte) error {
 	hc.Stat = thc.Stat
 	hc.Redirect = thc.Redirect
 	hc.Auth = thc.Auth
+	hc.Prot = thc.Prot
 	hc.Compress = thc.Compress
 	hc.Minify = thc.Minify
 	hc.Origin = thc.Origin
@@ -117,6 +119,13 @@ type Auth struct {
 	Realm   string `json:"realm"`
 	User    string `json:"user"`
 	Pass    string `json:"pass"`
+}
+
+type Prot struct {
+	Enabled   bool     `json:"enabled"`
+	SQL       bool     `json:"sql"`
+	Ignore    []string `json:"ignore"`
+	Threshold int
 }
 
 type Compress struct {

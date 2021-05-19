@@ -17,6 +17,7 @@ import (
 	"github.com/webability-go/xamboo/components/log"
 	"github.com/webability-go/xamboo/components/minify"
 	"github.com/webability-go/xamboo/components/origin"
+	"github.com/webability-go/xamboo/components/prot"
 	"github.com/webability-go/xamboo/components/redirect"
 	"github.com/webability-go/xamboo/components/stat"
 	"github.com/webability-go/xamboo/config"
@@ -50,6 +51,9 @@ func Link() {
 			case "auth":
 				Components["auth"] = auth.Component
 				auth.Component.Start()
+			case "prot":
+				Components["prot"] = prot.Component
+				prot.Component.Start()
 			case "compress":
 				Components["compress"] = compress.Component
 				compress.Component.Start()

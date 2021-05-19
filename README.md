@@ -18,10 +18,9 @@ __Highlights__:
 - Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
 - Available under the liberal MIT license.
 
-Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.16+
+Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.16.3+
 
-
-It is a very high quality framework for CMS, made in GO 1.16 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+It is a very high quality framework for CMS, made in GO 1.16.3 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
 Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
@@ -334,7 +333,7 @@ Example of a working real listeners for HTTP and HTTPS:
 A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
 Any host can listen on any listener, and respond to any domain in the configuration.
 
-A Host may have components activated, like compressed response, minify HTML/CSS/JS response, Basic Auth, Redirect, etc.
+A Host may have components activated, like compressed response, minify HTML/CSS/JS response, Basic Auth, Prot, Redirect, etc.
 
 The components can be built-in or programmed.
 
@@ -376,6 +375,7 @@ The available built-in components are:
 - stat: will store all the system statistics and also the requests (used by log).
 - redirect: will control the called domain and port, and redirect to the correct one if it is any other variant.
 - auth: will control the access with a username and password for basic realm authorization to access site.
+- prot: will protect the get, post, put variables against SQL injection.
 - compress: will compress the content as asked by the client (gzip or deflate) based on mime content
 - minify: will minify the html, css, javascript, json, xml text files if authorized type of file or mime.
 - origin: will set authorized headers for cros origin APIs based on rules.
@@ -399,6 +399,7 @@ The main components section follow the following structure:
     { "name": "stat", "source": "built-in" },
     { "name": "redirect", "source": "built-in" },
     { "name": "auth", "source": "built-in" },
+    { "name": "prot", "source": "built-in" },
     { "name": "compress", "source": "built-in" },
     { "name": "minify", "source": "built-in" },
     { "name": "origin", "source": "built-in" },
@@ -556,8 +557,42 @@ User and pass are the expected data to be captured to authorized the use of the 
 
 If the user and pass are wrong, the system returns a 401 unauthorized status.
 
+#### 4.2.5. Prot
 
-#### 4.2.5. compress
+The protection component intend to protect the system from SQL injection.
+The heuristic is based on counting the quantity of SQL sentence keywords into the get and post variables, and if a certain quantity is found the security is triggered.
+This is a basic protection system that can be enhanced on a more personalized component.
+
+The prot configuration parameters are
+```
+"hosts": [
+  {
+    ...
+    "prot": {
+      "enabled": true,
+      "sql": true,
+      "ignore": ["var1", "var2"],
+      "threshold": 3
+    }
+  },
+  ...
+  ]
+```
+
+enabled: true/false, to activate or de-activate the protection component.
+
+sql: enable or disable the sql injection verification of entry variables.
+
+ignore: is the list of the entry variables that will be ignored in the verification.
+
+threshold: is the score of sql injection to activate the protection. A score of 3 is normally a good score to protect the code. 1 is very sensible, 5 is hard to trigger.
+
+It will serve a 500 error if a sql injection is detected.
+
+The activation of the protection is logged into the error log of the host with information about the injection.
+
+
+#### 4.2.6. compress
 
 The compress configuration parameters are
 ```
@@ -596,7 +631,7 @@ mimes is the list of authorized mimes to compress. If the information is any oth
 files is the list of filters on file names to compress. They are normal file names, with files joker (* and ?)
 
 
-#### 4.2.6. minify
+#### 4.2.7. minify
 
 The minify configuration parameters are
 ```
@@ -623,7 +658,7 @@ The component will minify the type of generated code (based on mime).
 Activate or deactivate each type of information.
 
 
-#### 4.2.7. origin
+#### 4.2.8. origin
 
 The origin configuration parameters are
 ```
@@ -650,7 +685,7 @@ The component will identify an OPTIONS or HEAD request and distribute the correc
 You should use this component only when you program some REST API or so.
 
 
-#### 4.2.8. fileserver
+#### 4.2.9. fileserver
 
 The fileserver configuration parameters are
 ```
@@ -676,7 +711,7 @@ If the takeover is false, when a file does not exists, the next handler will be 
 The static directy is where the static files are.
 
 
-#### 4.2.9. cms
+#### 4.2.10. cms
 
 The CMS is a full content mamagement system with meta language, to build powerfull dynamic sites, with business rules implemented directly into pages and code.
 
@@ -765,7 +800,7 @@ The base template is used if the type of browser is unknown.
 Then CMS makes a full takeover on the handlers, so none of the following handlers will be called.
 
 
-#### 4.2.10. error
+#### 4.2.11. error
 
 The error component will only returns a 404 errors. You may want to build your own error component to personalize the returned data.
 
@@ -867,11 +902,10 @@ When you want to add a hand made external engine, the syntax is:
   { "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" },
 ```
 
-You may need to developp a new components for instance to replace a built-in one, or add new components.
+You may need to develop a new engine for instance to replace a built-in one, or add new engines.
 
-For instance if you need a "auth" component based on a database for users, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
+For instance if you need a new page type engine based on a new type of templates for instance, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
 
-Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
 
 ### 5.2. List of build-in engines
 
@@ -1442,6 +1476,11 @@ Extras:
 
 
 # Version Changes Control
+
+v1.6.2 - 2021-05-18
+-----------------------
+- New component "prot" added, to protect the code and query variables against SQL injection.
+- In the CMS engines, the cached xtemplate is now cloned before injection into the engines to avoid racing problems between pages.
 
 v1.6.1 - 2021-04-27
 -----------------------
