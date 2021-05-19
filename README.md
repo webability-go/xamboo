@@ -15,9 +15,9 @@ Highlights:
 - Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
 - Available under the liberal MIT license.
 
-Xamboo is the result of over 15 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.16+
+Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.16.3+
 
-It is a very high quality framework for CMS, made in GO 1.16 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+It is a very high quality framework for CMS, made in GO 1.16.3 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
 Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
