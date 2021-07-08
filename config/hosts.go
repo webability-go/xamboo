@@ -122,9 +122,12 @@ type Auth struct {
 }
 
 type Prot struct {
-	Enabled   bool     `json:"enabled"`
-	SQL       bool     `json:"sql"`
-	Ignore    []string `json:"ignore"`
+	Enabled     bool     `json:"enabled"`
+	SQL         bool     `json:"sql"`
+	Ignore      []string `json:"ignore"`
+	IPBlackList []string `json:"ipblacklist"`
+	//	IPWhiteList    []string `json:"ip"`
+	// IPFrequency
 	Threshold int
 }
 
