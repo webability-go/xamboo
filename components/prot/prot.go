@@ -1,6 +1,8 @@
 package prot
 
 import (
+	"bytes"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strings"
@@ -48,6 +50,17 @@ func (prot *Prot) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if host.Prot.Enabled {
+
+			// IP blacklist
+			if len(host.Prot.IPBlackList) > 0 {
+				if ipmatch(r.RemoteAddr, host.Prot.IPBlackList) {
+					slg.Println("C[prot]: IP BLACKLIST MATCH FOUND:", r)
+					http.Error(w, "C[prot]: IP BLACKLIST MATCH FOUND by Xamboo Protection System", http.StatusInternalServerError)
+					return
+				}
+			}
+
+			// SQL injection
 			if host.Prot.SQL {
 				// Search into request specific keywords:
 				// SELECT UPDATE DELETE INSERT COALESCE FROM TABLE ORDER GROUP WHERE /**/ AND OR
@@ -78,9 +91,19 @@ func (prot *Prot) Handler(handler http.HandlerFunc) http.HandlerFunc {
 					ignored[i] = true
 				}
 
-				r.ParseForm()
+				cr := r.Clone(r.Context())
+				body, err := ioutil.ReadAll(r.Body)
+				if err != nil {
+					http.Error(w, "C[prot]: Cannot read the body of request", http.StatusInternalServerError)
+					return
+				}
+				// clone body
+				r.Body = ioutil.NopCloser(bytes.NewReader(body))
+				cr.Body = ioutil.NopCloser(bytes.NewReader(body))
+
+				cr.ParseForm()
 				nummatch := 0
-				for p, v := range r.Form {
+				for p, v := range cr.Form {
 					// ignore variables
 					if ignored[p] {
 						continue
@@ -107,4 +130,17 @@ func (prot *Prot) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			lg.Println("C[Prot]: We have served the handler.")
 		}
 	}
+}
+
+func ipmatch(ip string, list []string) bool {
+	// simple match of IPs
+	for _, m := range list {
+		if ip == m {
+			return true
+		}
+		if len(ip) > len(m) && ip[:len(m)] == m {
+			return true
+		}
+	}
+	return false
 }

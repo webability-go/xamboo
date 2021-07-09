@@ -1465,7 +1465,7 @@ See the xmodules reference to see which ones are available and how to use them.
 - Make stats=enabled/disabled, with level of stat = full, count, none
 - simple code server injector, finish all supported code.
 
-- Security component: max rate limit x IP, attacks, injections, etc
+- Security component: adds max rate limit x IP
 - Redirect component: set up redirect rules based on reg exp etc.
 
 Extras:
@@ -1477,10 +1477,15 @@ Extras:
 
 # Version Changes Control
 
+v1.6.3 - 2021-07-08
+-----------------------
+- Bug corrected in prot component: it was reading the form variables before the CMS and invalidating the keeporiginalbody page parameter of CMS.
+- IP Blacklist added to the prot component
+
 v1.6.2 - 2021-05-18
 -----------------------
 - New component "prot" added, to protect the code and query variables against SQL injection.
-- In the CMS engines, the cached xtemplate is now cloned before injection into the engines to avoid racing problems between pages.
+- In the CMS engines, the cached XTemplate is now cloned before injection into the engines to avoid racing problems between pages.
 
 v1.6.1 - 2021-04-27
 -----------------------
