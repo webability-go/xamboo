@@ -4,16 +4,21 @@ go 1.16
 
 require (
 	github.com/alexbrainman/sspi v0.0.0-20210105120005-909beea2cc74 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/jcmturner/gokrb5/v8 v8.4.2 // indirect
-	github.com/lib/pq v1.9.0 // indirect
+	github.com/kisielk/gotool v1.0.0 // indirect
+	github.com/lib/pq v1.10.3 // indirect
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/webability-go/uasurfer v0.0.2
 	github.com/webability-go/wajaf v0.1.0
 	github.com/webability-go/xconfig v0.4.2
-	github.com/webability-go/xcore/v2 v2.0.4
+	github.com/webability-go/xcore/v2 v2.0.8
 	github.com/webability-go/xdominion v0.3.3
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
-	golang.org/x/text v0.3.5
+	golang.org/x/net v0.0.0-20211008194852-3b03d305991f // indirect
+	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
+	golang.org/x/text v0.3.7
+	google.golang.org/genproto v0.0.0-20211008145708-270636b82663 // indirect
+	google.golang.org/grpc v1.41.0
 )
