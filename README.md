@@ -1477,6 +1477,10 @@ Extras:
 
 # Version Changes Control
 
+v1.6.4 - 2021-11-24
+-----------------------
+- Added method RegisterModule to Datasource interface to avoid a bug when different applications are loaded with compiled modules optionally into them.
+
 v1.6.3 - 2021-07-08
 -----------------------
 - Bug corrected in prot component: it was reading the form variables before the CMS and invalidating the keeporiginalbody page parameter of CMS.

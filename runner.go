@@ -3,10 +3,13 @@ package xamboo
 import (
 	"crypto/tls"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
 	"golang.org/x/text/language"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/webability-go/xamboo/applications"
 	"github.com/webability-go/xamboo/cms/engines"
@@ -85,17 +88,7 @@ func Run(file string, args ...interface{}) error {
 		go func(listener config.Listener) {
 
 			llogger := loggers.GetListenerLogger(listener.Name, "sys")
-
 			xlogger.Printf(i18n.Get("listener.launch"), listener.Name)
-			server := &http.Server{
-				Addr:              ":" + listener.Port,
-				ErrorLog:          llogger,
-				ReadTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
-				ReadHeaderTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
-				IdleTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
-				WriteTimeout:      time.Duration(listener.WriteTimeOut) * time.Second,
-				MaxHeaderBytes:    listener.HeaderSize,
-			}
 
 			// If the server is protocol HTTPS, we have to scan all the certificates for this listener
 			if listener.Protocol == config.PROTOCOL_HTTPS {
@@ -151,6 +144,16 @@ func Run(file string, args ...interface{}) error {
 					}
 				}
 				tlsConfig.BuildNameToCertificate()
+
+				server := &http.Server{
+					Addr:              ":" + listener.Port,
+					ErrorLog:          llogger,
+					ReadTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
+					ReadHeaderTimeout: time.Duration(listener.ReadTimeOut) * time.Second,
+					IdleTimeout:       time.Duration(listener.ReadTimeOut) * time.Second,
+					WriteTimeout:      time.Duration(listener.WriteTimeOut) * time.Second,
+					MaxHeaderBytes:    listener.HeaderSize,
+				}
 				server.TLSConfig = tlsConfig
 
 				xserver, err := tls.Listen("tcp", listener.IP+":"+listener.Port, tlsConfig)
@@ -161,10 +164,88 @@ func Run(file string, args ...interface{}) error {
 				if servererr != nil {
 					llogger.Fatal(err)
 				}
-			} else {
+			} else if listener.Protocol == config.PROTOCOL_HTTP {
+
 				// *******************************************
 				// VERIFICAR EL LISTEN AND SERVE POR DEFECTO SIN TLS; ESTA MAL IMPLEMENTADO: HAY QUE USAR EL HANDLER Y TIMEOUTS Y ETC
 				llogger.Fatal(http.ListenAndServe(listener.IP+":"+listener.Port, nil))
+			} else if listener.Protocol == config.PROTOCOL_gRPC {
+
+				lis, err := net.Listen("tcp", listener.IP+":"+listener.Port)
+				if err != nil {
+					llogger.Fatal(err)
+				}
+				grpcServer := grpc.NewServer()
+				if err := grpcServer.Serve(lis); err != nil {
+					llogger.Fatal(err)
+				}
+			} else if listener.Protocol == config.PROTOCOL_gRPCS {
+
+				numcertificates := 0
+				// We search for all the hosts on this listener
+				for _, host := range config.Config.Hosts {
+					if utils.SearchInArray(listener.Name, host.Listeners) {
+						numcertificates++
+					}
+				}
+
+				tlsConfig := &tls.Config{
+					CipherSuites: []uint16{
+						// obsolete tls options
+						//              tls.TLS_RSA_WITH_RC4_128_SHA,
+						//              tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+						//              tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
+						//              tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
+						//              tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+						//              tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
+						//              tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
+						//              tls.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+						tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+						tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+						tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+						tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+						tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+					},
+				}
+				tlsConfig.PreferServerCipherSuites = true
+				tlsConfig.MinVersion = tls.VersionTLS12
+				tlsConfig.MaxVersion = tls.VersionTLS13
+				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
+				i := 0
+				var certerror error
+				for _, host := range config.Config.Hosts {
+					if utils.SearchInArray(listener.Name, host.Listeners) {
+						tlsConfig.Certificates[i], certerror = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
+						if certerror != nil {
+							llogger.Fatal(certerror)
+						}
+						xlogger.Printf(i18n.Get("host.link"), host.Name, listener.Name)
+						i++
+					}
+				}
+				tlsConfig.BuildNameToCertificate()
+
+				lis, err := net.Listen("tcp", listener.IP+":"+listener.Port)
+				if err != nil {
+					llogger.Fatal(err)
+				}
+				s := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
+				if err = s.Serve(lis); err != nil {
+					llogger.Fatal(err)
+				}
+
+			} else {
+				// FATAL ERROR, protocol not known
+				llogger.Fatal("Error, protocol not known")
 			}
 		}(l)
 	}

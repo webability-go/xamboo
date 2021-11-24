@@ -71,6 +71,7 @@ type Datasource interface {
 	GetCache(id string) *xcore.XCache
 	GetCaches() map[string]*xcore.XCache
 	SetModule(moduleid string, moduleversion string)
+	RegisterModule(mod Module)
 	GetModule(moduleid string) string
 	GetModules() map[string]string
 	IsModuleAuthorized(id string) bool
