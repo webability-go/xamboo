@@ -1,8 +1,10 @@
 package host
 
 import (
+	"log"
 	"net"
 	"net/http"
+	"runtime/debug"
 	"strings"
 
 	"github.com/webability-go/xamboo/config"
@@ -12,9 +14,32 @@ import (
 func Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		slg := loggers.GetCoreLogger("errors")
+		var lg *log.Logger
 		// CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
 		// 1. http, https, ftp, ftps, ws, wss ?
 		// *** WHAT WILL WE SUPPORT ? (at least WS => CHECK TEST DONE)
+
+		defer func() {
+			if r := recover(); r != nil {
+				if lg != nil {
+					lg.Println("Recovered in Component Host", r, string(debug.Stack()))
+				} else {
+					slg.Println("Recovered in Component Host", r, string(debug.Stack()))
+				}
+			}
+		}()
+		notify := w.(http.CloseNotifier).CloseNotify()
+		go func() {
+			<-notify
+			if lg != nil {
+				lg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
+			} else {
+				slg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
+			}
+		}()
+
 		secure := false
 		if r.TLS != nil {
 			secure = true
@@ -47,7 +72,6 @@ func Handler(handler http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			// ERROR: NO LISTENER/HOST DEFINED
-			slg := loggers.GetCoreLogger("errors")
 			slg.Println("C[host] No host or site found:", host, port, r.URL)
 			http.Error(w, "Error, no site found", http.StatusNotImplemented)
 		}

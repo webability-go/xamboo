@@ -1474,6 +1474,10 @@ Extras:
 
 # Version Changes Control
 
+v1.6.5 - 2021-11-26
+-----------------------
+- Added a hook deferred function to host component, to recover any error on the request thread and also to detect client disconnection to log them.
+
 v1.6.4 - 2021-11-24
 -----------------------
 - Added method RegisterModule to Datasource interface to avoid a bug when different applications are loaded with compiled modules optionally into them.
