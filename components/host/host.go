@@ -30,16 +30,18 @@ func Handler(handler http.HandlerFunc) http.HandlerFunc {
 				}
 			}
 		}()
-		notify := w.(http.CloseNotifier).CloseNotify()
-		go func() {
-			<-notify
-			if lg != nil {
-				lg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
-			} else {
-				slg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
-			}
-		}()
-
+		// TOOD(phil) Intestigate further to close the notifier when the thread ends normally
+		/*
+			notify := w.(http.CloseNotifier).CloseNotify()
+			go func() {
+				<-notify
+				if lg != nil {
+					lg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
+				} else {
+					slg.Println("The client closed the connection prematurely. Cleaning up.", r.URL)
+				}
+			}()
+		*/
 		secure := false
 		if r.TLS != nil {
 			secure = true
