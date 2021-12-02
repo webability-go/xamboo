@@ -1474,6 +1474,10 @@ Extras:
 
 # Version Changes Control
 
+v1.6.6 - 2021-12-02
+-----------------------
+- Remove for now the client disconnection channel listener that was causing problems of stability.
+
 v1.6.5 - 2021-11-26
 -----------------------
 - Added a hook deferred function to host component, to recover any error on the request thread and also to detect client disconnection to log them.
