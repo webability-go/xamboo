@@ -15,9 +15,9 @@ Highlights:
 - Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
 - Available under the liberal MIT license.
 
-Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.16.3+
+Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.17+
 
-It is a very high quality framework for CMS, made in GO 1.16.3 or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+It is a very high quality framework for CMS, made in GO 1.17+ or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
 Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
@@ -43,7 +43,7 @@ The Xamboo server works only on Unix systems, since it makes a heavy use of plug
 
 To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
 
-You need GO 1.15 installed and working on your server.
+You need GO 1.17+ installed and working on your server.
 
 Create a new directory for your Xamboo Server, for instance /home/sites/server
 
@@ -85,19 +85,38 @@ $ cd ..
 ```
 
 You need to edit each .json files to adapt it to your own IP and ports
-You can also link the master config.json to the mainconfig.json (commented lines)
-You can also link the admin config.json to the mainconfig.json (commented lines)
 
-Set the Listeners IP and Port so the service will work on your machine.
+If you installed the master, link the master/config/hosts.json file into the mainconfig.json (commented lines)
+If you want the master on another IP/port, you may also want to link the /master/config/listeners.json and modify it.
+
+If you installed the admin, link the admin/config/hosts.json file into the mainconfig.json (commented lines)
+If you want the admin on another IP/port, you may also want to link the /admin/config/listeners.json and modify it.
+
+Set all the Listeners IP and Port so the service will work on your machine.
 Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
 
-Upgrade to the lastest versions, then run the xamboo with master, admin and examples
+Then run the xamboo with master, admin and examples
 
 ```
-$ go get -u
-$ start.sh
+go get -u
+start.sh
 ```
 
+Note: Be carefull. "go mod tidy" would break anything since there are many modules used by the .so applications that are not directly linked t0 the main application.
+If you run "go mod tidy", you will need to re-link local directories and indirect modules:
+
+```
+go get master
+go get admin
+go get github.com/webability-go/wajaf
+go get github.com/webability-go/xdominion
+go get github.com/webability-go/xdommask
+go get github.com/webability-go/xmodules
+```
+
+And be aware of the log files to know if you need to link other modules.
+
+--
 
 To build your own server:
 
@@ -117,7 +136,7 @@ You can compile xamboo to an executable with:
 go build xamboo.go
 ```
 
-You do not need to recompile any component, engine, app or page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity, but it is not necessary. The xamboo will do automatically.
+You do not need to recompile any component, engine, app or page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity, but it is not necessary. The xamboo will do it automatically.
 
 You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo-env.
 
@@ -1473,6 +1492,11 @@ Extras:
 
 
 # Version Changes Control
+
+v1.7.0 - 2022-06-29
+-----------------------
+- global pluginprefix and hostname parameters added to the configuration .json files. Those parameters are needed when you run multiple instances of the xamboo based on the same directory/code, to compile and load all the .so plugins to avoid conflicts ( name as pluginprefix + "-" + hostame + "library.so." + serial )
+- Compiler enhanced to better log compiled code with elapsed time, library, output errors.
 
 v1.6.6 - 2021-12-02
 -----------------------

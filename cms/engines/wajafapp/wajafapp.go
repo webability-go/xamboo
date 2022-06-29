@@ -16,6 +16,7 @@ import (
 	"github.com/webability-go/xamboo/cms/engines/assets"
 	"github.com/webability-go/xamboo/cms/identity"
 	"github.com/webability-go/xamboo/compiler"
+	"github.com/webability-go/xamboo/config"
 	"github.com/webability-go/xamboo/utils"
 )
 
@@ -39,10 +40,9 @@ func (re *LibraryEngine) NeedInstance() bool {
 
 func (re *LibraryEngine) GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) assets.EngineInstance {
 
-	prefix := Hostname + "-"
 	lastpath := utils.LastPath(P)
 	SourcePath := PagesDir + P + "/" + lastpath + ".go"
-	PluginPath := PagesDir + P + "/" + prefix + lastpath + ".so"
+	PluginPath := PagesDir + P + "/" + config.Config.PluginPrefix + Hostname + "-" + lastpath + ".so"
 
 	if utils.FileExists(SourcePath) {
 		data := &LibraryEngineInstance{

@@ -13,14 +13,15 @@ import (
 )
 
 type ConfigDef struct {
-	Version    string
-	File       string
-	Listeners  ListenerList  `json:"listeners"`
-	Hosts      HostList      `json:"hosts"`
-	Components ComponentList `json:"components"`
-	Engines    EngineList    `json:"engines"`
-	Log        Log           `json:"log"`
-	Include    []string      `json:"include"`
+	Version      string
+	File         string
+	PluginPrefix string        `json:"pluginprefix"`
+	Listeners    ListenerList  `json:"listeners"`
+	Hosts        HostList      `json:"hosts"`
+	Components   ComponentList `json:"components"`
+	Engines      EngineList    `json:"engines"`
+	Log          Log           `json:"log"`
+	Include      []string      `json:"include"`
 }
 
 var Config = &ConfigDef{}
