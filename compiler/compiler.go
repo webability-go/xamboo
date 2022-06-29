@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os/exec"
 	"sync"
+	"time"
 
 	"github.com/webability-go/xamboo/cms/context"
 	"github.com/webability-go/xamboo/i18n"
@@ -20,14 +21,19 @@ type Worker struct {
 
 func (w *Worker) Compile(ctx *context.Context, plugin *Plugin) {
 
-	messages := "Recompiling: " + plugin.SourcePath + "\n"
-
 	// Change version +1
 	plugin.Version++
 	plugin.PluginVPath = plugin.PluginPath + "." + fmt.Sprint(plugin.Version)
 	plugin.Error = nil
+
+	messages := "Recompiling: " + plugin.SourcePath + ", library: " + plugin.PluginVPath + "."
+
+	start := time.Now()
 	cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", plugin.PluginVPath, plugin.SourcePath)
 	out, err := cmd.CombinedOutput()
+
+	elapsed := time.Since(start)
+	messages += " Compiled in " + fmt.Sprint(elapsed) + "\n"
 	if err != nil {
 		messages += fmt.Sprintf(i18n.Get("compiler.builderror"), err)
 		plugin.Status = 2
