@@ -12,9 +12,10 @@ type THostList []Host
 type Plugins []Plugin
 
 type Plugin struct {
-	Name    string
-	Library string
-	Id      string
+	Name        string `json:"name"`
+	Librarypath string `json:"librarypath"`
+	Library     string `json:"library"`
+	Id          string
 }
 
 type Host struct {

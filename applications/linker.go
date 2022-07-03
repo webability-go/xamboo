@@ -41,9 +41,9 @@ func Link() {
 				// take path of library
 				path := strings.ReplaceAll(application.Library, ".so", ".go")
 				lib = &compiler.Plugin{
-					SourcePath:  path,
-					PluginPath:  application.Library,
-					PluginVPath: application.Library + ".1",
+					SourcePath:  application.Librarypath + path,
+					PluginPath:  application.Librarypath + config.Config.PluginPrefix + application.Library,
+					PluginVPath: application.Librarypath + config.Config.PluginPrefix + application.Library + ".1",
 					Version:     0, // will be 1 at first compile
 					Messages:    "",
 					Status:      0, // 0 = must compile or/and load (first creation of library)
