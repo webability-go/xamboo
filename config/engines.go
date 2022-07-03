@@ -11,9 +11,10 @@ type EngineList []Engine
 type TEngineList []Engine
 
 type Engine struct {
-	Name    string `json:"name"`
-	Source  string `json:"source"`
-	Library string `json:"library"`
+	Name        string `json:"name"`
+	Source      string `json:"source"`
+	Librarypath string `json:"librarypath"`
+	Library     string `json:"library"`
 	// Status is 0 = nothing new, 1 = new, 2 = changed, 3 = deleted
 	Status int
 }

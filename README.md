@@ -1493,6 +1493,10 @@ Extras:
 
 # Version Changes Control
 
+v1.7.1 - 2022-07-03
+-----------------------
+- Separation of librarypath and library for all plugins (components, engines and plugins), to have a better control of plugin prexif and version
+
 v1.7.0 - 2022-06-29
 -----------------------
 - global pluginprefix and hostname parameters added to the configuration .json files. Those parameters are needed when you run multiple instances of the xamboo based on the same directory/code, to compile and load all the .so plugins to avoid conflicts ( name as pluginprefix + "-" + hostame + "library.so." + serial )
