@@ -20,6 +20,7 @@ type RequestStat struct {
 	Time      time.Time
 	Hostname  string
 	Request   string
+	Referer   string
 	Protocol  string
 	Method    string
 	Code      int
@@ -102,7 +103,7 @@ func (s *MainStat) Clean() {
 	}
 }
 
-func CreateRequestStat(request string, method string, protocol string, code int, length int, duration time.Duration, remoteaddr string) *RequestStat {
+func CreateRequestStat(request string, method string, protocol string, code int, length int, duration time.Duration, remoteaddr string, referer string) *RequestStat {
 
 	ip, port, _ := net.SplitHostPort(remoteaddr)
 
@@ -111,6 +112,7 @@ func CreateRequestStat(request string, method string, protocol string, code int,
 		StartTime: time.Now(),
 		Time:      time.Now(),
 		Request:   request,
+		Referer:   referer,
 		Method:    method,
 		Protocol:  protocol,
 		Code:      code,

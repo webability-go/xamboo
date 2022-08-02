@@ -111,6 +111,7 @@ func buildLogParams(hw host.HostWriter) map[string]string {
 					data["starttime"] = fmt.Sprint(req.StartTime)
 					data["endtime"] = fmt.Sprint(req.Time)
 					data["request"] = fmt.Sprint(req.Request)
+					data["referer"] = fmt.Sprint(req.Referer)
 					data["method"] = fmt.Sprint(req.Method)
 					data["code"] = fmt.Sprint(req.Code)
 					data["bytesout"] = fmt.Sprint(req.Length)

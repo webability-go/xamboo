@@ -1493,13 +1493,17 @@ Extras:
 
 # Version Changes Control
 
+v1.7.2 - 2022-08-01
+-----------------------
+- parameter %referer% added into pages logs for hosts
+
 v1.7.1 - 2022-07-03
 -----------------------
 - Separation of librarypath and library for all plugins (components, engines and plugins), to have a better control of plugin prexif and version
 
 v1.7.0 - 2022-06-29
 -----------------------
-- global pluginprefix and hostname parameters added to the configuration .json files. Those parameters are needed when you run multiple instances of the xamboo based on the same directory/code, to compile and load all the .so plugins to avoid conflicts ( name as pluginprefix + "-" + hostame + "library.so." + serial )
+- global pluginprefix parameter added to the configuration .json files. This parameter is needed when you run multiple instances of the xamboo based on the same directory/code, to compile and load all the .so plugins to avoid conflicts ( name as pluginpath + pluginprefix + "-" + hostame + "library.so." + serial )
 - Compiler enhanced to better log compiled code with elapsed time, library, output errors.
 
 v1.6.6 - 2021-12-02
