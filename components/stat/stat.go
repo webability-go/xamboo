@@ -46,7 +46,7 @@ func (st *Stat) Handler(handler http.HandlerFunc) http.HandlerFunc {
 			lg.Println("C[stat]: We are going to create the statwriter.")
 		}
 
-		req := CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr)
+		req := CreateRequestStat(r.Host+r.URL.Path, r.Method, r.Proto, 0, 0, 0, r.RemoteAddr, r.Referer())
 		req.Hostname = host.Name
 		sw := writer{writer: hw, RequestStat: req}
 		hw.SetParam("requeststat", req)
