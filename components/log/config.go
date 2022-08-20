@@ -6,6 +6,7 @@ type LogConfig struct {
 	PagesFormat string `json:"pagesformat"`
 	Errors      string `json:"errors"`
 	Sys         string `json:"sys"`
+	Server      string `json:"server"`
 	Stats       string `json:"stats"`
 	Status      int
 }
