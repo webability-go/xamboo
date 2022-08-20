@@ -1493,6 +1493,10 @@ Extras:
 
 # Version Changes Control
 
+v1.7.3 - 2022-08-19
+-----------------------
+- Server logger added for listener, the server logger will receive all the default http.server messages
+
 v1.7.2 - 2022-08-01
 -----------------------
 - parameter %referer% added into pages logs for hosts

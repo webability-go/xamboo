@@ -87,7 +87,7 @@ func Run(file string, args ...interface{}) error {
 		xlogger.Printf(i18n.Get("listener.scan"), l.Name)
 		go func(listener config.Listener) {
 
-			llogger := loggers.GetListenerLogger(listener.Name, "sys")
+			llogger := loggers.GetListenerLogger(listener.Name, "server")
 			xlogger.Printf(i18n.Get("listener.launch"), listener.Name)
 
 			// If the server is protocol HTTPS, we have to scan all the certificates for this listener
@@ -137,7 +137,7 @@ func Run(file string, args ...interface{}) error {
 					if utils.SearchInArray(listener.Name, host.Listeners) {
 						tlsConfig.Certificates[i], certerror = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
 						if certerror != nil {
-							llogger.Fatal(certerror)
+							xlogger.Fatal(certerror)
 						}
 						xlogger.Printf(i18n.Get("host.link"), host.Name, listener.Name)
 						i++
@@ -158,26 +158,26 @@ func Run(file string, args ...interface{}) error {
 
 				xserver, err := tls.Listen("tcp", listener.IP+":"+listener.Port, tlsConfig)
 				if err != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 				servererr := server.Serve(xserver)
 				if servererr != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 			} else if listener.Protocol == config.PROTOCOL_HTTP {
 
 				// *******************************************
 				// VERIFICAR EL LISTEN AND SERVE POR DEFECTO SIN TLS; ESTA MAL IMPLEMENTADO: HAY QUE USAR EL HANDLER Y TIMEOUTS Y ETC
-				llogger.Fatal(http.ListenAndServe(listener.IP+":"+listener.Port, nil))
+				xlogger.Fatal(http.ListenAndServe(listener.IP+":"+listener.Port, nil))
 			} else if listener.Protocol == config.PROTOCOL_gRPC {
 
 				lis, err := net.Listen("tcp", listener.IP+":"+listener.Port)
 				if err != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 				grpcServer := grpc.NewServer()
 				if err := grpcServer.Serve(lis); err != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 			} else if listener.Protocol == config.PROTOCOL_gRPCS {
 
@@ -226,7 +226,7 @@ func Run(file string, args ...interface{}) error {
 					if utils.SearchInArray(listener.Name, host.Listeners) {
 						tlsConfig.Certificates[i], certerror = tls.LoadX509KeyPair(host.Cert, host.PrivateKey)
 						if certerror != nil {
-							llogger.Fatal(certerror)
+							xlogger.Fatal(certerror)
 						}
 						xlogger.Printf(i18n.Get("host.link"), host.Name, listener.Name)
 						i++
@@ -236,16 +236,16 @@ func Run(file string, args ...interface{}) error {
 
 				lis, err := net.Listen("tcp", listener.IP+":"+listener.Port)
 				if err != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 				s := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
 				if err = s.Serve(lis); err != nil {
-					llogger.Fatal(err)
+					xlogger.Fatal(err)
 				}
 
 			} else {
 				// FATAL ERROR, protocol not known
-				llogger.Fatal("Error, protocol not known")
+				xlogger.Fatal("Error, protocol not known")
 			}
 		}(l)
 	}

@@ -46,6 +46,12 @@ func Start() {
 	for _, l := range config.Config.Listeners {
 		id = "L[" + l.Name + "][sys]"
 		Loggers[id] = Create(id, l.Log.Sys, Loggers["X[sys]"].Logger, nil)
+		id = "L[" + l.Name + "][server]"
+		if l.Log.Server == "" {
+			Loggers[id] = Create(id, l.Log.Sys, Loggers["X[sys]"].Logger, nil)
+		} else {
+			Loggers[id] = Create(id, l.Log.Server, Loggers["X[sys]"].Logger, nil)
+		}
 	}
 
 	// 3. hosts
