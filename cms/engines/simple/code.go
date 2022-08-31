@@ -187,29 +187,29 @@ func compileCode(data string) CodeData {
 		} else if matches[i][16] == "L" {
 			param.paramtype = MetaLocalInstanceParam // local instance param
 			param.data1 = matches[i][17]
-		} else if matches[i][16] == "SE" {
+		} else if matches[i][18] == "SE" {
 			param.paramtype = MetaSessionParam // session param
 			param.data1 = matches[i][19]
-		} else if matches[i][18] == "J" {
+		} else if matches[i][20] == "J" {
 			param.paramtype = MetaJS // javascript call for header
 			param.data1 = matches[i][21]
-		} else if matches[i][20] == "C" {
+		} else if matches[i][22] == "C" {
 			param.paramtype = MetaCSS // css call for header
 			param.data1 = matches[i][23]
-		} else if matches[i][22] == "C" {
+		} else if matches[i][24] == "C" {
 			param.paramtype = MetaCall   // another block call
 			param.data1 = matches[i][25] // block to call
 			param.data2 = matches[i][27] // parameters
-		} else if matches[i][26] == "#" {
+		} else if matches[i][28] == "#" {
 			param.paramtype = MetaLanguage // language entry
 			param.data1 = matches[i][29]
-		} else if matches[i][28] == "%" {
+		} else if matches[i][30] == "%" {
 			param.paramtype = MetaComment // comment
 			param.data1 = matches[i][31]
-		} else if matches[i][30] == "B" {
+		} else if matches[i][32] == "B" {
 			param.paramtype = MetaTemporaryBoxStart // nested box, temporal value
 			param.data1 = matches[i][33]
-		} else if matches[i][32] == "B" {
+		} else if matches[i][34] == "B" {
 			param.paramtype = MetaTemporaryBoxEnd // nested box end, temporal value, to be delete at end
 		} else {
 			param.paramtype = MetaUnused // unknown, will be removed

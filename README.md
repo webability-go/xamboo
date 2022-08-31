@@ -1493,6 +1493,10 @@ Extras:
 
 # Version Changes Control
 
+v1.7.5 - 2022-08-31
+-----------------------
+- Bug corrected on Meta language [[SESSIONPARAM,*]]
+
 v1.7.4 - 2022-08-31
 -----------------------
 - Meta language [[SESSIONPARAM,*]] added for the simple code engine of the CMS, to get the value of a session parameter.
