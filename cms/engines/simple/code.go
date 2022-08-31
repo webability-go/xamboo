@@ -28,12 +28,13 @@ const (
 	MetaLocalPageParam     = 7  // this page parameters (into .page file), same as Main page parameters if it's the external called page
 	MetaInstanceParam      = 8  // Main page instance called parameters (into .instance file)
 	MetaLocalInstanceParam = 9  // this page instance parameters (into .instance file), same as Main page instance parameters if it's the external called page
-	MetaJS                 = 10 // Call a JS file to include into page headers
-	MetaCSS                = 11 // Call a CSS file to include into page headers
-	MetaCall               = 12 // Call a sub block to insert here
-	MetaLanguage           = 13 // Insert a language entry
-	MetaComment            = 14 // Comment, ignore it
-	MetaBox                = 15 // Nested box with inner data
+	MetaSessionParam       = 10 // Parameter into the session params
+	MetaJS                 = 11 // Call a JS file to include into page headers
+	MetaCSS                = 12 // Call a CSS file to include into page headers
+	MetaCall               = 13 // Call a sub block to insert here
+	MetaLanguage           = 14 // Insert a language entry
+	MetaComment            = 15 // Comment, ignore it
+	MetaBox                = 16 // Nested box with inner data
 
 	MetaTemporaryBoxStart = 101 // Temporal nested box start tag
 	MetaTemporaryBoxEnd   = 102 // Temporal nested box end tag
@@ -133,19 +134,20 @@ func compileCode(data string) CodeData {
 			`|\[\[(L)OCALPAGEPARAM\,(.*?)\]\]` + // index based 12
 			`|\[\[(I)NSTANCEPARAM\,(.*?)\]\]` + // index based 14
 			`|\[\[(L)OCALINSTANCEPARAM\,(.*?)\]\]` + // index based 16
-			`|\[\[(J)S\,(.*?)\]\]` + // index based 18
-			`|\[\[(C)SS\,(.*?)\]\]` + // index based 20
-			`|\[\[(C)ALL\,(.*?)(\:(.*?)){0,1}\]\]` + // index based 22
+			`|\[\[(SE)SSIONPARAM\,(.*?)\]\]` + // index based 18
+			`|\[\[(J)S\,(.*?)\]\]` + // index based 20
+			`|\[\[(C)SS\,(.*?)\]\]` + // index based 22
+			`|\[\[(C)ALL\,(.*?)(\:(.*?)){0,1}\]\]` + // index based 24
 
 			// ==== LANGUAGE INJECTION
-			`|(#)#(.*?)##` + // index based 26
+			`|(#)#(.*?)##` + // index based 28
 
 			// ==== COMENTS
-			`|(%)--(.*?)--%\n?` + // index based 28
+			`|(%)--(.*?)--%\n?` + // index based 30
 
 			// ==== NESTED BOXES
-			`|\[\[(B)OX\,(.*?)\:` + // index based 30
-			`|(B)OX\]\]` // index based 32
+			`|\[\[(B)OX\,(.*?)\:` + // index based 32
+			`|(B)OX\]\]` // index based 34
 
 	codex := regexp.MustCompile(code)
 	indexes := codex.FindAllStringIndex(data, -1)
@@ -185,25 +187,28 @@ func compileCode(data string) CodeData {
 		} else if matches[i][16] == "L" {
 			param.paramtype = MetaLocalInstanceParam // local instance param
 			param.data1 = matches[i][17]
+		} else if matches[i][16] == "SE" {
+			param.paramtype = MetaSessionParam // session param
+			param.data1 = matches[i][19]
 		} else if matches[i][18] == "J" {
 			param.paramtype = MetaJS // javascript call for header
-			param.data1 = matches[i][19]
+			param.data1 = matches[i][21]
 		} else if matches[i][20] == "C" {
 			param.paramtype = MetaCSS // css call for header
-			param.data1 = matches[i][21]
+			param.data1 = matches[i][23]
 		} else if matches[i][22] == "C" {
 			param.paramtype = MetaCall   // another block call
-			param.data1 = matches[i][23] // block to call
-			param.data2 = matches[i][25] // parameters
+			param.data1 = matches[i][25] // block to call
+			param.data2 = matches[i][27] // parameters
 		} else if matches[i][26] == "#" {
 			param.paramtype = MetaLanguage // language entry
-			param.data1 = matches[i][27]
+			param.data1 = matches[i][29]
 		} else if matches[i][28] == "%" {
 			param.paramtype = MetaComment // comment
-			param.data1 = matches[i][29]
+			param.data1 = matches[i][31]
 		} else if matches[i][30] == "B" {
 			param.paramtype = MetaTemporaryBoxStart // nested box, temporal value
-			param.data1 = matches[i][31]
+			param.data1 = matches[i][33]
 		} else if matches[i][32] == "B" {
 			param.paramtype = MetaTemporaryBoxEnd // nested box end, temporal value, to be delete at end
 		} else {
@@ -303,6 +308,11 @@ func (c *CodeData) Inject(ctx *context.Context, language *xcore.XLanguage, e int
 			}
 		case MetaLocalInstanceParam: // local instance params
 			pm, ok := ctx.LocalInstanceparams.Get(v.data1)
+			if ok {
+				injected = append(injected, fmt.Sprint(pm))
+			}
+		case MetaSessionParam: // sys param
+			pm, ok := ctx.Sessionparams.Get(v.data1)
 			if ok {
 				injected = append(injected, fmt.Sprint(pm))
 			}

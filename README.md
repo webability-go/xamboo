@@ -1493,6 +1493,10 @@ Extras:
 
 # Version Changes Control
 
+v1.7.4 - 2022-08-31
+-----------------------
+- Meta language [[SESSIONPARAM,*]] added for the simple code engine of the CMS, to get the value of a session parameter.
+
 v1.7.3 - 2022-08-19
 -----------------------
 - Server logger added for listener, the server logger will receive all the default http.server messages
