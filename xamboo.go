@@ -26,4 +26,4 @@
 package xamboo
 
 // VERSION last oficial published version of the xamboo on github.com
-const VERSION = "1.7.4"
+const VERSION = "1.7.5"
