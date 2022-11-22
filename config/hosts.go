@@ -120,6 +120,13 @@ type Auth struct {
 	Realm   string `json:"realm"`
 	User    string `json:"user"`
 	Pass    string `json:"pass"`
+	Users   []User `json:"users"`
+}
+
+type User struct {
+	Enabled bool   `json:"enabled"`
+	User    string `json:"user"`
+	Pass    string `json:"pass"`
 }
 
 type Prot struct {

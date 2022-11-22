@@ -49,14 +49,31 @@ func (auth *Auth) Handler(handler http.HandlerFunc) http.HandlerFunc {
 		// check AUTH
 		if host.Auth.Enabled {
 			user, pass, ok := r.BasicAuth()
+			// 1. check first Master User
 			if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(host.Auth.User)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(host.Auth.Pass)) != 1 {
-				if host.Debug {
-					lg.Println("C[auth]: Auth required on:", host.Auth.Realm)
+				// verify loop of credential users
+				found := false
+				if host.Auth.Users != nil && len(host.Auth.Users) > 0 {
+					for _, oneuser := range host.Auth.Users {
+						if !oneuser.Enabled {
+							continue
+						}
+						if subtle.ConstantTimeCompare([]byte(user), []byte(oneuser.User)) == 1 && subtle.ConstantTimeCompare([]byte(pass), []byte(oneuser.Pass)) == 1 {
+							found = true
+							break
+						}
+					}
 				}
-				w.Header().Set("WWW-Authenticate", `Basic realm="`+host.Auth.Realm+`"`)
-				w.WriteHeader(401)
-				w.Write([]byte("Unauthorised.\n"))
-				return
+
+				if !found {
+					if host.Debug {
+						lg.Println("C[auth]: Auth required on:", host.Auth.Realm)
+					}
+					w.Header().Set("WWW-Authenticate", `Basic realm="`+host.Auth.Realm+`"`)
+					w.WriteHeader(401)
+					w.Write([]byte("Unauthorised.\n"))
+					return
+				}
 			}
 		}
 
