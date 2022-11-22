@@ -1493,6 +1493,10 @@ Extras:
 
 # Version Changes Control
 
+v1.7.6 - 2022-11-22
+-----------------------
+- Auth component now accept also a list of users, added to the master user/pass
+
 v1.7.5 - 2022-08-31
 -----------------------
 - Bug corrected on Meta language [[SESSIONPARAM,*]]
