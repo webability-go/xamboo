@@ -15,6 +15,9 @@ func Handler(handler http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		// Set TIMEOUT of request total read/write
+		// make a channel with timeout
+
 		slg := loggers.GetCoreLogger("errors")
 		var lg *log.Logger
 		// CHECK THE REQUESTED VHOST: dispatch on the registered sites based on the config
