@@ -43,7 +43,7 @@ The Xamboo server works only on Unix systems, since it makes a heavy use of plug
 
 To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
 
-You need GO 1.17+ installed and working on your server.
+You need GO 1.17+ installed and working on your server. We recommend Go 1.20
 
 Create a new directory for your Xamboo Server, for instance /home/sites/server
 
@@ -150,9 +150,10 @@ Starting the Xamboo, you need to pass a configuration JSON file to the applicati
 
 You may use absolute paths, but it's very recommended to use only relative paths for portability. All the path you will use are relative to the directory where you launch your xamboo application.
 
-The config file is a JSON object which have 6 main sections.
+The config file is a JSON object which have 6 main sections and an optional parameter.
 ```
 {
+  "pluginprefix": "prefix-",
   "log": {},
   "include": [],
   "listeners": [],
@@ -216,7 +217,14 @@ the result configuration would be (as interpreted by Xamboo):
 }
 ```
 
-## 1. "log" section
+## 1. "pluginprefix" parameter
+
+The plugin prefix is a string concatenated to every compiled libaries on this xamboo instance.
+This is very usefull when you have more than one instance running on the same code and directories,
+so the compiled .so libraries does not race and conflict on disk.
+
+
+## 2. "log" section
 
 The log section may contains the following parameters:
 
@@ -278,7 +286,7 @@ func Log(ctx *context.Context) {
 ```
 
 
-## 2. "listeners" section
+## 3. "listeners" section
 
 The listener is the thread charged to listen to a specific IP:Port on the server, with some metrics and logs.
 
@@ -344,7 +352,7 @@ Example of a working real listeners for HTTP and HTTPS:
 ]
 ```
 
-## 3. "hosts" section
+## 4. "hosts" section
 
 A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
 Any host can listen on any listener, and respond to any domain in the configuration.
@@ -402,9 +410,9 @@ The available built-in components are:
 
 Each component can be enabled or disabled. See the following section.
 
-## 4. Components
+## 5. Components
 
-### 4.1. Definition and loading the components
+### 5.1. Definition and loading the components
 
 The main components section follow the following structure:
 
@@ -443,9 +451,9 @@ For instance if you need a "auth" component based on a database for users, you m
 
 Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
 
-### 4.2. List of build-in components
+### 5.2. List of build-in components
 
-#### 4.2.1. log
+#### 5.2.1. log
 
 The log configuration parameters are
 ```
@@ -509,7 +517,7 @@ func Log(hw *host.HostWriter) {
 }
 ```
 
-#### 4.2.2. stat
+#### 5.2.2. stat
 
 This component is used to build the request parameters and statictics so the log component can use it.
 
@@ -520,7 +528,7 @@ system global stats.
 
 It is used by the master environment to display all realtime statistics of the server.
 
-#### 4.2.3. redirect
+#### 5.2.3. redirect
 
 The redirect engine is a very simple redirect mechanism that ensure to redirect multiple domain entries to a single official domain.
 
@@ -547,7 +555,7 @@ enabled: true/false, to activate or de-activate the redirect component.
 If the request does not correspond to the default configured protocol, domain and port, the request will be automatically
 redirected to the correct URL with a 301 status code.
 
-#### 4.2.4. auth
+#### 5.2.4. auth
 
 The auth configuration parameters are
 ```
@@ -573,7 +581,7 @@ User and pass are the expected data to be captured to authorized the use of the 
 
 If the user and pass are wrong, the system returns a 401 unauthorized status.
 
-#### 4.2.5. Prot
+#### 5.2.5. Prot
 
 The protection component intend to protect the system from SQL injection.
 The heuristic is based on counting the quantity of SQL sentence keywords into the get and post variables, and if a certain quantity is found the security is triggered.
@@ -608,7 +616,7 @@ It will serve a 500 error if a sql injection is detected.
 The activation of the protection is logged into the error log of the host with information about the injection.
 
 
-#### 4.2.6. compress
+#### 5.2.6. compress
 
 The compress configuration parameters are
 ```
@@ -647,7 +655,7 @@ mimes is the list of authorized mimes to compress. If the information is any oth
 files is the list of filters on file names to compress. They are normal file names, with files joker (* and ?)
 
 
-#### 4.2.7. minify
+#### 5.2.7. minify
 
 The minify configuration parameters are
 ```
@@ -674,7 +682,7 @@ The component will minify the type of generated code (based on mime).
 Activate or deactivate each type of information.
 
 
-#### 4.2.8. origin
+#### 5.2.8. origin
 
 The origin configuration parameters are
 ```
@@ -701,7 +709,7 @@ The component will identify an OPTIONS or HEAD request and distribute the correc
 You should use this component only when you program some REST API or so.
 
 
-#### 4.2.9. fileserver
+#### 5.2.9. fileserver
 
 The fileserver configuration parameters are
 ```
@@ -727,7 +735,7 @@ If the takeover is false, when a file does not exists, the next handler will be 
 The static directy is where the static files are.
 
 
-#### 4.2.10. cms
+#### 5.2.10. cms
 
 The CMS is a full content mamagement system with meta language, to build powerfull dynamic sites, with business rules implemented directly into pages and code.
 
@@ -816,7 +824,7 @@ The base template is used if the type of browser is unknown.
 Then CMS makes a full takeover on the handlers, so none of the following handlers will be called.
 
 
-#### 4.2.11. error
+#### 5.2.11. error
 
 The error component will only returns a 404 errors. You may want to build your own error component to personalize the returned data.
 
@@ -836,7 +844,7 @@ The error configuration parameters are
 enabled: true/false, to activate or de-activate the error component.
 
 
-### 4.3. Reference to build a new component
+### 5.3. Reference to build a new component
 
 To build your own component, you need a public exported variable called Component and it must meet the xamboo/components/assets.Component interface definition.
 
@@ -887,9 +895,9 @@ Finally the Handler function returns the handler that will encapsulate next hand
 If the handler is not enabled or activated by your configuration on the host, you need to directly call the handler parameter of Handler function.
 
 
-## 5. "engines" section
+## 6. "engines" section
 
-### 5.1. Definition and loading the engines
+### 6.1. Definition and loading the engines
 -----------------------------
 
 The main engines section follow the following structure:
@@ -923,36 +931,36 @@ You may need to develop a new engine for instance to replace a built-in one, or 
 For instance if you need a new page type engine based on a new type of templates for instance, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
 
 
-### 5.2. List of build-in engines
+### 6.2. List of build-in engines
 
-#### 5.2.1. redirect engine
+#### 6.2.1. redirect engine
 
 The redirect engine is made to automatically redirect a page to a new page, with a redirect code.
 
-#### 5.2.2. simple engine
+#### 6.2.2. simple engine
 
 The simple engine is charged to integrate a code page (generally HTML, JS, CSS etc) with parameters and business rules.
 
-#### 5.2.3. library engine
+#### 6.2.3. library engine
 
 The library engine is made to compile and call pages as plugin. That is, a GO code compile as a plugin to serve your page.
 The library detects any changes in the code and automatically recompile the page.
 
-#### 5.2.4. template engine
+#### 6.2.4. template engine
 
 The template engine is used to serve and dispatch XCore v2 XTemplate, generally for other pages to inject code into them.
 
-#### 5.2.5. language engine
+#### 6.2.5. language engine
 
 The language engine is used to serve and dispatch XCore v2 XLanguage, generally for other pages to inject code with them.
 
-#### 5.2.6. wajafapp engine
+#### 6.2.6. wajafapp engine
 
 The Wajaf App is a special engine to build administration code as plugin, with a special layer to build Wajaf Application, integrate XML to JSON, encode JSON, listen to events and so on.
 
 This is the engine to integrate the github.com/webability-go/wajaf libraries to build powerfull one page applications for administration system.
 
-### 5.3. Reference to build a new engine
+### 6.3. Reference to build a new engine
 
 To build your own engine, you need 2 public exported variables called Engine and EngineInstance and they must meet the xamboo/cms/engines/assets.Engine and xamboo/cms/engines/assets.EngineInstance interfaces definitions.
 
@@ -1413,22 +1421,86 @@ mypage.base.fr.language:
 </language>
 ```
 
+### 3. Access to system variables
+
+You have a qunatity of keyworks to access some levels of system, page, instance and local variables.
 
 - [[URLPARAMS]]
-- [[URLPARAM,(.*?)]]
-- [[VAR,(.*?)]]
-- [[PARAM,(.*?)]]
-- [[SYSPARAM,(.*?)]]
-- [[PAGEPARAM,(.*?)]]
-- [[LOCALPAGEPARAM,(.*?)]]
-- [[INSTANCEPARAM,(.*?)]]
-- [[LOCALINSTANCEPARAM,(.*?)]]
+
+Will read all the parameters in the URL, and write them as a query ready to use on any new URL you may write in your code
+A URL parameter comes under the syntax domain.com/parameter1/parameter2/...
+You need the entry "acceptpathparameters=yes" into the .page file of the page, so the system can build the URL parameters.
+
+- [[URLPARAM,variablename]]
+
+Will extract the value of the #variablename URL parameter. variablename is a number 1-indexed on the URL.
+A URL parameter comes under the syntax domain.com/parameter1/parameter2/...
+You need the entry "acceptpathparameters=yes" into the .page file of the page, so the system can build the URL parameters.
+
+- [[VAR,variablename]]
+
+Will extract the value of the parameter <variablename> from the URL query ?parameter=value and/or the POST/PUT parameters
+
+- [[PARAM,variablename]]
+
+Will extract the value of the local page parameter. The local page parameter is set when calling the page by the caller as specific parameters
+
+- [[SYSPARAM,variablename]]
+
+Will extract the value of the system parameter <variablename>
+The parameter is into the .conf file of the CMS of the virtual host serving the site
+
+- [[PAGEPARAM,variablename]]
+
+Will extract the value of the main page parameter <variablename>
+The parameter is into the .page file
+Scope: the instance of the page that has been called by the URL
+
+- [[LOCALPAGEPARAM,variablename]]
+
+Will extract the value of the local page parameter <variablename>
+The parameter is into the .page file
+Scope: the instance of the page that is beeing build in this moment
+If may be the same page as the page called by the URL, or any contruction block or template 
+
+- [[INSTANCEPARAM,variablename]]
+
+Will extract the value of the main instance parameter <variablename>
+The parameter is into the .instance file
+Scope: the instance of the page that has been called by the URL
+
+- [[LOCALINSTANCEPARAM,variablename]]
+
+Will extract the value of the local instance parameter <variablename>
+The parameter is into the .instance file
+Scope: the instance of the page that is beeing build in this moment
+If may be the same page as the page called by the URL, or any contruction block or template 
+
+- [[SESSIONPARAM,variablename]]
+
+Will extract the value of the session parameter <variablename>
+The parameter is set by into the .instance file
+Scope: the instance of the page that is beeing build in this moment
+If may be the same page as the page called by the URL, or any contruction block or template 
+
 - [[JS,(.*?)]]
+
+Includes a Javascript into the headers only once, no matter how much time is ot called
+
 - [[CSS,(.*?)]]
+
+Includes a CSS into the headers only once, no matter how much time is ot called
+
 - [[CALL,(.*?)(:(.*?)){0,1}]]
+
+Will call a page, template or block with the specified parameters
+The parameters (optional) can be read by the called page using the PARAM keyword
+
 - [[BOX,(.*?):
 - BOX]]
 
+Will include a template and call it with the inner data to encapsulate it.
+A Box is a mini local template applied to a piece of code only.
 
 
 # APPLICATION
@@ -1458,7 +1530,6 @@ The applications will need to deal with the following objects:
 
 ## 6. Context
 
-## 7. Bridge
 
 
 
@@ -1469,6 +1540,8 @@ The XModules are all the modules that are build within the Xamboo applications a
 It is a normalized structure to call the methods and link the contexts with hosts and applications.
 
 See the xmodules reference to see which ones are available and how to use them.
+
+
 
 
 # TO DO
@@ -1492,6 +1565,10 @@ Extras:
 
 
 # Version Changes Control
+
+v1.7.7 - 2023-03-16
+-----------------------
+- Documentation enhanced with some new entries
 
 v1.7.6 - 2022-11-22
 -----------------------
