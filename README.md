@@ -2,7 +2,7 @@
 # Xamboo for GO v1
 =============================
 
-Highlights:
+__Highlights__:
 
 - Build Static, Dynamic Pages, RestAPIs, GraphAPIs, on multisites and virtual hosts.
 - Support Auth, SSL, Minifying of code, Compress and many other components, also personalized components.
