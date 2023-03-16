@@ -1,0 +1,78 @@
+package host
+
+import (
+	"bufio"
+	"fmt"
+	"net"
+	"net/http"
+
+	"github.com/webability-go/xconfig"
+
+	"github.com/webability-go/xamboo/config"
+)
+
+// Structures to wrap writer and log stats
+type HostReader interface {
+	http.Request
+}
+
+type reader struct {
+	writer http.Request
+
+	wroteHeader bool
+	listener    *config.Listener
+	host        *config.Host
+	params      *xconfig.XConfig
+}
+
+func (w *reader) Header() http.Header {
+	return w.writer.Header()
+}
+
+func (w *reader) WriteHeader(statusCode int) {
+	w.wroteHeader = true
+	w.writer.WriteHeader(statusCode)
+}
+
+func (w *reader) Write(b []byte) (int, error) {
+	if !w.wroteHeader {
+		w.WriteHeader(http.StatusOK)
+	}
+
+	return w.writer.Write(b)
+}
+
+func (w *reader) SetListener(l *config.Listener) {
+	w.listener = l
+}
+
+func (w *reader) SetHost(h *config.Host) {
+	w.host = h
+}
+
+func (w *reader) GetListener() *config.Listener {
+	return w.listener
+}
+
+func (w *reader) GetHost() *config.Host {
+	return w.host
+}
+
+// Makes the hijack function visible for gorilla websockets
+func (w *reader) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if hj, ok := w.writer.(http.Hijacker); ok {
+		return hj.Hijack()
+	}
+	return nil, nil, fmt.Errorf("http.Hijacker interface is not supported in HostWriter") // should not happen
+}
+
+func (w *reader) GetParams() *xconfig.XConfig {
+	return w.params
+}
+
+func (w *reader) SetParam(id string, value interface{}) {
+	if w.params == nil {
+		w.params = xconfig.New()
+	}
+	w.params.Set(id, value)
+}
