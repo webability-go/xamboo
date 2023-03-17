@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<language id="system" lang="ru">
+  <entry id="config.error"><![CDATA[Ошибка парсинга Config файла: %s %s]]></entry>
+  <entry id="listener.scan"><![CDATA[Сканирование слушателя: L[%s].]]></entry>
+  <entry id="listener.launch"><![CDATA[Запуск прослушивания: L[%s].]]></entry>
+  <entry id="host.link"><![CDATA[Хост связан с H[%s] на L[%s] Готово.]]></entry>
+  <entry id="logger.start"><![CDATA[Запуск логера...]]></entry>
+  <entry id="logger.protocolerror"><![CDATA[Лог регистрации неизвестен: %s.]]></entry>
+  <entry id="logger.statcalllinkerror"><![CDATA[Не удалось связать функцию вызова статистики: %s.]]></entry>
+  <entry id="logger.statcallnotfound"><![CDATA[Не удалось найти функцию вызова статистики: %s %s %s.]]></entry>
+  <entry id="logger.fileerror"><![CDATA[Не удалось открыть файл лога: %s %s %s.]]></entry>
+  <entry id="logger.explain"><![CDATA[Логгер связан с %s на %s]]></entry>
+  <entry id="config.errorconfigcomponent"><![CDATA[Ошибка: конфигурация внешнего компонента не является map[string]interface{} в хосте %s]]></entry>
+  <entry id="config.errorconfigenadled"><![CDATA[Ошибка: конфигурация внешнего компонента не содержит булевой записи 'enabled' в хосте %s]]></entry>
+  <entry id="compiler.builderror"><![CDATA[Ошибка при запуске go build:\n%s\n]]></entry>
+</language>
