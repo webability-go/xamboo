@@ -25,9 +25,9 @@ import (
 var LibraryCache = xcore.NewXCache("wajafapp", 0, 0)
 
 /*
-func init() {
-	LibraryCache.Validator = utils.FileValidator
-}
+	func init() {
+		LibraryCache.Validator = utils.FileValidator
+	}
 */
 var Engine = &LibraryEngine{}
 
