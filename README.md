@@ -15,9 +15,9 @@ __Highlights__:
 - Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
 - Available under the liberal MIT license.
 
-Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.17+
+Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.19+
 
-It is a very high quality framework for CMS, made in GO 1.17+ or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+It is a very high quality framework for CMS, made in GO 1.19+ or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
 
 Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
 
@@ -43,7 +43,7 @@ The Xamboo server works only on Unix systems, since it makes a heavy use of plug
 
 To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
 
-You need GO 1.17+ installed and working on your server. We recommend Go 1.20
+You need GO 1.19+ installed and working on your server. We recommend Go 1.20
 
 Create a new directory for your Xamboo Server, for instance /home/sites/server
 
@@ -1565,6 +1565,10 @@ Extras:
 
 
 # Version Changes Control
+
+v1.8.1 - 2024-04-10
+-----------------------
+- go.mod and go.sum modidied for security and up-to-date libraries updates
 
 v1.8.0 - 2024-04-08
 -----------------------

@@ -16,7 +16,7 @@
 //
 // The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
 //
-// The full set of manuals for installation, configuration and programmation references is available on the github site
+// # The full set of manuals for installation, configuration and programmation references is available on the github site
 //
 // https://www.github.com/webability-go/xamboo
 //
@@ -26,4 +26,4 @@
 package xamboo
 
 // VERSION last oficial published version of the xamboo on github.com
-const VERSION = "1.8.0"
+const VERSION = "1.8.1"
