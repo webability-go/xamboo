@@ -56,6 +56,7 @@ type DatasourceSet interface {
 type Datasource interface {
 	// general needed funcion
 	GetName() string
+	GetConfig() *xconfig.XConfig
 	AddLanguage(lang language.Tag)
 	GetLanguages() []language.Tag
 	SetLog(id string, logger *log.Logger)

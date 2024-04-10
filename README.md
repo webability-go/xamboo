@@ -1566,6 +1566,11 @@ Extras:
 
 # Version Changes Control
 
+v1.8.0 - 2024-04-08
+-----------------------
+- Added GetConfig() in Datasource Interface so the xmodules can use Datasource interface as standard without casting
+- The various parts of xamboo-env, xamboo-master, xamboo-admin and xmodules have been modified to meet new normalized standard
+
 v1.7.7 - 2023-03-16
 -----------------------
 - Documentation enhanced with some new entries
