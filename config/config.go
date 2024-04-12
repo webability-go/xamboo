@@ -43,7 +43,10 @@ func (c *ConfigDef) Load(file string) error {
 				lc := xconfig.New()
 				// adapt this to multiple config files. They are all replaced by default, consider + on parameters to merge them
 				for j := range c.Hosts[i].CMS.ConfigFiles {
-					lc.LoadFile(c.Hosts[i].CMS.ConfigFiles[j])
+					err := lc.LoadFile(c.Hosts[i].CMS.ConfigFiles[j])
+					if err != nil {
+						return err
+					}
 				}
 				c.Hosts[i].CMS.Config = lc
 			}

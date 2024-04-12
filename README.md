@@ -1566,6 +1566,10 @@ Extras:
 
 # Version Changes Control
 
+v1.8.2 - 2024-04-12
+-----------------------
+- Error corrected into config/config.go: when the config file had an error of reading/loading, the error was not reported (and system just panic sometimes after)
+
 v1.8.1 - 2024-04-10
 -----------------------
 - go.mod and go.sum modidied for security and up-to-date libraries updates
