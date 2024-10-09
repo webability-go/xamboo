@@ -42,7 +42,7 @@ func (re *LibraryEngine) GetInstance(Hostname string, PagesDir string, P string,
 	// prefix := Hostname + "-"   // No prefix. A library always has the same BuildID if it's from the same code. IT just gives conflicts when various sites use the same code
 	lastpath := utils.LastPath(P)
 	SourcePath := PagesDir + P + "/" + lastpath + ".go"
-	PluginPath := PagesDir + P + "/" + config.Config.PluginPrefix + Hostname + "-" + lastpath + ".so"
+	PluginPath := PagesDir + P + "/" + config.Config.PluginPrefix + "-" + lastpath + ".so"
 
 	if utils.FileExists(SourcePath) {
 		data := &LibraryEngineInstance{

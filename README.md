@@ -1566,6 +1566,10 @@ Extras:
 
 # Version Changes Control
 
+v1.8.3 - 2024-10-09
+-----------------------
+- Remove the hostname from the .so library name to avoid conflict of same library betwen different VHosts
+
 v1.8.2 - 2024-04-12
 -----------------------
 - Error corrected into config/config.go: when the config file had an error of reading/loading, the error was not reported (and system just panic sometimes after)

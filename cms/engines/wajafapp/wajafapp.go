@@ -42,7 +42,7 @@ func (re *LibraryEngine) GetInstance(Hostname string, PagesDir string, P string,
 
 	lastpath := utils.LastPath(P)
 	SourcePath := PagesDir + P + "/" + lastpath + ".go"
-	PluginPath := PagesDir + P + "/" + config.Config.PluginPrefix + Hostname + "-" + lastpath + ".so"
+	PluginPath := PagesDir + P + "/" + config.Config.PluginPrefix + "-" + lastpath + ".so"
 
 	if utils.FileExists(SourcePath) {
 		data := &LibraryEngineInstance{
