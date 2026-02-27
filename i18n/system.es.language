@@ -3,4 +3,23 @@
   <entry id="config.error"><![CDATA[Error leyendo el archivo de configuración: %s %s]]></entry>
   <entry id="listener.scan"><![CDATA[Escaneando el Listener: L[%s].]]></entry>
   <entry id="listener.launch"><![CDATA[Lanzando el Listener: L[%s].]]></entry>
+  <entry id="host.link"><![CDATA[Ligando Host H[%s] a L[%s] Completado.]]></entry>
+  <entry id="logger.start"><![CDATA[Logger iniciando...]]></entry>
+  <entry id="logger.protocolerror"><![CDATA[Protocolo de log no conocido: %s.]]></entry>
+  <entry id="logger.statcalllinkerror"><![CDATA[Error al enlazar la función de llamada de estadísticas: %s.]]></entry>
+  <entry id="logger.statcallnotfound"><![CDATA[Error al encontrar la función de llamada de estadísticas: %s %s %s.]]></entry>
+  <entry id="logger.fileerror"><![CDATA[Error al abrir el archivo de log: %s %s %s.]]></entry>
+  <entry id="logger.explain"><![CDATA[Enlazar Log %s a %s]]></entry>
+  <entry id="config.errorconfigcomponent"><![CDATA[Error: la configuración del componente externo no es un map[string]interface{} en el host %s]]></entry>
+  <entry id="config.errorconfigenadled"><![CDATA[Error: la configuración del componente externo no contiene una entrada booleana 'enabled' en el host %s]]></entry>
+  <entry id="compiler.builderror"><![CDATA[Error ejecutando go build:\n%s\n]]></entry>
+  <entry id="fatal.protocol"><![CDATA[Error, protocolo no conocido: %s]]></entry>
+  <entry id="engine.build"><![CDATA[Construyendo Engines Containers nativos y externos]]></entry>
+  <entry id="engine.compile.error"><![CDATA[Error: el código GO no pudo compilar %s\n%s\n%s]]></entry>
+  <entry id="engine.buildid.error"><![CDATA[Error: la biblioteca .so no tiene un build id %s\n%s]]></entry>
+  <entry id="engine.load.error"><![CDATA[Error: la biblioteca .so no pudo cargar %s\n%s]]></entry>
+  <entry id="engine.link.error"><![CDATA[Error enlazando la interfaz principal del engine Engine: %s\n%s]]></entry>
+  <entry id="engine.linkinterface.error"><![CDATA[Error enlazando la interfaz principal del engine Engine, no es del tipo assets.Engine: %s]]></entry>
+  <entry id="component.build"><![CDATA[Construyendo Components Containers nativos y externos]]></entry>
+  <entry id="component.notknown"><![CDATA[Componente incorporado no conocido: %s]]></entry>
 </language>

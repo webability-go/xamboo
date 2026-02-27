@@ -3,4 +3,23 @@
   <entry id="config.error"><![CDATA[Erreur en lisant le fichier de configuration: %s %s]]></entry>
   <entry id="listener.scan"><![CDATA[Analyse du Listener: L[%s].]]></entry>
   <entry id="listener.launch"><![CDATA[Lancement du Listener: L[%s].]]></entry>
+  <entry id="host.link"><![CDATA[Attacher Host H[%s] a L[%s] Completé.]]></entry>
+  <entry id="logger.start"><![CDATA[Logger démarrage...]]></entry>
+  <entry id="logger.protocolerror"><![CDATA[Protocole de log inconnu: %s.]]></entry>
+  <entry id="logger.statcalllinkerror"><![CDATA[Échec de liaison de la fonction d'appel de statistiques: %s.]]></entry>
+  <entry id="logger.statcallnotfound"><![CDATA[Échec de recherche de la fonction d'appel de statistiques: %s %s %s.]]></entry>
+  <entry id="logger.fileerror"><![CDATA[Échec d'ouverture du fichier log: %s %s %s.]]></entry>
+  <entry id="logger.explain"><![CDATA[Attacher Log %s à %s]]></entry>
+  <entry id="config.errorconfigcomponent"><![CDATA[Erreur: la configuration du composant externe n'est pas un map[string]interface{} dans l'hôte %s]]></entry>
+  <entry id="config.errorconfigenadled"><![CDATA[Erreur: la configuration du composant externe ne contient pas d'entrée booléenne 'enabled' dans l'hôte %s]]></entry>
+  <entry id="compiler.builderror"><![CDATA[Erreur lors de l'exécution de go build:\n%s\n]]></entry>
+  <entry id="fatal.protocol"><![CDATA[Erreur, protocole inconnu: %s]]></entry>
+  <entry id="engine.build"><![CDATA[Construction des Engines Containers natifs et externes]]></entry>
+  <entry id="engine.compile.error"><![CDATA[Erreur: le code GO n'a pas pu compiler %s\n%s\n%s]]></entry>
+  <entry id="engine.buildid.error"><![CDATA[Erreur: la bibliothèque .so n'a pas de build id %s\n%s]]></entry>
+  <entry id="engine.load.error"><![CDATA[Erreur: la bibliothèque .so n'a pas pu charger %s\n%s]]></entry>
+  <entry id="engine.link.error"><![CDATA[Erreur de liaison de l'interface principale du moteur Engine: %s\n%s]]></entry>
+  <entry id="engine.linkinterface.error"><![CDATA[Erreur de liaison de l'interface principale du moteur Engine, n'est pas du type assets.Engine: %s]]></entry>
+  <entry id="component.build"><![CDATA[Construction des Components Containers natifs et externes]]></entry>
+  <entry id="component.notknown"><![CDATA[Composant intégré inconnu: %s]]></entry>
 </language>

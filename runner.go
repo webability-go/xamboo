@@ -2,6 +2,7 @@ package xamboo
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -127,7 +128,7 @@ func Run(file string, args ...interface{}) error {
 						tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
 					},
 				}
-				tlsConfig.PreferServerCipherSuites = true
+				//				tlsConfig.PreferServerCipherSuites = true
 				tlsConfig.MinVersion = tls.VersionTLS12
 				tlsConfig.MaxVersion = tls.VersionTLS13
 				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
@@ -143,7 +144,7 @@ func Run(file string, args ...interface{}) error {
 						i++
 					}
 				}
-				tlsConfig.BuildNameToCertificate()
+				// 				tlsConfig.BuildNameToCertificate()
 
 				server := &http.Server{
 					Addr:              ":" + listener.Port,
@@ -216,7 +217,7 @@ func Run(file string, args ...interface{}) error {
 						tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
 					},
 				}
-				tlsConfig.PreferServerCipherSuites = true
+				// 				tlsConfig.PreferServerCipherSuites = true
 				tlsConfig.MinVersion = tls.VersionTLS12
 				tlsConfig.MaxVersion = tls.VersionTLS13
 				tlsConfig.Certificates = make([]tls.Certificate, numcertificates)
@@ -232,7 +233,7 @@ func Run(file string, args ...interface{}) error {
 						i++
 					}
 				}
-				tlsConfig.BuildNameToCertificate()
+				// 				tlsConfig.BuildNameToCertificate()
 
 				lis, err := net.Listen("tcp", listener.IP+":"+listener.Port)
 				if err != nil {
@@ -245,7 +246,7 @@ func Run(file string, args ...interface{}) error {
 
 			} else {
 				// FATAL ERROR, protocol not known
-				xlogger.Fatal("Error, protocol not known")
+				xlogger.Fatal(fmt.Sprintf(i18n.Get("fatal.protocol"), listener.Protocol))
 			}
 		}(l)
 	}

@@ -1,111 +1,248 @@
+# Xamboo for Go
 
-# Xamboo for GO v1
-=============================
+## Introduction
 
-__Highlights__:
+Xamboo is the orchestration layer for APIs, microservices, and CMS modules into one cohesive platform for modern distributed architectures.
 
-- Build Static, Dynamic Pages, RestAPIs, GraphAPIs, on multisites and virtual hosts.
-- Support Auth, SSL, Minifying of code, Compress and many other components, also personalized components.
-- Contains many types of engines and personalized engines to distribute code.
-- Auto Compile new pages and apps in GO without restarting the server (as plugin modules).
-- Contains a CMS with advanced Meta language.
-- Optimized for content distribution to portals with heavy load.
-- Content-format agnostic: content can be HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc,
-- No database dependency, although it is possible to use a database if wished.
-- Can handle millions of pages per month (~500 pages per second in real environment, up to 3000 requests per second on tests, basic server ).
-- Available under the liberal MIT license.
+It orchestrates and manages:
 
-Xamboo is the result of over 17 years of manufacturing engineering frameworks, originally written for PHP 7+ and now ported to GO 1.19+
+-   APIs
+-   Microservices
+-   Web applications
+-   Web pages
+-   Full CMS systems
+-   Administration backends
 
-It is a very high quality framework for CMS, made in GO 1.19+ or higher, fully object-oriented and strong to distribute code into Web portals with heavy load and REST APIs optimization.
+All as modular, dynamically compiled components working together under a unified engine.
 
-Xamboo is freeware, and uses several other freeware components (XConfig, XCore, XDominion, WAJAF)
+Built in **Go (1.24+)**, Xamboo is designed for:
 
-Xamboo is an engine to build applications that distribute any type of code to the client:
-It is completely independent of the generated code, i.e. you can send HTML, XHTML, XML, SGML, javascript, JSON, PDF, images, videos, etc.
+-   Large-scale content distribution
+-   High-performance REST and Graph APIs
+-   Modular service architectures
+-   Multi-host and multi-site environments
 
-Xamboo works on sites currently distributing more than **90 millions web pages monthly**, (that's near 500 pages per second on peak hour) it serves regular sites, and GRAPH-APIs / REST APIs to APP-mobiles.
+Xamboo is:
 
-The Xamboo server works only on Unix systems, since it makes a heavy use of plugins (.so librairies) that are not compatible with windows.
+-   Plugin-based  
+-   Engine-driven  
+-   Modular-first  
+-   CMS-capable  
+-   Multi-host ready  
+-   Highly scalable  
+-   MIT licensed
 
-- What you can do to be part of the project:
-  + Improvement of the Core of Xamboo.
-  + Translation of messages and manuals, in all the languages.
-  + Improvement of the Master site tools (administration of web interface for configuration)
-  + Improvement of the Admin site tools (administration of xmodules and own modules)
-  + Developement of XModules (All purpose modules, from user administation up to ecommerce, acountability, CRM, ERP, etc.)
+|                                                                                                                                                   |
+|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| \# Architecture                                                                                                                                   |
+| Incoming Request ↓ Listener (IP:Port) ↓ Host (Domain resolution) ↓ Components (Middleware chain) ↓ CMS Router ↓ Engine ↓ Page / Plugin ↓ Response |
 
-- If you want to help with the code, modules, translations, debug, test code, you are most welcome. Just insert an issue here or on reddit.
+# Key Features
 
+## Core
 
-# INSTALATION AND COMPILATION
-=============================
+-   Multi-site & virtual host support
+-   Automatic plugin compilation (`go build --buildmode=plugin`)
+-   Runtime page compilation
+-   Hot configuration reload
+-   Middleware-based architecture
 
-To install a working Xamboo system, we will use the xamboo-env project that will use the xamboo library.
+## CMS
 
-You need GO 1.19+ installed and working on your server. We recommend Go 1.20
+-   Directory-based page resolution
+-   Version & language support
+-   Meta-language injection
+-   Template engine
+-   Language engine
+-   Library engine (Go plugins)
 
-Create a new directory for your Xamboo Server, for instance /home/sites/server
+## Performance
 
+-   500+ requests/sec production observed
+-   3000+ requests/sec lab tested
+-   TLS 1.2 / TLS 1.3
+-   Gzip / Deflate compression
+-   Code minification
+
+## Security
+
+-   Basic authentication
+-   SQL injection heuristic protection
+-   IP blacklist support
+-   CORS origin control
+
+------------------------------------------------------------------------
+
+# Installation & Deployment Guide
+
+## Overview
+
+This chapter provides a complete, production-oriented guide to
+installing and running a fully functional **Xamboo server environment**.
+
+Xamboo is built around a modular runtime architecture that dynamically
+compiles:
+
+-   Engines  
+-   Components  
+-   Applications  
+-   CMS pages  
+-   XModules
+
+Because Xamboo uses Go plugins (`--buildmode=plugin`), installation must
+be performed on a **Unix/Linux environment**.
+
+------------------------------------------------------------------------
+
+## System Requirements
+
+### Operating System
+
+-   Linux (recommended)
+-   Unix-based systems  
+-   ❌ Windows is NOT supported (Go plugin limitation)
+
+### Software Requirements
+
+-   **Go 1.24+** (Go 1.26+ recommended)
+-   Git
+-   GNU Make (optional but recommended)
+-   OpenSSL (if using HTTPS)
+
+Verify Go installation:
+
+``` bash
+go version
 ```
-$ mkdir /home/sites/server
+
+------------------------------------------------------------------------
+
+## Installation Architecture
+
+A typical Xamboo installation may include:
+
+    /home/sites/server
+    │
+    ├── xamboo-env (core runtime)
+    ├── master      (optional administration UI)
+    ├── admin       (optional XModules administration)
+    └── your-sites  (your CMS projects)
+
+Only `xamboo-env` is mandatory.  
+`master` and `admin` are optional but highly recommended for development
+and administration.
+
+------------------------------------------------------------------------
+
+# Step 1 — Create the Server Root Directory
+
+``` bash
+mkdir -p /home/sites/server
+cd /home/sites/server
+git init
 ```
 
-Go into your server directory and create a git:
+------------------------------------------------------------------------
 
-```
-$ cd /home/sites/server
-$ git init
-```
+# Step 2 — Install the Xamboo Runtime Environment
 
-Then pull the last version of Xamboo Ready to use environment project for Xamboo Server.
-
-```
-$ git pull https://github.com/webability-go/xamboo-env.git
+``` bash
+git pull https://github.com/webability-go/xamboo-env.git
 ```
 
-You may also add the master site for web administration of the Xamboo (optional):
+------------------------------------------------------------------------
 
-```
-$ mkdir /home/sites/server/master
-$ cd /home/sites/server/master
-$ git init
-$ git pull https://github.com/webability-go/xamboo-master.git
-$ cd ..
-```
+# Step 3 — (Optional) Install the Master Administration Interface
 
-And also add the administration site for your application, installation and administration of the xmodules (optional):
-
-```
-$ mkdir /home/sites/server/admin
-$ cd /home/sites/server/admin
-$ git init
-$ git pull https://github.com/webability-go/xamboo-admin.git
-$ cd ..
+``` bash
+mkdir master
+cd master
+git init
+git pull https://github.com/webability-go/xamboo-master.git
+cd ..
 ```
 
-You need to edit each .json files to adapt it to your own IP and ports
+------------------------------------------------------------------------
 
-If you installed the master, link the master/config/hosts.json file into the mainconfig.json (commented lines)
-If you want the master on another IP/port, you may also want to link the /master/config/listeners.json and modify it.
+# Step 4 — (Optional) Install the Admin Interface
 
-If you installed the admin, link the admin/config/hosts.json file into the mainconfig.json (commented lines)
-If you want the admin on another IP/port, you may also want to link the /admin/config/listeners.json and modify it.
-
-Set all the Listeners IP and Port so the service will work on your machine.
-Set the Hosts domains so the service will resolve. Do not forget to add those domains to your DNS too.
-
-Then run the xamboo with master, admin and examples
-
+``` bash
+mkdir admin
+cd admin
+git init
+git pull https://github.com/webability-go/xamboo-admin.git
+cd ..
 ```
+
+------------------------------------------------------------------------
+
+# Step 5 — Configure the Server
+
+Edit:
+
+-   `mainconfig.json`
+-   `listeners.json`
+-   `hosts.json`
+
+Example listener:
+
+``` json
+{
+  "name": "server-http",
+  "ip": "0.0.0.0",
+  "port": "80",
+  "protocol": "http",
+  "readtimeout": 120,
+  "writetimeout": 120,
+  "headersize": 65536
+}
+```
+
+Example host:
+
+``` json
+{
+  "name": "mysite",
+  "listeners": ["server-http"],
+  "hostnames": ["example.com", "www.example.com"]
+}
+```
+
+Ensure:
+
+-   DNS points to the server IP
+-   Firewall allows the configured ports
+
+------------------------------------------------------------------------
+
+## Linking Master & Admin
+
+In `mainconfig.json`:
+
+``` json
+"include": [
+  "master/config/hosts.json",
+  "admin/config/hosts.json"
+]
+```
+
+------------------------------------------------------------------------
+
+# Step 6 — Download Dependencies
+
+``` bash
 go get -u
-start.sh
 ```
 
-Note: Be carefull. "go mod tidy" would break anything since there are many modules used by the .so applications that are not directly linked t0 the main application.
-If you run "go mod tidy", you will need to re-link local directories and indirect modules:
+⚠ Do NOT run:
 
+``` bash
+go mod tidy
 ```
+
+If accidentally executed, restore modules:
+
+``` bash
 go get master
 go get admin
 go get github.com/webability-go/wajaf
@@ -114,44 +251,108 @@ go get github.com/webability-go/xdommask
 go get github.com/webability-go/xmodules
 ```
 
-And be aware of the log files to know if you need to link other modules.
+and follow the sys logs entries to know if you need to restore more modules for recompilation of the .so libraries 
 
---
+------------------------------------------------------------------------
 
-To build your own server:
+# Step 7 — Start the Server
 
-Edit start.sh, json config files and change the config file path.
-
-You can copy the example directory and change anything you need, or build from scratch.
-
-The master site is not necessary to make the Xamboo to work. It's a helpfull tool to configure and install anything easier and edit the json config files.
-
-The admin site is not necessary but is a good start to build your own administration system for your site if you need one.
-
-Install the master site and install contexts with XModules for any site you need.
-
-You can compile xamboo to an executable with:
-
+``` bash
+./start.sh
 ```
+
+Or:
+
+``` bash
+go run xamboo.go --config=mainconfig.json
+```
+
+------------------------------------------------------------------------
+
+# Step 8 — Build Production Binary (Optional)
+
+``` bash
 go build xamboo.go
 ```
 
-You do not need to recompile any component, engine, app or page any time you restart the server. The system compile things as needed. You may recompile anything before launching on a production site, for velocity, but it is not necessary. The xamboo will do it automatically.
+Xamboo dynamically compiles plugins at runtime when needed.
 
-You will need the original code so the compiler is able to compile pages and libraries without problem at anytime. It will use the go.mod and go.sum retrieved with the Xamboo-env.
+------------------------------------------------------------------------
 
-You may attach the xamboo to an OS/service, calling the start.sh
+# Step 9 — Run as a Service (Recommended)
+
+Example systemd service:
+
+    [Unit]
+    Description=Xamboo Server
+    After=network.target
+
+    [Service]
+    WorkingDirectory=/home/sites/server
+    ExecStart=/home/sites/server/xamboo --config=mainconfig.json
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+
+There is a systemd directory into the main xamboo project, with example systemd file.
 
 
-# CONFIGURATION FILES
-=============================
+------------------------------------------------------------------------
 
-Starting the Xamboo, you need to pass a configuration JSON file to the application with --config=[config path]
+# Summary of installation:
 
-You may use absolute paths, but it's very recommended to use only relative paths for portability. All the path you will use are relative to the directory where you launch your xamboo application.
+1.  Install Go  
+2.  Clone xamboo-env  
+3.  (Optional) Install master/admin  
+4.  Configure JSON files  
+5.  Run `go get -u`  
+6.  Start server
 
-The config file is a JSON object which have 6 main sections and an optional parameter.
+Xamboo handles dynamic compilation automatically.
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+# Configuration Files
+
+## Overview
+
+Xamboo is entirely driven by a JSON-based configuration system.
+
+When starting the server, you must provide a configuration file:
+
+``` bash
+xamboo --config=./mainconfig.json
 ```
+
+You may use absolute paths, but **relative paths are strongly
+recommended** for portability.
+
+All paths are resolved relative to the directory where Xamboo is
+launched.
+
+------------------------------------------------------------------------
+
+# Configuration Philosophy
+
+Xamboo’s configuration system is:
+
+-   Modular
+-   Composable
+-   Merge-based
+-   Multi-file capable
+-   Environment-friendly
+
+You can split configuration across multiple files and include them
+dynamically.
+
+------------------------------------------------------------------------
+
+# Root Configuration Structure
+
+``` json
 {
   "pluginprefix": "prefix-",
   "log": {},
@@ -163,42 +364,38 @@ The config file is a JSON object which have 6 main sections and an optional para
 }
 ```
 
-You may add other entries into each level for comments, they are just going to be ignored.
-```
+Each section is optional within an individual file — but must exist at
+least once across the full merged configuration.
+
+------------------------------------------------------------------------
+
+# Configuration Merging & Includes
+
+Main configuration:
+
+``` json
 {
-  "comments": "This comment entry will be ignored by the xamboo",
-  "log-comments": "The logs are into the /var/log directory on my server",
   "log": {},
-  "include-comments": "Each site has its own config file included",
-  "not-included": ["site1/config.json", "site2/config.json"],
-  "include": [],
-  "listeners": [],
-  "hosts": [],
+  "include": [
+    "site1/config.json",
+    "site2/config.json"
+  ],
   "components": [],
   "engines": []
 }
 ```
 
-Every entry is optional in each file, but you must have them at least once in the full configuration with included files.
-For instance you may have only log and include section in the main config, and listeners, hosts and engines in the included file.
+Site configuration example:
 
-The final config will concatenate every section together.
-For instance if in the config for site1 you have listener1 and listener2, and host1; and in the config for site2 you have listener3 and host2,
-```
-{
-  "comments": "MAIN CONFIG",
-  "log": {},
-  "include": ["site1/config.json", "site2/config.json"],
-  "components": [],
-  "engines": []
-}
-
+``` json
 {
   "comments": "site1/config.json",
   "listeners": [ <LISTENER1>, <LISTENER2> ],
   "hosts": [ <HOST1> ]
 }
+```
 
+``` json
 {
   "comments": "site2/config.json",
   "listeners": [ <LISTENER3> ],
@@ -206,97 +403,204 @@ For instance if in the config for site1 you have listener1 and listener2, and ho
 }
 ```
 
+Xamboo concatenates sections of the same type when merging.
 the result configuration would be (as interpreted by Xamboo):
-```
+
+``` json
 {
   "log": {},
   "listeners": [ <LISTENER1>, <LISTENER2>, <LISTENER3> ],
-  "hosts": [ <HOST1>, <HOST2> ]
+  "hosts": [ <HOST1>, <HOST2> ],
   "components": [],
   "engines": []
 }
 ```
 
-## 1. "pluginprefix" parameter
+------------------------------------------------------------------------
 
-The plugin prefix is a string concatenated to every compiled libaries on this xamboo instance.
-This is very usefull when you have more than one instance running on the same code and directories,
-so the compiled .so libraries does not race and conflict on disk.
+# 1. pluginprefix
 
-
-## 2. "log" section
-
-The log section may contains the following parameters:
-
+``` json
+"pluginprefix": "instanceA-"
 ```
+
+The plugin prefix is appended to every compiled `.so` plugin.
+
+This prevents naming collisions when running multiple Xamboo instances
+on the same filesystem.
+
+------------------------------------------------------------------------
+
+# 2. log Section
+
+``` json
 {
   "log": {
     "enabled": true,
-    "sys": "file:./example/logs/xamboo-sys.log",
-    "pages": "file:./example/logs/developers.log",
-    "pagesformat": "%requestid% %clientip% %method% %protocol% %code% %request% %duration% %bytesout% %bytestocompress% %bytestominify%",
-    "errors": "file:./example/logs/xamboo-error.log",
-    "stats": "discard",
-  },
-  ...
+    "sys": "file:./logs/xamboo-sys.log",
+    "pages": "file:./logs/pages.log",
+    "pagesformat": "%requestid% %clientip% %method% %protocol% %code% %request% %duration%",
+    "errors": "file:./logs/errors.log",
+    "stats": "discard"
+  }
 }
 ```
 
-The log section is present in the root of the config file (main log), and also into each of the hosts and listeners defined in "hosts" and "listeners" sections.
+The **log section** can be defined at three levels within the
+configuration:
 
-* Main log:
+-   At the **root level** of the main configuration file (global log
+    settings)
+-   Inside each **listener**
+-   Inside each **host**
 
-Only "sys" and "errors" logs are used, "enabled" is ignored
+Each level supports different log parameters.
 
-* Listener log:
+------------------------------------------------------------------------
 
-Only "sys" log is used, "enabled" is ignored
+## Main (Root) Log
 
-* Host log:
+At the root level:
 
-"enabled" (true/false) parameter, and "sys", "pages", "pagesformat", "errors" and "stats" logs are used.
+-   Only `"sys"` and `"errors"` logs are used.
+-   The `"enabled"` parameter is ignored.
 
-Any other entry is ignored.
+------------------------------------------------------------------------
 
----
+## Listener Log
 
-The "sys" logs will log anything "normal" for the object, for instance all the http.net server messages from TLS , startup, shutdown, etc.
-The "errors" logs will always receive any errors that may happen in the system, from main thread up to each hit on server (even panic errors and recovered errors.)
-The "pages" logs will log any hit on any pages and files for the host.
-Finally, the "stat" log will call any file or function at the same time as the "pages" log, but you are free to call a function with the whole context to log anything anywhere you need to.
+At the listener level:
 
-Each log entry can be one of:
+-   Only the `"sys"` log is used.
+-   The `"enabled"` parameter is ignored.
 
-- file:<file>
-- stdout:
-- stderr:
-- discard
+Listener logs typically capture low-level server events such as
+connection handling and protocol activity.
 
-The stat log can also be "call:<app plugin>:<entry function>".
-The function will be called for each hit on the host, with the server context so you can log anything you want anywhere you want to.
+------------------------------------------------------------------------
 
-The function must be publicly exported like this in your application plugin:
+## Host Log
 
-```
-import "github.com/webability-go/xamboo/cms/context"
+At the host level, the following parameters are supported:
 
-func Log(ctx *context.Context) {
-	// do the log
+-   `"enabled"` (true/false)
+-   `"sys"`
+-   `"pages"`
+-   `"pagesformat"`
+-   `"errors"`
+-   `"stats"`
+
+Any other entries are ignored.
+
+Host-level logging is the most complete and configurable logging layer.
+
+------------------------------------------------------------------------
+
+# Log Types and Behavior
+
+## `sys` Log
+
+The `"sys"` log records normal operational events related to the
+component.  
+This includes:
+
+-   HTTP server messages
+-   TLS handshakes
+-   Startup and shutdown events
+-   Internal system notifications
+
+------------------------------------------------------------------------
+
+## `errors` Log
+
+The `"errors"` log captures all runtime errors that occur within the
+system, including:
+
+-   Application errors
+-   Component errors
+-   Panics (including recovered panics)
+-   Unexpected runtime failures
+
+Note: A `404` response is **not** considered a system error and is
+logged in the `"pages"` log instead.
+
+------------------------------------------------------------------------
+
+## `pages` Log
+
+The `"pages"` log records every request handled by the host, including:
+
+-   Page hits
+-   Static file requests
+-   Response codes
+-   Performance metrics
+
+This log is typically used for access logging and traffic analysis.
+
+------------------------------------------------------------------------
+
+## `stats` Log
+
+The `"stats"` entry allows you to trigger a function call for every
+processed request.
+
+Instead of writing to a file, it can invoke a custom function from a
+loaded plugin, passing the full request context.
+
+This allows you to:
+
+-   Send metrics to external systems
+-   Integrate with monitoring platforms
+-   Store statistics in databases
+-   Implement custom analytics pipelines
+
+The function receives the full request context and can log or process
+data as needed.
+
+------------------------------------------------------------------------
+
+## Log targets:
+
+-   file:path
+-   stdout:
+-   stderr:
+-   discard
+-   call:<plugin>:<function>
+
+Custom stat callback example:
+
+``` go
+import "github.com/webability-go/xamboo/components/host"
+
+func Log(hw *host.HostWriter) {
+    // custom log logic
 }
 ```
 
+------------------------------------------------------------------------
 
-## 3. "listeners" section
+## 3. `listeners` Section
 
-The listener is the thread charged to listen to a specific IP:Port on the server, with some metrics and logs.
+The **listeners** section defines the network entry points of your
+Xamboo server.
 
-The general syntax is:
+A listener is responsible for:
 
-```
-"listeners": [ <LISTENER1>, <LISTENER2>, ... ]
+-   Binding to a specific **IP address**
+-   Listening on a specific **port**
+-   Handling a specific **protocol** (HTTP or HTTPS)
+-   Managing connection timeouts
+-   Handling low-level logging
 
-Each listener is:
+Each listener runs as a dedicated server instance that accepts incoming
+connections and forwards valid requests to the host resolution system.
 
+------------------------------------------------------------------------
+
+# General Structure
+
+``` json
+"listeners": [
   {
     "name": "NAME",
     "ip": "IP",
@@ -306,24 +610,136 @@ Each listener is:
     "writetimeout": TIMEOUT,
     "headersize": SIZE,
     "log": {
-      "sys": "SYSLOG",
+      "sys": "SYSLOG"
     }
   }
+]
 ```
 
-Where each parameter is:
+You may define multiple listeners in the array.
 
-- NAME: is the name of the listener (any string)
-- IP: is the IP to listen to. If the IP is empty "", then the server will listen to all the available IPs on the server.
-- PORT: is the port to listen to.
-- PROTOCOL: is the protocol to listen to. For now, Xamboo knows http and https only.
-- TIMEOUT: is a number between 0 and 65535, the time is in seconds. Recommended values are 120 seconds (2 minutes)
-- SIZE: is a number between 4096 and 65535, the size is in bytes.
-- the SYSLOG is explained in the log section.
+------------------------------------------------------------------------
 
-Example of a working real listeners for HTTP and HTTPS:
+# Parameter Reference
 
+### `name`
+
+A unique identifier for the listener.
+
+-   Must be a string
+-   Used internally and referenced by hosts
+-   Example: `"server-http"`
+
+------------------------------------------------------------------------
+
+### `ip`
+
+The IP address to bind.
+
+-   If set to an empty string `""`, Xamboo listens on **all available
+    network interfaces**
+-   Can be a specific local or public IP
+-   Example:
+    -   `"0.0.0.0"` → all interfaces
+    -   `"127.0.0.1"` → localhost only
+    -   `"10.10.10.10"` → specific interface
+
+------------------------------------------------------------------------
+
+### `port`
+
+The TCP port to listen on.
+
+-   Must be a string
+-   Common values:
+    -   `"80"` → HTTP
+    -   `"443"` → HTTPS
+    -   `"8080"` → alternative HTTP
+
+Ensure the port is open in your firewall configuration.
+
+------------------------------------------------------------------------
+
+### `protocol`
+
+The communication protocol.
+
+Currently supported:
+
+-   `"http"`
+-   `"https"`
+
+When using `"https"`, TLS certificates must be configured at the **Host
+level**.
+
+------------------------------------------------------------------------
+
+### `readtimeout`
+
+Maximum duration (in seconds) allowed to read the full request.
+
+-   Integer between `0` and `65535`
+-   Recommended value: `120` seconds
+
+Prevents slow client attacks and hanging connections.
+
+------------------------------------------------------------------------
+
+### `writetimeout`
+
+Maximum duration (in seconds) allowed to write the response.
+
+-   Integer between `0` and `65535`
+-   Recommended value: `120` seconds
+
+Prevents stalled responses from blocking the server.
+
+------------------------------------------------------------------------
+
+### `headersize`
+
+Maximum allowed size (in bytes) for HTTP headers.
+
+-   Integer between `4096` and `65535`
+-   Recommended value: `65536`
+
+Protects against oversized header attacks.
+
+------------------------------------------------------------------------
+
+### `log.sys`
+
+Defines where system-level listener logs are written.
+
+The `sys` log captures:
+
+-   TLS handshake events
+-   Connection open/close
+-   Server startup/shutdown
+-   Low-level protocol events
+
+Example:
+
+``` json
+"log": {
+  "sys": "file:./logs/listener-http-sys.log"
+}
 ```
+
+Log targets may be:
+
+-   `file:path`
+-   `stdout:`
+-   `stderr:`
+-   `discard`
+
+------------------------------------------------------------------------
+
+# Example: HTTP and HTTPS Listeners
+
+Below is a production-ready example with both HTTP and HTTPS listeners:
+
+``` json
 "listeners": [
   {
     "name": "server-http",
@@ -334,7 +750,7 @@ Example of a working real listeners for HTTP and HTTPS:
     "writetimeout": 120,
     "headersize": 65536,
     "log": {
-      "sys": "file:./logs/listener-http-sys.log",
+      "sys": "file:./logs/listener-http-sys.log"
     }
   },
   {
@@ -346,120 +762,361 @@ Example of a working real listeners for HTTP and HTTPS:
     "writetimeout": 120,
     "headersize": 65536,
     "log": {
-      "sys": "file:./logs/listener-https-sys.log",
+      "sys": "file:./logs/listener-https-sys.log"
     }
   }
 ]
 ```
 
-## 4. "hosts" section
+------------------------------------------------------------------------
 
-A Host is the equivalent to a site responding to requests on a Listener. The site is named with a (sub) domain name.
-Any host can listen on any listener, and respond to any domain in the configuration.
+# How Listeners Interact with Hosts
 
-A Host may have components activated, like compressed response, minify HTML/CSS/JS response, Basic Auth, Prot, Redirect, etc.
+Listeners do **not** serve content directly.
 
-The components can be built-in or programmed.
+Instead:
 
-The general syntax is:
+1.  The listener accepts the incoming request.
+2.  The request is matched against configured **hosts**.
+3.  The host determines:
+    -   Domain validity
+    -   Enabled components
+    -   CMS routing
+    -   Engine execution
 
-```
+A single listener can serve multiple hosts.  
+A single host can respond on multiple listeners.
+
+This design allows:
+
+-   HTTP → HTTPS redirection
+-   Multi-domain hosting
+-   Multi-port environments
+-   Reverse proxy setups
+
+------------------------------------------------------------------------
+
+# Best Practices
+
+-   Always define both HTTP and HTTPS listeners.
+-   Use HTTPS in production.
+-   Keep timeouts at reasonable values (120s recommended).
+-   Set `headersize` high enough for modern headers but not excessive.
+-   Log listener `sys` output separately for easier debugging.
+-   Avoid binding to public IPs unnecessarily; prefer `0.0.0.0` behind a
+    reverse proxy.
+
+------------------------------------------------------------------------
+## 4. `hosts` Section
+
+A **Host** represents a virtual site that responds to requests received
+through one or more listeners.
+
+In practical terms, a Host is the equivalent of a website bound to one
+or more domain names. It defines how requests are processed once they
+are accepted by a listener.
+
+Any host can:
+
+-   Listen on one or multiple configured listeners  
+-   Respond to one or multiple domain names  
+-   Activate built-in or custom components  
+-   Load external plugins  
+-   Execute CMS pages and engines
+
+Hosts are the **application-level orchestration layer** of Xamboo.
+
+------------------------------------------------------------------------
+
+# General Structure
+
+``` json
 "hosts": [
   {
     "name": "developers",
-    "listeners": [ "http", "https" ],
-    "hostnames": [ "developers.webability.info", "www.webability.info", "webability.info", "webability.org" ],
+    "listeners": ["http", "https"],
+    "hostnames": [
+      "developers.webability.info",
+      "www.webability.info",
+      "webability.info",
+      "webability.org"
+    ],
     "cert": "./example/ssl/cert.pem",
     "key": "./example/ssl/privkey.pem",
     "plugins": [
-      { "Name":"app",
+      {
+        "Name": "app",
         "Library": "./example/app/app.so"
       }
     ],
 
     "COMPONENT-NAME": { COMPONENT-CONFIG }
-
-  },
-  ...
-  ]
+  }
+]
 ```
 
-The Host as a name, which is a free string.
-The Listeners section contains all the previously declared listeners in the config you want to respond for this host.
-The hostnames section contains all the host names (domain names) that will answer to the requests.
+Multiple hosts may be defined in the array.
 
-The cert and key is the SSL certificate for the site, only if there is any listener on HTTPS protocol.
-The cert should include all the hostname you declare for this site.
+------------------------------------------------------------------------
 
-The plugins are the external .so libraries to load with the host. See the programmation section to build them.
+# Core Host Parameters
 
-The available built-in components are:
+## `name`
 
-- log: will log the system statistics into the declared logs into the configuration.
-- stat: will store all the system statistics and also the requests (used by log).
-- redirect: will control the called domain and port, and redirect to the correct one if it is any other variant.
-- auth: will control the access with a username and password for basic realm authorization to access site.
-- prot: will protect the get, post, put variables against SQL injection.
-- compress: will compress the content as asked by the client (gzip or deflate) based on mime content
-- minify: will minify the html, css, javascript, json, xml text files if authorized type of file or mime.
-- origin: will set authorized headers for cros origin APIs based on rules.
-- fileserver: will serve static files from a static directory.
-- cms: will build the pages based on the Xamboo CMS. Have a browser sub module.
--- browser: will set the page version to the type of device.
-- error: will serve a 404 error.
+A free string used as the internal identifier of the host.
 
-Each component can be enabled or disabled. See the following section.
+-   Does not need to match a domain
+-   Used for logging and internal reference
+-   Must be unique within the configuration
 
-## 5. Components
+------------------------------------------------------------------------
 
-### 5.1. Definition and loading the components
+## `listeners`
 
-The main components section follow the following structure:
+Defines which previously declared listeners this host responds to.
 
+``` json
+"listeners": ["server-http", "server-https"]
 ```
-{
-  "components": [
-    { "name": "log", "source": "built-in" },
-    { "name": "stat", "source": "built-in" },
-    { "name": "redirect", "source": "built-in" },
-    { "name": "auth", "source": "built-in" },
-    { "name": "prot", "source": "built-in" },
-    { "name": "compress", "source": "built-in" },
-    { "name": "minify", "source": "built-in" },
-    { "name": "origin", "source": "built-in" },
-    { "name": "fileserver", "source": "built-in" },
-    { "name": "cms", "source": "built-in" },
-    { "name": "error", "source": "built-in" },
-    { "name": "myhandler", "source": "extern", "library": "./example/components/myhandler/myhandler.so" }
-  ],
-  ...
+
+Rules:
+
+-   Listener names must exist in the `listeners` section
+-   A host may respond to multiple listeners
+-   Multiple hosts may share the same listener
+
+------------------------------------------------------------------------
+
+## `hostnames`
+
+Defines the domain names that this host will respond to.
+
+``` json
+"hostnames": [
+  "example.com",
+  "www.example.com"
+]
+```
+
+Important notes:
+
+-   The incoming HTTP `Host` header must match one of these entries
+-   DNS must point these domains to your server
+-   If a request matches the listener but not a hostname, the host will
+    not handle it
+
+------------------------------------------------------------------------
+
+## `cert` and `key` (TLS Configuration)
+
+These parameters are required only if the host responds on an HTTPS
+listener.
+
+``` json
+"cert": "./ssl/cert.pem",
+"key": "./ssl/privkey.pem"
+```
+
+Requirements:
+
+-   The certificate must include all declared hostnames
+-   Paths should be relative to the server root
+-   Only used for HTTPS listeners
+
+------------------------------------------------------------------------
+
+## `plugins`
+
+Hosts may load external compiled Go plugins (`.so` files).
+
+``` json
+"plugins": [
+  {
+    "Name": "app",
+    "Library": "./example/app/app.so"
+  }
+]
+```
+
+Plugins can provide:
+
+-   Applications
+-   Custom engines
+-   Custom components
+-   Business logic
+-   XModules integration
+
+Plugins must be compiled using:
+
+``` bash
+go build --buildmode=plugin
+```
+
+------------------------------------------------------------------------
+
+# Host-Level Components
+
+A Host may activate and configure components.
+
+Components act as middleware layers that process requests before and
+after CMS execution.
+
+Example:
+
+``` json
+"log": {
+  "enabled": true,
+  "pages": "file:./logs/developers.log"
 }
 ```
 
-A component is a plugin module (built-in or external) that is called as a middleware on the server handler.
-The order of components is VERY IMPORTANT. Let them in this order unless you perfectly know what you are doing.
+Each component can be enabled or disabled per host.
 
-When you want to add a hand made component, the syntax is:
+------------------------------------------------------------------------
 
+# Built-in Components
+
+The available built-in components are:
+
+-   log — Logs system activity and request statistics
+-   stat — Collects runtime and request statistics
+-   redirect — Normalizes domain, scheme, and port
+-   auth — Provides HTTP Basic Authentication
+-   prot — Protects against SQL injection
+-   compress — Compresses responses (gzip/deflate)
+-   minify — Minifies HTML, CSS, JS, JSON, XML, SVG
+-   origin — Handles CORS headers
+-   fileserver — Serves static files
+-   cms — Executes the Xamboo CMS system and engines
+-   browser — CMS sub-module for device detection
+-   error — Handles and serves 404 errors
+
+The components are detailed lower in this document.
+
+------------------------------------------------------------------------
+
+# Request Lifecycle Within a Host
+
+Once a request matches a host:
+
+1.  TLS is negotiated (if HTTPS)
+2.  Middleware components execute in configured order
+3.  CMS resolves the requested page (if it is a page)
+4.  The corresponding engine runs
+5.  The response flows back through the middleware chain
+6.  The final output is sent to the client
+
+------------------------------------------------------------------------
+
+# 5. Components
+
+Components are **middleware modules** executed in a chain for every request handled by a Host. They are responsible for cross‑cutting concerns such as logging, statistics, canonical redirection, authentication, security checks, compression/minification, CORS, static files, CMS routing, and final error handling.
+
+A component may:
+
+-   Inspect or modify the request
+-   Block or redirect execution
+-   Transform the response
+-   Log activity
+-   Enforce security policies
+-   Serve static content
+-   Execute the CMS
+
+A component can be:
+
+- **Built-in**: shipped with Xamboo and referenced with `"source": "built-in"`
+- **External**: compiled as a Go plugin (`.so`) and referenced with `"source": "extern"`
+
+Xamboo executes components **in the exact order** defined in the global `components` array.  
+⚠️ **Order is critical.** Changing the order can change behavior (for example, compressing before minifying, or running CMS before fileserver). Keep the default order unless you have a precise reason and understand the implications.
+
+---
+
+## 5.1 Definition and Loading of Components
+
+### 5.1.1 Declaring the middleware chain
+
+Components are declared globally in the root configuration:
+
+```json
+{
+  "components": [
+    { "name": "log",       "source": "built-in" },
+    { "name": "stat",      "source": "built-in" },
+    { "name": "redirect",  "source": "built-in" },
+    { "name": "auth",      "source": "built-in" },
+    { "name": "prot",      "source": "built-in" },
+    { "name": "compress",  "source": "built-in" },
+    { "name": "minify",    "source": "built-in" },
+    { "name": "origin",    "source": "built-in" },
+    { "name": "fileserver","source": "built-in" },
+    { "name": "cms",       "source": "built-in" },
+    { "name": "error",     "source": "built-in" },
+
+    { "name": "myhandler", "source": "extern", "library": "./example/components/myhandler/myhandler.so" }
+  ]
+}
 ```
-  { "name": "mycomponent", "source": "extern", "library": "./path/to/your/mycomponent.so" },
+
+### 5.1.2 Built-in vs external components
+
+**Built-in component**
+```json
+{ "name": "compress", "source": "built-in" }
 ```
 
-You may need to developp a new components for instance to replace a built-in one, or add new components.
-
-For instance if you need a "auth" component based on a database for users, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
-
-Another example would be a component to verify security and SQL injection and reject the request if it does not pass though the security system. This component could be inserted before the redirect component.
-
-### 5.2. List of build-in components
-
-#### 5.2.1. log
-
-The log configuration parameters are
+**External component**
+```json
+{ "name": "mycomponent", "source": "extern", "library": "./path/to/your/mycomponent.so" }
 ```
+
+External components must be compiled as Go plugins:
+
+```bash
+go build --buildmode=plugin
+```
+
+### 5.1.3 Replacing a built-in component
+
+You can override a built-in component by providing an external component with the same operational purpose. Some common reasons may be:
+
+- Implement authentication backed by a database or identity provider (replace `auth`)
+- Add a stricter WAF/security gate (insert before `redirect` or before `cms`)
+- Push logs to centralized systems (replace/extend `log` and/or `stats` callback)
+- Better heuristic for system protection adding rate limits (replace `prot`)
+
+---
+
+## 5.2 Built-in Components (Detailed Reference)
+
+The built-in components are configured **per host** (inside the `hosts` entries), even though they are loaded globally in the `components` array.
+
+Each component typically supports:
+
+- `enabled`: `true/false` (when applicable)
+- A component-specific configuration block
+
+Below are the official built-in components in recommended execution order.
+
+---
+
+### 5.2.1 `log`
+
+The **log** component is the primary request and system logging facility at the host level. It can write to files/streams and can optionally call a custom function after each request to export metrics.
+
+It provides up to four log channels:
+
+- `sys`: internal messages for the host (startup/shutdown, internal notices)
+- `errors`: runtime errors, panics, recovered panics, and failures
+- `pages`: access log of requests (pages + static files)
+- `stats`: optional output or callback executed for each request (advanced/custom metrics)
+
+#### Configuration Example
+
+```json
 "hosts": [
   {
-    ...
+    "...": "...",
     "log": {
       "enabled": true,
       "pages": "file:./example/logs/developers.log",
@@ -468,402 +1125,583 @@ The log configuration parameters are
       "sys": "file:./example/logs/developers-sys.log",
       "stats": "discard"
     }
-  },
-  ...
-  ]
+  }
+]
 ```
 
-enabled: true/false, to activate or de-activate the log system.
+#### Parameters
 
-pages: the file or stream to send the statistics of requests.
+- `enabled` *(bool)*  
+  Enables/disables the host logging system.
 
-pages-format: is the format to log the requests. The list of known parameters are:
-- %bytesout%: The quantity of bytes sent to the client (header not included)
-- %bytestocompress%: The quantity of bytes before compressing the data sent to the client
-- %bytestominify%: The quantity of bytes before minifying the data sent to the client
-- %clientip%: The client IP
-- %clientport%: The client Port
-- %code%: The return code (200, 404, etc)
-- %duration%: The duration of the data calculation, from receiving the request up to send it to the client
-- %hostid%: The ID of the host serving the request
-- %listenerid%: The ID of the listener serving the request
-- %listenerip%: The IP of the listener serving the request
-- %listenerport%: The Port of the listener serving the request
-- %protocol%: The requested protocol (HTTP, HTTPS, WS, WSS)
-- %method%: The requested method (GET, POST, PUT, HEAD, OPTION, DELETE, ...)
-- %request%: The full string request from the client
-- %starttime%: The start time when the request has been received
-- %endtime%: The end time when the request is finished to be calculated and sent to the client
-- %requestid%": The Unique Internal ID of the request
+- `pages` *(string)*  
+  Destination for request access logs.
 
-If a parameter have an empty value, it is replace with a - (dash)
+- `pagesformat` *(string)*  
+  Format template for each request log line. Supported tokens include:
 
-errors: the file or stream to send the errors happening in the system. Note: a 404 is not an error per se and will be logged into pages log.
+  - `%bytesout%` — bytes sent to the client (headers excluded)  
+  - `%bytestocompress%` — size before compression  
+  - `%bytestominify%` — size before minification  
+  - `%clientip%`, `%clientport%`  
+  - `%code%` — HTTP status code  
+  - `%duration%` — processing time from request receipt to response ready  
+  - `%hostid%`  
+  - `%listenerid%`, `%listenerip%`, `%listenerport%`  
+  - `%protocol%` — HTTP/HTTPS/WS/WSS  
+  - `%method%` — GET/POST/PUT/HEAD/OPTIONS/DELETE/...  
+  - `%request%` — full request line  
+  - `%starttime%`, `%endtime%`  
+  - `%requestid%` — unique internal request identifier  
 
-sys: the file or stream to send the internal messages.
+  If a token has an empty value, it is replaced with `-`.
 
-stat: the function to call when a request is done and executed in the listener/host.
+- `errors` *(string)*  
+  Destination for errors. Note: a `404` is not a system error and is typically logged in `pages`.
 
-The stat function is a public function from any of your loaded plugins.
+- `sys` *(string)*  
+  Destination for host system messages.
 
-The general syntax is:
+- `stats` *(string)*  
+  Statistics destination. Can be:
+  - `file:<path>` / `stdout:` / `stderr:` / `discard`
+  - `call:<plugin>:<function>` to invoke a function in a loaded plugin on each request.
 
-```
+#### Behavior
+
+- `pages` is written for every completed request (page hit and static hit).
+- `errors` receives internal failures, panics (including recovered panics), and unexpected runtime issues.
+- `stats` can be used to send metrics anywhere (DB, external monitoring, message queue) via a callback.
+
+#### Custom stats callback
+
+```go
 import "github.com/webability-go/xamboo/components/host"
 
 func Log(hw *host.HostWriter) {
-	// do the log
-  // The RequestStat and the Context objects are into the HostWriter parameters
+    // hw contains RequestStat and Context
+    // send metrics to your system
 }
 ```
 
-#### 5.2.2. stat
+#### Best Practices
 
-This component is used to build the request parameters and statictics so the log component can use it.
+- Use separate files per host (`./logs/<host>-pages.log`, `./logs/<host>-errors.log`).
+- Keep `pagesformat` consistent across environments for easier parsing.
+- Use `stats` callback for Prometheus/Influx/ELK forwarding rather than mixing logic into request handlers.
 
-It cannot be disabled.
+---
 
-It will also store all the system stats like total request per minute, total lifetime requests served, quantity of requests by type,
-system global stats.
+### 5.2.2 `stat`
 
-It is used by the master environment to display all realtime statistics of the server.
+The **stat** component builds and stores request statistics used by the `log` component and by runtime monitoring tools (including the Master environment).
 
-#### 5.2.3. redirect
+It collects and maintains:
 
-The redirect engine is a very simple redirect mechanism that ensure to redirect multiple domain entries to a single official domain.
+- Global counters (lifetime requests served)
+- Per-minute request rates
+- Request breakdown by type/method
+- Host and listener runtime measurements
 
-It is very usefull where you listen to different domains or sub domains and/or different protocols or ports on the same host, to
-be sure this is always the official protocol/domain/port that will be used.
+#### Configuration
 
-The redirect configuration parameters are
+This component is **mandatory** and **cannot be disabled**.
+
+#### Behavior
+
+- Runs early in the chain to collect accurate timings and counters.
+- Provides the data used by `%duration%`, `%bytesout%`, and other access log tokens.
+
+#### Best Practices
+
+- Keep `stat` immediately after `log` (default order).
+- Do not attempt to disable it; rely on `log.enabled=false` if you want to reduce logging overhead, or do not need logging.
+
+---
+
+### 5.2.3 `redirect`
+
+The **redirect** component ensures URL normalization by enforcing a single canonical scheme, domain, and port for a host.
+
+In environments where a host may respond to:
+
+- Multiple domain names (e.g., `example.com`, `www.example.com`)
+- Multiple subdomains
+- Different protocols (`http` and `https`)
+- Different ports
+
+the redirect component guarantees that all traffic is consolidated to one official URL.
+
+This is essential for:
+
+- SEO consistency (avoiding duplicate content)
+- Security enforcement (forcing HTTPS)
+- Domain normalization
+- Port standardization
+- Clean URL architecture
+
+When enabled, the component compares the incoming request’s scheme, host, and port with the configured canonical values. If they do not match, the client is automatically redirected to the correct URL using an HTTP **301 (Moved Permanently)** status code.
+
+#### Configuration Example
+
+```json
+"redirect": {
+  "enabled": true,
+  "scheme": "https",
+  "host": "developers.webability.info:83"
+}
 ```
-"hosts": [
-  {
-    ...
-    "redirect": {
-      "enabled": true,
-      "scheme": "https",
-      "host": "developers.webability.info:83"
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables canonical redirection.
+- `scheme` *(string)* — Canonical scheme (`http` or `https`).
+- `host` *(string)* — Canonical hostname, optionally with port (`domain` or `domain:port`).
+
+#### Behavior
+
+If a request arrives as:
+
+```
+http://webability.info/
+```
+
+and the configuration specifies:
+
+```
+scheme: https
+host: developers.webability.info:83
+```
+
+the component returns a 301 redirect to:
+
+```
+https://developers.webability.info:83/
+```
+
+The redirect happens **before CMS execution** or any page rendering.
+
+#### Best Practices
+
+- Enforce HTTPS in production.
+- Choose one canonical domain (with or without `www`) and redirect all variants.
+- Keep `redirect` early in the chain to avoid wasted processing on non-canonical requests.
+
+---
+
+### 5.2.4 `auth`
+
+The **auth** component enforces **HTTP Basic Authentication** at the host level. It is commonly used to protect:
+
+- Administration interfaces (master/admin)
+- Staging environments
+- Private APIs or internal tools
+
+#### Configuration Example
+
+```json
+"auth": {
+  "enabled": true,
+  "realm": "Xamboo Env test (xamboo/xamboo)",
+  "user": "xamboo",
+  "pass": "xamboo",
+  "users": [
+    { "enabled": true,
+      "user": "name",
+      "pass": "password"
+    },
+    { "enabled": false,
+      "user": "name2",
+      "pass": "password2"
     }
-  },
-  ...
   ]
+}
 ```
 
-enabled: true/false, to activate or de-activate the redirect component.
+#### Parameters
 
-If the request does not correspond to the default configured protocol, domain and port, the request will be automatically
-redirected to the correct URL with a 301 status code.
+- `enabled` *(bool)* — Enables/disables Basic Auth protection.
+- `realm` *(string)* — Realm text displayed by the browser login prompt.
+- `user` *(string)* — Expected username (master user).
+- `pass` *(string)* — Expected password (master user).
+- `users` *(array of user)* — Expected list of users, can be disabled or enabled.
 
-#### 5.2.4. auth
+Each user is:
 
-The auth configuration parameters are
+- `enabled` *(bool)* — Enables/disables this user.
+- `user` *(string)* — Expected username.
+- `pass` *(string)* — Expected password.
+
+
+#### Behavior
+
+- If credentials are missing or incorrect, the component returns **401 Unauthorized** and triggers the browser login dialog.
+- If correct, the request continues to the next component, creating the headers needed to the authentication of user.
+
+#### Best Practices
+
+- Use only for simple protection or internal environments.
+- For production-grade authentication (DB users, OAuth/JWT, SSO), create a custom auth component and replace this one.
+- Never store production credentials in a public repository; use environment-specific config files.
+
+---
+
+### 5.2.5 `prot`
+
+The **prot** component implements a basic heuristic protection against SQL injection attempts. It scans incoming variables (GET/POST/PUT) and scores suspicious SQL keyword patterns. If the score exceeds a configured threshold, the request is blocked.
+
+This is a **baseline protection layer**. It can be replaced with a more advanced/custom security component depending on your needs, for instance adding rate limits, IP protections, etc.
+
+#### Configuration Example
+
+```json
+"prot": {
+  "enabled": true,
+  "sql": true,
+  "ignore": ["var1", "var2"],
+  "threshold": 3
+}
 ```
-"hosts": [
-  {
-    ...
-    "auth": {
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables the protection layer.
+- `sql` *(bool)* — Enables SQL injection heuristics scanning.
+- `ignore` *(array of strings)* — Variable names to exclude from scanning.
+- `threshold` *(int)* — Score needed to trigger protection.
+
+Guidance for `threshold`:
+- `1` — very sensitive (high false-positive risk)
+- `3` — balanced (recommended default)
+- `5` — less sensitive (harder to trigger)
+
+#### Behavior
+
+- If an injection attempt is detected, the component returns **500** and logs details to the host error log.
+- If not triggered, the request proceeds normally.
+
+#### Best Practices
+
+- Keep it enabled on public forms and API endpoints unless you have a stronger WAF.
+- Tune `ignore` for fields that may legitimately contain SQL-like strings (advanced search boxes, query languages, graphQL).
+- Consider replacing with a stronger component for enterprise security requirements.
+
+---
+
+### 5.2.6 `compress`
+
+The **compress** component compresses responses (gzip or deflate) when the client supports it and the response matches configured MIME types and file patterns.
+
+Compression reduces bandwidth usage and improves load times for text-based resources.
+
+#### Configuration Example
+
+```json
+"compress": {
+  "enabled": true,
+  "mimes": [
+    "text/html",
+    "text/css",
+    "application/javascript"
+  ],
+  "files": [
+    "*.ico",
+    "*.css",
+    "*.js",
+    "*.html"
+  ]
+}
+```
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables compression.
+- `mimes` *(array of strings)* — Allowed MIME types to compress.
+- `files` *(array of strings)* — Filename patterns (wildcards `*` and `?`) allowed for compression (primarily for fileserver outputs).
+
+#### Behavior
+
+Compression happens only if **all** conditions are met:
+
+1. Client requests compression (`Accept-Encoding: gzip, deflate`).
+2. The response MIME matches one of `mimes`.
+3. If serving a static file, filename matches `files` patterns.
+
+#### Best Practices
+
+- Enable for HTML/CSS/JS/JSON/XML/SVG.
+- Avoid compressing already-compressed formats (jpg, png, mp4, zip).
+- Use with `minify` for best results (minify first, then compress).
+
+---
+
+### 5.2.7 `minify`
+
+The **minify** component reduces the size of text-based responses by removing unnecessary whitespace and optimizing formatting. It is most effective for HTML, CSS, JavaScript, JSON, SVG, and XML.
+
+#### Configuration Example
+
+```json
+"minify": {
+  "enabled": true,
+  "html": true,
+  "css": true,
+  "js": true,
+  "json": true,
+  "svg": true,
+  "xml": true
+}
+```
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables minification.
+- `html`, `css`, `js`, `json`, `svg`, `xml` *(bool)* — Enable/disable minification per output type.
+
+#### Behavior
+
+- Minification is applied based on detected MIME type of the response.
+- If a type is disabled (e.g., `"js": false`), responses of that type are passed through unchanged.
+
+#### Best Practices
+
+- Keep enabled for production.
+- Disable in development if you need human-readable output for debugging.
+- Use together with `compress` for maximal reduction (minify → compress).
+
+---
+
+### 5.2.8 `origin`
+
+The **origin** component manages CORS behavior for cross-origin API calls. It detects `OPTIONS` and `HEAD` preflight requests and responds with the appropriate headers based on configured rules.
+
+Use this component when your host serves:
+
+- REST APIs
+- Cross-domain browser calls
+- Microservices consumed by web frontends on a different domain
+
+#### Configuration Example
+
+```json
+"origin": {
+  "enabled": true,
+  "maindomains": ["webability.info"],
+  "default": "https://developers.webability.info",
+  "methods": ["GET", "POST", "OPTIONS", "HEAD"],
+  "headers": [
+    "Accept", "Content-Type", "Content-Length", "Accept-Encoding",
+    "X-CSRF-Token", "Authorization", "Origin", "X-Requested-With", "Method"
+  ],
+  "credentials": true
+}
+```
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables CORS handling.
+- `maindomains` *(array of strings)* — Allowed main domains (used as a rule base).
+- `default` *(string)* — Default allowed origin if none matches.
+- `methods` *(array of strings)* — Allowed HTTP methods for CORS.
+- `headers` *(array of strings)* — Allowed request headers.
+- `credentials` *(bool)* — Whether to allow credentials (`Access-Control-Allow-Credentials`).
+
+#### Behavior
+
+- For preflight requests, responds with the computed CORS headers.
+- For normal requests, adds CORS headers when appropriate.
+- Does not replace application authentication; it only defines browser cross-origin permissions.
+
+#### Best Practices
+
+- Keep the allowed origins strict—avoid `*` in production for sensitive APIs.
+- Explicitly include only the methods and headers you use.
+- If you use cookies/Authorization headers, set `credentials: true` and ensure origins are explicit.
+
+---
+
+### 5.2.9 `fileserver`
+
+The **fileserver** component serves static files from a configured directory.
+
+It can run in two modes:
+
+- **takeover = true**: the host becomes a pure static server.
+- **takeover = false**: static files are served when they exist, otherwise the request falls through to CMS (ideal for websites with assets + pages).
+
+#### Configuration Example
+
+```json
+"fileserver": {
+  "enabled": true,
+  "takeover": false,
+  "static": "./example/repository/public/static"
+}
+```
+
+#### Parameters
+
+- `enabled` *(bool)* — Enables/disables static file serving.
+- `takeover` *(bool)* — Full takeover mode.
+- `static` *(string)* — Directory path containing static files.
+
+#### Behavior
+
+- If `takeover` is **true**:
+  - Files are served if present.
+  - If the file is missing, fileserver triggers 404.
+  - No CMS fallback occurs.
+
+- If `takeover` is **false**:
+  - Files are served if present.
+  - If missing, request continues to the next component (commonly `cms`).
+
+#### Best Practices
+
+- Use `takeover=false` for standard CMS sites (assets + pages).
+- Keep static directories separate per host for clean deployments.
+- Put fileserver before CMS (default order) so assets do not consume CMS routing time.
+
+---
+
+### 5.2.10 `cms`
+
+The **cms** component activates the Xamboo Content Management System. When enabled, the CMS resolves URLs to API, microservices, websockets, pages, loads templates and languages, and executes the configured engines.
+
+This component is the core of Xamboo’s page routing and rendering system.
+
+#### Configuration Example
+
+```json
+"cms": {
+  "enabled": true,
+  "config": [
+    "./example/application/config/example.conf"
+  ],
+  "engines": {
+    "simple": true,
+    "library": true,
+    "template": true,
+    "language": true,
+    "wajafapp": true,
+    "box": true
+  },
+  "browser": {
+    "enabled": true,
+    "useragent": {
       "enabled": true,
-      "realm": "Xamboo Env test (xamboo/xamboo)",
-      "user": "xamboo",
-      "pass": "xamboo"
+      "comments": "context.Version becomes: computer, phone, tablet, tv, console, wearable, base"
     }
-  },
-  ...
-  ]
+  }
+}
 ```
 
-enabled: true/false, to activate or de-activate the auth component.
+#### Parameters
 
-The realm is the title of the real that should be displayed on the user login form of the browser.
+- `enabled` *(bool)* — Enables/disables the CMS handler.
+- `config` *(array of strings)* — List of XConfig files (`key=value` pairs) used by CMS and by your code.
+- `engines` *(object)* — Enables/disables engines available for pages calculation on this host.
+- `browser` *(object)* — Browser/device detection sub-module.
 
-User and pass are the expected data to be captured to authorized the use of the host.
+##### `engines` options
+Set unused engines to `false` to reduce feature surface and prevent unintended execution types.
 
-If the user and pass are wrong, the system returns a 401 unauthorized status.
+##### `browser` sub-module
+- `browser.enabled` *(bool)* — Enables device detection.
+- `browser.useragent.enabled` *(bool)* — Enables User-Agent based classification.
 
-#### 5.2.5. Prot
+Known versions (device classes) include:
+- `pc` (or computer), `mobile`, `tablet`, `tv`, `console`, `wearable`, `base`
 
-The protection component intend to protect the system from SQL injection.
-The heuristic is based on counting the quantity of SQL sentence keywords into the get and post variables, and if a certain quantity is found the security is triggered.
-This is a basic protection system that can be enhanced on a more personalized component.
+> The `base` version is used when device type is unknown.
 
-The prot configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "prot": {
-      "enabled": true,
-      "sql": true,
-      "ignore": ["var1", "var2"],
-      "threshold": 3
-    }
-  },
-  ...
-  ]
-```
+#### CMS Configuration File (XConfig)
 
-enabled: true/false, to activate or de-activate the protection component.
+Why an extra file? Because CMS and application code often need a shared parameter store. The XConfig file is a simple `key=value` configuration used by engines and your business logic.
 
-sql: enable or disable the sql injection verification of entry variables.
+Example:
 
-ignore: is the list of the entry variables that will be ignored in the verification.
-
-threshold: is the score of sql injection to activate the protection. A score of 3 is normally a good score to protect the code. 1 is very sensible, 5 is hard to trigger.
-
-It will serve a 500 error if a sql injection is detected.
-
-The activation of the protection is logged into the error log of the host with information about the injection.
-
-
-#### 5.2.6. compress
-
-The compress configuration parameters are
-```
-"hosts": [
-  {
-    ...
-
-    "compress": {
-      "enabled": true,
-      "mimes": [
-        "text/html",
-        "text/css",
-        "application/javascript"
-      ],
-      "files": [
-        "*.ico",
-        "*.css",
-        "*.js",
-        "*.html"
-      ]
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the compress component.
-
-The component will listen to the request and compress the information to send back only if:
-- The client ask for a compressed content (deflate or gzip)
-- The information mime correspond to the authorized mimes to compress
-- The requested file (fileserver type) correspond to the authorized extentions
-
-mimes is the list of authorized mimes to compress. If the information is any other type of mime, it will not be compressed.
-
-files is the list of filters on file names to compress. They are normal file names, with files joker (* and ?)
-
-
-#### 5.2.7. minify
-
-The minify configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "minify": {
-      "enabled": true,
-      "html": true,
-      "css": true,
-      "js": true,
-      "json": true,
-      "svg": true,
-      "xml": true
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the minify component.
-
-The component will minify the type of generated code (based on mime).
-Activate or deactivate each type of information.
-
-
-#### 5.2.8. origin
-
-The origin configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "origin": {
-      "enabled": true,
-      "maindomains": ["webability.info"],
-      "default": "https://developers.webability.info",
-      "methods": ["GET", "POST", "OPTIONS", "HEAD"],
-      "headers": ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Origin", "X-Requested-With", "Method"],
-      "credentials": true
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the origin component.
-
-The component will identify an OPTIONS or HEAD request and distribute the correct headers to authorize cross origin of requests.
-
-You should use this component only when you program some REST API or so.
-
-
-#### 5.2.9. fileserver
-
-The fileserver configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "fileserver": {
-      "enabled": true,
-      "takeover": false,
-      "static": "./example/repository/public/static"
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the fileserver component.
-
-If the takeover is true, then the host will server only files. If a file does not exists, then the 404 is launched by the file server.
-
-If the takeover is false, when a file does not exists, the next handler will be called. This is perfect to serve static files on a CMS or so.
-
-The static directy is where the static files are.
-
-
-#### 5.2.10. cms
-
-The CMS is a full content mamagement system with meta language, to build powerfull dynamic sites, with business rules implemented directly into pages and code.
-
-The full CMS manuals and references are below this manual.
-
-The cms configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "cms": {
-      "enabled": true,
-      "config": [
-        "./example/application/config/example.conf"
-      ],
-      "engines": {
-        "simple": true,
-        "library": true,
-        "template": true,
-        "language": true,
-        "wajafapp": true,
-        "box": true
-      },
-      "browser": {
-        "enabled": true,
-        "useragent": {
-          "enabled": true,
-          "comments": "The context.Version will have one of: computer, phone, tablet, tv, console, wearable, base when the module is enabled"
-        }
-      }
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the cms component.
-
-CMS Configuration files
------------------------------
-
-Wait, why an extra configuration file?
-
-The configuration file is a set of param-value pairs that will be used into the construction of the site by both the pages engines and your own code. This is a XConfig configuration file (see the github.com/webability-go/xconfig manuals) for the whole code parameters.
-
-You may add as many as parameters you need for your code; the important ones for Xamboo are:
-
-```
-# The main example site configuration file
-
-# Where the pages of our CMS is
-# pagesdir can be relative to the xamboo run directory (prefered), or absolute
+```ini
+# Where the pages are located (relative preferred)
 pagesdir=./example/application/pages/
 
-# The main page to use for / (your home page) (must exists in the pages)
+# Home page and error pages
 mainpage=home
 errorpage=errors/page
 errorblock=errors/block
 
-#  The default version of the pages for this site. It is highly recommended to never change 'base' unless you perfectly know what you are doing (advanced configuration)
-#  The host module "browser-useragent" will change the version based on the type of connected device to your site if activated.
+# Default page version and language
 version=base
-#  The default language of the pages for this site. You may change with your local language
 language=en
 
-# If the pages of the site accept parameters as URL by default (like this: /the-page/param1/param2/param3 )
-# MAIN PAGE SHOULD NEVER ACCEPT PARAMETERS unless you perfectly know what you do (calling icons, files, etc should get main page instead of a 404 for instance)
-# boolean: yes/no, true/false, 0/1
+# Whether pages accept URL path parameters by default
 acceptpathparameters=yes
-
 ```
 
-engines: The authorized engines to be used by the CMS on this host.
-You may deactivate any not used engine for pages calculation, setting the parameter to false.
+#### Behavior
 
-browser: This is a sub component for the cms engine.
+- When CMS is enabled and matches a request to a page, it generates the response using templates, language resources, and engines.
+- When CMS takes over, it typically becomes the final handler (no further components after CMS will run for successful page routing), except response modifiers already wrapping it in the chain (such as compress/minify).
 
-browser>enabled: true/false, to activate or de-activate the browser sub component.
+#### Best Practices
 
-browser>useragent: will be able to replace the browser type into the version of the page so you can build version of pages based on the type of browser.
-Known types of browsers are:
-- pc, mobile, tablet, tv, console, wearable, base
+- Keep `version=base` unless you intentionally manage multiple page versions.
+- Be cautious with `acceptpathparameters`:
+  - Avoid enabling it on the home page to prevent accidental routing collisions (icons/files mapping to `/`).
+- Disable unused engines for a tighter security and maintenance profile.
+- Keep your `pagesdir` relative for portability across environments.
 
-The base template is used if the type of browser is unknown.
+---
 
-Then CMS makes a full takeover on the handlers, so none of the following handlers will be called.
+### 5.2.11 `error`
 
+The **error** component is the final fallback handler that returns a **404 Not Found** when no previous component has produced a response.
 
-#### 5.2.11. error
+It is intentionally minimal. If you want branded error pages, JSON API errors, or structured error responses, you can replace it with a custom component.
 
-The error component will only returns a 404 errors. You may want to build your own error component to personalize the returned data.
+#### Configuration Example
 
-The error configuration parameters are
-```
-"hosts": [
-  {
-    ...
-    "error": {
-      "enabled": false
-    }
-  },
-  ...
-  ]
-```
-
-enabled: true/false, to activate or de-activate the error component.
-
-
-### 5.3. Reference to build a new component
-
-To build your own component, you need a public exported variable called Component and it must meet the xamboo/components/assets.Component interface definition.
-
-So it needs 3 functions to be callable by the components system:
-```
-type Component interface {
-	Start()
-	NeedHandler() bool
-	Handler(handler http.HandlerFunc) http.HandlerFunc
+```json
+"error": {
+  "enabled": true
 }
 ```
 
-For instance this is the simplest error system component:
+#### Parameters
 
+- `enabled` *(bool)* — Enables/disables the default 404 handler.
+
+#### Behavior
+
+- If enabled and reached, it returns a 404 response.
+- Often placed at the end of the chain to ensure every request has a deterministic outcome.
+
+#### Best Practices
+
+- Keep it enabled unless CMS or another handler fully guarantees 404 responses.
+- Replace it for APIs to return JSON error envelopes rather than plain text.
+
+---
+
+## 5.3 Creating a Custom Component
+
+To build your own component, you must export a public variable named `Component` that implements the `xamboo/components/assets.Component` interface:
+
+```go
+type Component interface {
+    Start()
+    NeedHandler() bool
+    Handler(handler http.HandlerFunc) http.HandlerFunc
+}
 ```
+
+### Minimal Example (Custom 404 Component)
+
+```go
 package mycomponent
 
 import (
-	"net/http"
+    "net/http"
 )
 
 var Component = &MyComponent{}
@@ -871,387 +1709,498 @@ var Component = &MyComponent{}
 type MyComponent struct{}
 
 func (mc *MyComponent) Start() {
+    // called once when the component is loaded for the first time
 }
 
 func (mc *MyComponent) NeedHandler() bool {
-	return true
+    return true
 }
 
-func (mc *MyComponent) Handler(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-    http.Error(w, "404 Not Found", http.StatusNotFound)
-  }
+func (mc *MyComponent) Handler(next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, "404 Not Found", http.StatusNotFound)
+    }
 }
 ```
 
-You may add as much as code you need before and after the handler call.
+### Lifecycle Notes
 
-Start is called when the component is loaded for the first time by the system (like an init, but once the system is loaded).
+- `Start()` is called once when the component is first loaded (similar to initialization).
+- `NeedHandler()` must return `true` for the component to participate.
+- `Handler()` wraps the next handler in the chain.
 
-NeedHandler must return true to be considered by the components system.
+If your component supports `enabled=false` at the host level, your `Handler()` should pass through by calling `next(w, r)` when disabled.
 
-Finally the Handler function returns the handler that will encapsulate next handler in chain, and encapsulated by previous handler in chain.
+---
 
-If the handler is not enabled or activated by your configuration on the host, you need to directly call the handler parameter of Handler function.
+## Recommended Default Order (Why it matters)
 
+A typical safe order is:
 
-## 6. "engines" section
+1. `log` / `stat` (observe everything)
+2. `redirect` (canonicalize early)
+3. `auth` / `prot` (security gates early)
+4. `compress` / `minify` (response optimizers wrap downstream handlers - performance optimization)
+5. `origin` (CORS for APIs interoperability)
+6. `fileserver` (serve static assets fast)
+7. `cms` (full CMS routing and execution)
+8. `error` (fallback)
 
-### 6.1. Definition and loading the engines
------------------------------
+This order ensures requests are normalized and protected before expensive routing, and responses are optimized consistently.
+External components allow you to extend or replace any behavior while preserving the same middleware execution model.
 
-The main engines section follow the following structure:
+------------------------------------------------------------------------
 
-```
+# 6. Engines
+
+The **Engines** system is the execution core of the Xamboo CMS.  
+While Components manage HTTP-level behavior (middleware, security, logging, compression, etc.), **Engines define how a page is interpreted and executed**.
+
+The CMS manual comes in next chapter.
+
+An engine determines:
+
+- How a page file is processed
+- Whether it requires compilation
+- Whether it needs templates or language resources
+- Whether it runs as pure content or as compiled Go code
+- How it interacts with context and identity
+
+Engines are the **page-type execution layer** of Xamboo.
+
+---
+
+# 6.1 Definition and Loading of Engines
+
+## 6.1.1 Global Engine Declaration
+
+Engines are declared globally in the root configuration:
+
+```json
 {
   "engines":
   [
-    { "name": "redirect", "source": "built-in" },
-    { "name": "simple", "source": "built-in" },
-    { "name": "library", "source": "built-in" },
-    { "name": "template", "source": "built-in" },
-    { "name": "language", "source": "built-in" },
-    { "name": "wajafapp", "source": "built-in" }
-  ],
-  ...
+    { "name": "redirect",  "source": "built-in" },
+    { "name": "simple",    "source": "built-in" },
+    { "name": "library",   "source": "built-in" },
+    { "name": "template",  "source": "built-in" },
+    { "name": "language",  "source": "built-in" },
+    { "name": "wajafapp",  "source": "built-in" }
+  ]
 }
 ```
 
-The engines are type of pages that can be called from the Xamboo server.
-There are 6 build-in engines for standard type of pages, and you can add as many engines as you need. (See Engine section of this manual to know how to build them)
+There are **6 built-in engines**, but you can register as many custom engines as needed.
 
-When you want to add a hand made external engine, the syntax is:
+Each engine represents a **page type handler**.
 
+The host can define a new set of engines or restrict some engines with its own list of engines, if the array of engines are specified into the configuration of the host.
+If there is no definition of engines, the global engines will be used.
+
+---
+
+## 6.1.2 Built-in vs External Engines
+
+### Built-in Engine
+
+```json
+{ "name": "simple", "source": "built-in" }
 ```
-  { "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" },
+
+### External Engine
+
+```json
+{ "name": "myengine", "source": "extern", "library": "./path/to/your/myengine.so" }
 ```
 
-You may need to develop a new engine for instance to replace a built-in one, or add new engines.
+External engines must be compiled as Go plugins:
 
-For instance if you need a new page type engine based on a new type of templates for instance, you may copy the library to your own directory and modify it to your needs, then call it as a extern library instead of the built-in one.
-
-
-### 6.2. List of build-in engines
-
-#### 6.2.1. redirect engine
-
-The redirect engine is made to automatically redirect a page to a new page, with a redirect code.
-
-#### 6.2.2. simple engine
-
-The simple engine is charged to integrate a code page (generally HTML, JS, CSS etc) with parameters and business rules.
-
-#### 6.2.3. library engine
-
-The library engine is made to compile and call pages as plugin. That is, a GO code compile as a plugin to serve your page.
-The library detects any changes in the code and automatically recompile the page.
-
-#### 6.2.4. template engine
-
-The template engine is used to serve and dispatch XCore v2 XTemplate, generally for other pages to inject code into them.
-
-#### 6.2.5. language engine
-
-The language engine is used to serve and dispatch XCore v2 XLanguage, generally for other pages to inject code with them.
-
-#### 6.2.6. wajafapp engine
-
-The Wajaf App is a special engine to build administration code as plugin, with a special layer to build Wajaf Application, integrate XML to JSON, encode JSON, listen to events and so on.
-
-This is the engine to integrate the github.com/webability-go/wajaf libraries to build powerfull one page applications for administration system.
-
-### 6.3. Reference to build a new engine
-
-To build your own engine, you need 2 public exported variables called Engine and EngineInstance and they must meet the xamboo/cms/engines/assets.Engine and xamboo/cms/engines/assets.EngineInstance interfaces definitions.
-
-So it needs 6 functions to be callable by the engines system:
+```bash
+go build --buildmode=plugin
 ```
+
+---
+
+## 6.1.3 Why Create a Custom Engine?
+
+You may develop a new engine when:
+
+- You need a new page type
+- You want a custom template language
+- You want a new compilation logic
+- You need to replace an existing built-in engine
+- You want to integrate another rendering framework
+
+---
+
+# 6.2 Built-in Engines (Detailed Reference)
+
+## 6.2.1 Redirect Engine
+
+The **redirect engine** allows a page to redirect to another page with a specific HTTP status code.
+
+Unlike the redirect component (which normalizes host/domain), this engine redirects at the **page level**.
+
+Use cases:
+- Legacy page migration
+- URL restructuring
+- SEO page forwarding
+
+Best practice:
+- Use 301 for permanent redirects
+- Use 302 for temporary redirects
+
+---
+
+## 6.2.2 Simple Engine
+
+The **simple engine** processes standard page files (HTML, JS, CSS) with parameter injection and business rule evaluation.
+
+Best practice:
+- Use for lightweight dynamic pages
+- Move heavy logic to the library engine
+
+---
+
+## 6.2.3 Library Engine
+
+The **library engine** compiles Go code pages as plugins and executes them dynamically.
+
+Features:
+- Auto recompilation when code changes
+- Full Go power
+- High performance
+
+Best practice:
+- Use for business logic
+- Keep logic separate from templates
+
+---
+
+## 6.2.4 Template Engine
+
+The **template engine** serves XCore v2 XTemplate pages and is mainly used for layouts.
+
+Best practice:
+- Keep templates presentation-only
+
+---
+
+## 6.2.5 Language Engine
+
+The **language engine** manages XCore v2 XLanguage resources for multilingual support.
+
+Best practice:
+- Avoid hard-coded strings
+- Keep translations separated
+
+---
+
+## 6.2.6 WajafApp Engine
+
+The **WajafApp engine** integrates with:
+
+github.com/webability-go/wajaf
+
+It is designed to build administration interfaces and SPAs.
+
+Best practice:
+- Use only for admin systems
+
+---
+
+# 6.3 Building a Custom Engine
+
+To build your own engine, you must export:
+
+- Engine
+- EngineInstance
+
+Interfaces:
+
+```go
 type Engine interface {
-	NeedInstance() bool
-	GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) EngineInstance
-	Run(ctx *context.Context, e interface{}) interface{}
+    NeedInstance() bool
+    GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) EngineInstance
+    Run(ctx *context.Context, e interface{}) interface{}
 }
 
 type EngineInstance interface {
-	NeedLanguage() bool
-	NeedTemplate() bool
-	Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{}
+    NeedLanguage() bool
+    NeedTemplate() bool
+    Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{}
 }
 ```
 
-For instance this is the simplest engine:
+Execution Flow:
 
-```
-package myengine
+1. Xamboo detects page type.
+2. Calls NeedInstance().
+3. If false → Run().
+4. If true → GetInstance() then Instance.Run() with template/language loaded if needed.
 
-var Engine = MyEngine{}
+---
 
-type MyEngine struct{}
+# Summary
 
-func (re *MyEngine) NeedInstance() bool {
+Engines define how CMS pages are executed.
 
-	return false
-	// return true mean you will create the boxengineinstance and the result will be served through it
-}
+They enable:
+- Static rendering
+- Go dynamic execution
+- Templates
+- Languages
+- Admin SPA integration
 
-func (re *MyEngine) GetInstance(Hostname string, PagesDir string, P string, i identity.Identity) assets.EngineInstance {
+------------------------------------------------------------------------
 
-	data := &MyEngineInstance{}
-	return data
-}
+# Configuration Best Practices
 
-func (se *MyEngine) Run(ctx *context.Context, s interface{}) interface{} {
+-   Use relative paths
+-   Use pluginprefix for multiple instances
+-   Keep middleware ordered correctly
+-   Separate site-specific configs
+-   Monitor logs during startup
 
-	return "<div style=\"border: 3px solid red;\">This is a code generated by MyEngine from the engine itself<br />(only .page is necesary and NeedInstance must return false)</div>"
-}
+------------------------------------------------------------------------
 
-type MyEngineInstance struct {
-}
+# Summary
 
-func (p *MyEngineInstance) NeedLanguage() bool {
-	return false
-}
+Xamboo’s configuration system is layered, extensible, and designed for
+scalable multi-host environments.
 
-func (p *MyEngineInstance) NeedTemplate() bool {
-	return false
-}
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+# CMS Reference (Full Manual)
 
-// context contains all the page context and history
-// params are an array of strings (if page from outside) or a mapped array of data (inner pages)
-func (p *MyEngineInstance) Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+Xamboo’s **CMS** is built on a very simple and powerful principle: **the directory structure on disk defines the URL space**.  
+Each folder under `pagesdir` represents a route, and therefore a page (or a family of URLs) that the CMS can resolve and execute.
 
-	return "<div style=\"border: 3px solid red;\">This is a code generated by the BOX engine as an instance<br />(You need .instance file and NeedInstance must return true)</div>"
-}
+Example:
 
-```
+- If your pages repository contains a folder `./blog/`, then you can request:  
+  `https://mysite.com/blog`
 
-You may add as much as code you need to make your engine work.
+Xamboo is not a classic “file server” CMS. It does not treat URLs as files. Instead, it treats URLs as **pages**, described by **folders + definition files + engine execution**.
 
-The engine will work in 2 step.
-  a. When the xamboo detect a page with the type of the engine, it will call the Engine.NeedInstance() function to know if the engines needs to build an instance to work (returns true/false).
-    a.1 If the engine does not need an instance, the server will call Engine.Run() function to get the result of the calculated page.
-    a.2 If the engine needs an instance, the server will call Engine.GetInstance() function to get the instance.
-  b. Call Instance.NeedTemplate and Instance.NeedLanguage to know if the Run function need local templates or languages
-  c. When and instance is created it will call Instance.Run() function to get the result of the calculated page.
+---
 
-- Important Considerations:
+## Core considerations
 
-An Engine is a plugin (go --buildmode=plugin) loadable by the Server. The server will compile automatically the engines at start.
+- The CMS root directory is defined by the `pagesdir` parameter (in the CMS XConfig file).
+- The **home page** is always a subdirectory defined by `mainpage`. Any files placed directly at the CMS root are ignored.
+- You must create working error handlers as CMS pages:
+  - `errorpage` (main error page)
+  - `errorblock` (reusable error block)
+  
+These must exist as valid CMS pages and be resolvable by the CMS, otherwise error handling will be incomplete or inconsistent.
 
-When the system loads the engine, it will check the existence of the exported variable Engine, that must meet the assets.Engine interface.
+---
 
-A page with instance may have as many instances as needed. Each instance normally have different parameters, most common parameters are language and type of connected device. Try to build instance only on 1 parameter or you will rapidly have a matrix of instances impossible to maintain.
+# 1. Pages
 
-It is common to have a unique code with different languages tables (.language files), or have different templates for PC and Mobile for instance.
+## 1.1 What is a page? (Engines, Instances, Languages, and Versions)
 
+A CMS page represents either:
 
-# CMS REFERENCE
+1. A **single URL**, for example:  
+   `https://www.mysite.com/login`
 
-The CMS code is contained into a directory that will contain a structure of directories and files that will follow the URLs called by the clients.
+2. A **group of URLs sharing the same root**, for example:  
+   - `https://www.mysite.com/blog`  
+   - `https://www.mysite.com/blog/channel1`  
+   - `https://www.mysite.com/blog/article1`  
+   - ...
 
-For instance, if your code container have a directory /blog/[some files] you may call from the web  https://mysite/blog
+In the second case, the root `/blog` corresponds to **one page**, and the remainder of the path is treated as **route parameters** (path parameters). The page code can use those parameters to decide what content to return.
 
-Some considerations:
+---
 
-- The root directory container is pointed by the 'pagesdir' config parameter.
-- The home page is always a sub directory pointed by the 'mainpage' config parameter. The root directory files will be ignored.
-- You need errorblock and errorpage directories created and working as a CMS page. They are pointed by 'errorblock' and 'errorpage' config parameters.
+### Engines (page execution types)
 
+Every CMS page ultimately produces an output (HTML, JS, CSS, JSON, images, video, etc.). However, there are different ways to build that output. That is why Xamboo uses **Engines**.
 
-## 1. PAGES
+Each page has a `type` that selects the engine that will build it. Examples include:
 
+- redirect (page-level redirect)
+- simple (meta-language + code files)
+- template (XCore v2 XTemplate)
+- language (XCore v2 XLanguage)
+- library (Go plugin page)
+- wajafapp (admin SPA/JSON engine)
 
-### 1.1. What is a page: Engines, Instances, Languages and Versions.
+> Built-in engines are documented in the Engines section. External engines may be added and referenced by their configured name.
 
-A CMS page is one unique URL or a group of URLs with the same root. It corresponde to one library code into the server.
+---
 
-For example:
+### Versions and languages (Instances)
 
-https://www.mysite.com/login   is a unique page for login on your site.
+Pages may be served in multiple combinations of:
 
-https://www.mysite.com/blog, https://www.mysite.com/blog/channel1, https://www.mysite.com/blog/article1, ...
+- **Version** (device/layout variant): `pc`, `mobile`, `tablet`, `base`, etc.
+- **Language**: `en`, `es`, `fr`, etc.
 
-are a group of URLs with a unique root https://www.mysite.com/blog
+Each combination is a **page instance**.
 
-The code of the root will resolve which data to send to the client based on the URL.
+#### The classic explosion problem
+If you have 5 versions and 10 languages, that is 50 potential combinations. Maintaining 50 fully duplicated pages is not realistic.
 
-This is considered a CMS page.
+#### The Xamboo strategy
+Xamboo encourages:
 
---
+- A limited number of **templates** (often per version)
+- A limited number of **language tables** (per language)
+- Engines that combine them at runtime
 
-A CMS page will always output a some compatible code (call it HTML, JS, CSS, Image, Video etc.) but the way to achieve it may be very different, that's why there are several engines to build the page.
+Instead of maintaining 50 separate page implementations, you typically maintain:
+- 5 templates
+- 10 language files
 
-The built-in engines are decribed later in this document.
+And let the engine produce any of the 50 possible outputs.
 
-There can be template engines, GO code engines, file server engines, redirection engines, etc.
-So evey page has a "type" of page which means which engine to use to build the page.
+---
 
---
+## 1.2 Page resolution (Routing)
 
-Every page may have a combination of versions and languages.
-For example you may have your home page in spanish and english, for PC and for mobile.
-You could obviously have your pages code N version * M languages, but that would be extremelly dificult to manage, so Xamboo hay many tools to only work with templates without languages, and tables of string in various languages to inject into the templates.
+Xamboo first normalizes the requested URI path:
 
-For instance, lets say you have 5 versions for pages:
-- PC, mobile, print, smart watch and tablet.
-An you have 10 languages to support:
-- es, en, fr, jp, ar, pt, it, de, ru, cn
+1. Keeps the leading `/`
+2. Removes the trailing `/` (if any)
+3. Splits into segments
+4. Applies compatibility rules:
+   - Converts routes to lowercase (to avoid issues on case-insensitive OSes)
+   - Applies allowed-character constraints
 
-Instead of having 50 pages code ready to serve, you will only have 5 HTML templates and 10 languages XML files with compabible entries, and the engines will be in charge to build anything with that.
+### There is no “file” concept in the CMS
+A URL like:
 
-Every one of those 50 possible pages are called an instance.
-You can have one instance per page, or have group of instances per page.
-You may also define a set of parameters for each instance or group of instances.
+`/my-route/my-file.html`
 
+is **not treated as a file** unless there is an actual folder named `my-file.html` inside the `my-route` folder.
 
-### 1.2. Page resolution
+If you want to serve real files, they must exist in the static repository (served by the `fileserver` component), otherwise a 404 is returned.
 
-Xamboo separates the path of the URI first. Leave the / at the beginning and removes the last /.
+---
 
-The notion of file does not exist in the framework. For example, /mi-ruta/mi-archivo.html is something not understood by the engine, unless there physically 'mi-file.html' folder within the 'my-route' folder in the root of the Web Site.
-If you want to call a file as is, it must exists in the static repository, or a 404 will be returned.
+### SEO-friendly route rules
 
-Xamboo routes are manufactured to comply with the rules of SEO and search engine indexing.
-Xamboo routes Xamboo accept only the following characters:
+Xamboo routes are designed for SEO and clean indexing. Routes should use only:
 
-A-Z a-z letters, letters with accents and ñ, numbers 0-9, hyphen, underscore.
+- Letters A–Z / a–z (including accented letters and ñ if your filesystem supports them)
+- Numbers 0–9
+- Hyphen `-`
+- Underscore `_`
 
-You can not include /, \, punctuation marks, etc. within routes (unless the OS supports it).
+Avoid using punctuation or special characters inside routes.
 
-Capitalization is always converted to lowercase for compatibility with operating systems insensitive to uppercase / lowercase is Windows.
-
-For example if you capture the URI path:
-/My-PagE/My-PatH: looks at page repository folder "my-page/my-path"
-/ My-page / My-route: look at page repository folder "/ my-page / my-route" with spaces
-
-The pages of the framework are all in the repository pages. This repository is a folder defined in the config file of the host site.
-
-Each page is a folder, which contains a number of files that make up the definition and code of the page.
-
-Xamboo accepts a hierarchical structure of pages, i.e. folders within folders.
-
-The route of the pages is the same route used in the URI to access this page.
-
-* The search is performed as follows:
-
-```
-a. Locate the folder path directly as it comes from the URI. (with a protection of "..")
-  a.1. If there is no folder, follow in step b.
-  a.2. If the folder exists, check there inside the .page file.
-    a.2.i. If not, continues in step b.
-    a.2.ii. If the file exists, verify it with status 'published'
-      a.2.ii.1. If not 'published', follows in step b.
-      a.2.ii.2. If published, calculates and returns page.
-b. Not Found page. Removes the last folder from URI
-  b.1. There are still folders, continues in step a.
-  b.2. No more folders, home page accept path parameters?
-    b.2.1 No: terminate with an error
-    b.2.2 Yes: serve home page.
-```
-
-In short, it is the first folder found on the route from the end to be executed. In other words, you can add whatever after the official route will be ignored and taken to the page found as a number of parameters.
-
-The parameter "AcceptPathParameters" in the .page file will confirm to the system to accept parameters after the valid page (that will be passed to the page), or launch an error if the page is not valid.
+Capitalization is converted to lowercase for portability.
 
 Examples:
-Repository Structure:
+- `/My-PagE/My-PatH` → repository folder: `my-page/my-path`
+- `/ My-page / My-route` → repository folder with spaces (not recommended)
+
+---
+
+### The resolution algorithm
+
+The CMS searches for a published page by walking backwards from the full path:
 
 ```
-/ section
-  => Real page with the file section.page published
-/ section / subsection
-  => Real page with the file subsection.page published
-/ Section / subsection / sub-subsection
-  => Actual page with sub-subsection.page file, unpublished
+a. Locate the folder path exactly as it comes from the URI (protected against "..")
+   a.1 If the folder does not exist → go to b
+   a.2 If the folder exists:
+       - look for the .page file inside
+       - if missing → go to b
+       - if present, verify status=published
+           - if not published → go to b
+           - if published → execute and return the page
 
-URI path to solve: / section / subsection / sub-sub / other-thing / one-extra-thing
-
-The resolution first searches the / section / subsection / sub-sub / other-thing / one-way-extra, that does not exist.
-Then, the resolution looks / section / subsection / sub-sub / other-thing that does not exist
-Then, the resolution looks / section / subsection / sub-subsection, which exists but is not published
-Finally, the resolution looks / section / subsection exists and is published
-Executes and returns the actual page / section / subsection, only if AcceptPathParameters=true in .page file, or gives a 404.
-
-The complement of the path is passed to the page and can be used as an array of parameters
-In general, these parameters are words used for SEO, variables, names of items, etc.
+b. Not found:
+   - remove the last path segment and return to (a)
+   - if no segments remain:
+       - if home page accepts path parameters → serve home page
+       - otherwise → error (404)
 ```
 
-### 1.3. .page file, type, status, template and others
+**In short:** the first published page found while trimming from the end is executed. Any remaining segments become **path parameters** if the page allows them.
 
-The .page file must have the name of the directory where is it into.
+The page-level parameter `acceptpathparameters` confirms whether extra segments may be accepted (and passed into the page), or whether a 404 should be returned.
 
-For instance:
+---
+
+## 1.3 The `.page` file: type, status, template and more
+
+Every page folder must contain a `.page` file named after the folder.
+
+Examples:
 
 ```
 ./home/home.page
 ./blog/channel/channel.page
 ```
 
-Into the page directory, the first file to find is the .page file. If the file exists, it must contain parameters=vale entries, readable by a XConfig configuration file.
+The `.page` file is an XConfig file (`key=value` format).
 
-There are 2 mandatory parameters and others depend on the page type.
+### Mandatory parameters
 
-```
-# type is the name of the engine to call, to build and resolve this page.
-# redirect: used to redirect the page with a 301, 302 code
-# simple: a simple page based on a metalanguage and output code
-# template: a template to use with something else
-# language: a language to use with something else
-# library: a .go code, injected with a template and a language, build for native client code
-# wajafapp: an administration page with a .go code, injected with a template and a language, build for JSON
+```ini
+# engine name used to build this page
 type=simple
 
-# status is:
-# hidden: can never be seen (even if called from somewhere else), default value if no status
-# published: can be seen from outside (main called page)
-# template: it's a template, not visible from outside
-# block: it's a building block to use in another page
-# folder: it's a folder (no code, no nothing, just have sub pages)
+# visibility / role of this page
 status=published
 ```
 
-The behaviour of the page and the other parameters will depend on the type and status.
-See next chapter for information of each page type.
+### Supported statuses
 
-If you add an external engine, you will call it with the name of the engine as defined into the Xamboo configuration files, into the 'engines' entries.
+- `hidden` (default if missing): never visible, not callable externally, not usable internally
+- `published`: visible from outside (main URL-invoked pages)
+- `template`: template page, not visible from outside
+- `block`: building block used by other pages
+- `folder`: purely structural folder, no page execution
 
-### 1.4. Instances of a page
+> Page behavior and additional parameters depend on the page type and status.
 
-For all the types of pages except redirect, you will need a .instance file.
-The instance files are a set of parameters defined for each version and languages if you need different behaviours based on those.
+If you add an external engine, you will reference it using the engine name declared in the global Xamboo configuration (`"engines": [...]`).
 
-The default language and version are defined into the configuration file, into 'language' and 'verion' entries.
+---
 
-This means, if the system cannot resolve the client language or version of file to use, it will set them with those values.
+## 1.4 Page instances (`.instance`)
 
-By default, Xamboo will not resolve automatically the language (you must set it by code) and the version can be set to the device type, activating the CMS browser sub module.
+For all page types **except redirect**, the page requires at least one `.instance` file.
 
-You may build a component that can set those parameters automatically.
+Instance files contain parameters that may differ by version and language.
 
-All the .instance files have the following name conventions:
+The default `language` and `version` are set in the CMS configuration file.  
+If the system cannot resolve a language/version, it falls back to those defaults.
 
+By default:
+- Language is not automatically detected (you set it in code, or with a component)
+- Version may be set from device type if the CMS browser sub-module is enabled
+
+### Instance filename conventions
+
+```
 [page-name].[version].[language].instance
 [page-name].[version].instance
 [page-name].instance
-
-The page-name must be the same as the directory where the file is into
-
-The set [version].[language] is called the identity of the instance.
-
-Resolution of .instance file, will search, in order:
-The first one found will be used:
-
-```
-[current-version].[current-language]
-[current-version].[default-language]
-[current-version]
-[default-version].[current-language]
-[default-version].[default-language]
-<none>
 ```
 
-For instance if your current language is fr, default language is en, current version if mobile and default version is base:
-it will search, in order:
+The `[version].[language]` pair is called the **instance identity**.
+
+### Instance resolution order
+
+Xamboo searches for the first existing file in this order:
+
+1. `[current-version].[current-language]`
+2. `[current-version].[default-language]`
+3. `[current-version]`
+4. `[default-version].[current-language]`
+5. `[default-version].[default-language]`
+6. `<none>` → `[page-name].instance`
+
+Example: current `fr`, default `en`, current version `mobile`, default `base`:
 
 ```
 mypage.mobile.fr.instance
@@ -1262,859 +2211,810 @@ mypage.base.en.instance
 mypage.instance
 ```
 
-It is mandatory to always have at least one file available for the page to work.
-Have always the last one available, even if empty, and create others only if really need.
+✅ **Strong recommendation:** always provide `mypage.instance`, even if empty.
 
-You may put into this file caches parameters, parameters to inject into the code or template code, parameters to use into the .go libraries etc.
+Instance files can store:
+- cache hints
+- template injection values
+- runtime configuration for Go pages
+- feature flags
 
-### 1.5. Type of pages and complementary files
+---
 
-#### 1.5.1 Redirect page
+## 1.5 Page types and complementary files
 
-Redirect page:
-- You will need 2 more parameters into the .page file:
+### 1.5.1 Redirect Page (`type=redirect`)
 
-```
+A redirect page needs no instance. It requires two additional `.page` parameters:
+
+```ini
+type=redirect
+status=published
+
 redirecturl=/other-url
-# Moved permanently
 redirectcode=301
 ```
 
-- redirecturl can be relative, absolute or to another domain.
-- redirectcode should be 301 or 302, but you may use any other code too.
+- `redirecturl` may be relative, absolute, or point to another domain
+- `redirectcode` is typically `301` (permanent) or `302` (temporary)
 
-A redirect page should always be published or it will not work (it's a redirect for your client browser, not for internal code creation)
-A redirect page does not need other files.
+✅ Best practices:
+- redirect pages should be `published`
+- avoid redirect chains
 
-#### 1.5.2 Simple Page
+---
 
-The simple page is the basic CMS page, with a mix of output code and meta language to inject and build the correct output.
+### 1.5.2 Simple Page (`type=simple`)
 
-A simple page will need one or more .instance files, and one or more .code files.
+The simple page is the core CMS page type: output code (HTML/JS/CSS/JSON) plus meta-language keywords for dynamic injection.
 
-The .page may have 2 more parameters:
-- template
-- acceptpathparameters
+Required files:
+- `.page`
+- one or more `.instance`
+- one or more `.code`
 
-The template is the page to call, to embed this page into it.
+Common `.page` parameters:
+- `template=<page>` (wrap into template page)
+- `acceptpathparameters=yes|no`
 
-If your page will receive a "group of URLs", you may activate acceptpathparameters to 'on', 'true' or '1'
+`.code` files follow the same identity resolution logic as `.instance` files.
 
-The .code files follow exactly the same resolution as the .instance files.
+The meta-language is documented in **CMS and Meta Language**.
 
-The reference of .code files is explained later in this manual in the "CMS AND META LANGUAGE" chapter
+---
 
+### 1.5.3 Template Page (`type=template`)
 
-#### 1.5.3 Template Page
+A template page is based on `.template` files containing XCore v2 XTemplate data.
 
-The template page is a page based on a .template file, that contains a xcore/v2 XTemplate data.
+- should not be `published`
+- used as layout/dispatch by other pages
+- may have multiple `.template` variants by identity
+- may have `.instance` for context parameters
 
-A template page should not be published and be used by other library pages.
+---
 
-You may have as many .template files you need, the good one will be loaded with the rules described before.
-You also may have as many .instance files you need to set context parameters.
+### 1.5.4 Language Page (`type=language`)
 
+A language page is based on `.language` files containing XCore v2 XLanguage data.
 
-#### 1.5.4 Language Page
+- should not be `published`
+- used by other pages to inject translations
+- may have multiple `.language` variants by identity
+- may have `.instance` for context parameters
 
-The language page is a page based on a .language file, that contains a xcore/v2 XLanguage data.
+---
 
-A language page should not be published and be used by other library pages.
+### 1.5.5 Library Page (`type=library`)
 
-You may have as many .language files you need, the good one will be loaded with the rules described before.
-You also may have as many .instance files you need to set context parameters.
+A library page is a single `.go` file compiled into a plugin. It must contain a `Run` function.
 
+Optional companion files:
+- `.template` variants
+- `.language` variants
+- `.instance` variants
 
-#### 1.5.5 Library Page
+Common `.page` parameters:
+- `template=<page>`
+- `acceptpathparameters=true` when handling multiple sub-URLs
 
-The library page is a unique .go file to build a library plugin. The library must contain a Run function. (See library page reference)
+---
 
-You may have as many .template and .language files you need, the good one will be loaded with the rules described before.
-You also may have as many .instance files you need to set context parameters.
+### 1.5.6 WajafApp Page (`type=wajafapp`)
 
-The .page may have 2 more parameters:
-- template
-- acceptpathparameters
+Similar to library pages, but designed for administration code using Wajaf.
 
-Is your page will listen to a list of sub pages, acceptpathparameters should be set to true.
+- `.go` plugin
+- must contain `Run` and optional event functions
+- typically returns JSON structures
 
-#### 1.5.6 WajafApp Page
+Common `.page` parameters:
+- `template=<page>`
+- `acceptpathparameters=true` (commonly mandatory)
 
-The library page is a unique .go file to build a library plugin for administation. The library plugin must contain a Run funcion, and as many function as you need to call the page events. (See library page reference)
+---
 
-You may have as many .template and .language files you need, the good one will be loaded with the rules described before.
-You also may have as many .instance files you need to set context parameters.
+# 2. CMS and Meta Language (Simple Pages)
 
-The .page may have 2 more parameters:
-- template
-- acceptpathparameters set to true (mandatory)
+The meta-language is a set of keywords written inside `.code` files. The engine replaces those keywords with values or execution results.
 
+## 2.1 Comments `%-- ... --%`
 
-# CMS AND META LANGUAGE
+Comments are removed during compilation:
 
-## Types of pages:
-
-Simple Page (.code)
------------------------
-
-The type of the page in the .page file must be
-type=simple
-
-The code of the page is your native code (for instance HTML, JS, CSS, etc) and you can use a MetaLanguage to insert and use business rules into the construction of the page:
-
-* Meta language for Simple Page:
-
-The meta language is a set of [[KEYWORDS]] to be replaced by different rules.
-
-### 1. Comments %-- --%
-
-The comments will be discarded immediately at the compilation of the code and do not interfere with the rest of your code.
-
-Example:
-
-```
+```text
 %-- This is a comment. It will not appear in the final code. --%
 
 %--
-This subtemplate will not be compiled, usable or even visible since it is into a comment
+This entire block will never be compiled or visible:
 [[BOX,/box:
 Anything here
 BOX]]
 --%
 ```
 
-### 2. Language insertion ##id##
+---
 
-The ##id## keyword will insert a string identified by 'id' in the .language file of the page, corresponding to the client language.
-If the client language is not supported, the fallback default .language file should be used.
+## 2.2 Language insertion `##id##`
 
-Example:
+`##id##` inserts a localized string from the `.language` file matching the client language (with fallback).
 
-```
+Example usage:
+
+```html
 <div style="background-color: blue;">
 ##welcome##<br />
-You may use the same parameter as many time you wish.<br />
 <span onclick="alert('##hello##');" class="button">##clickme##!</span>
-<span onclick="alert('##helloagain##');" class="button">##clickme## ##again##!</span>
 </div>
 ```
 
-With data to inject:
+Default fallback language file (`mypage.language`):
 
-mypage.language: (default language fallback, generally english)
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <language id="mypage" lang="en">
   <entry id="welcome">Welcome to</entry>
   <entry id="clickme">Click me</entry>
-  <entry id="again">Again</entry>
 </language>
 ```
 
-mypage.base.fr.language:
-```
+French variant (`mypage.base.fr.language`):
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <language id="mypage" lang="fr">
   <entry id="welcome">Bienvenue</entry>
   <entry id="clickme">Clique sur moi</entry>
-  <entry id="again">de nouveau</entry>
 </language>
 ```
 
-### 3. Access to system variables
+Best practices:
+- Keep keys consistent across languages
+- Always provide the fallback `mypage.language`
 
-You have a qunatity of keyworks to access some levels of system, page, instance and local variables.
+---
 
-- [[URLPARAMS]]
+## 2.3 Access to variables (system, page, instance, local)
 
-Will read all the parameters in the URL, and write them as a query ready to use on any new URL you may write in your code
-A URL parameter comes under the syntax domain.com/parameter1/parameter2/...
-You need the entry "acceptpathparameters=yes" into the .page file of the page, so the system can build the URL parameters.
+### `[[URLPARAMS]]`
+Reads all path parameters and writes them as a URL query string.
+Requires `acceptpathparameters=yes` in `.page`.
 
-- [[URLPARAM,variablename]]
+### `[[URLPARAM,n]]`
+Extracts the *n-th* (1-indexed) path parameter.
+Requires `acceptpathparameters=yes`.
 
-Will extract the value of the #variablename URL parameter. variablename is a number 1-indexed on the URL.
-A URL parameter comes under the syntax domain.com/parameter1/parameter2/...
-You need the entry "acceptpathparameters=yes" into the .page file of the page, so the system can build the URL parameters.
+### `[[VAR,name]]`
+Extracts a variable from:
+- query string `?name=value`
+- POST/PUT body variables
 
-- [[VAR,variablename]]
+### `[[PARAM,name]]`
+Extracts a local parameter passed when calling a page using `[[CALL,...]]`.
 
-Will extract the value of the parameter <variablename> from the URL query ?parameter=value and/or the POST/PUT parameters
+### `[[SYSPARAM,name]]`
+Reads a system parameter from the CMS `.conf` (XConfig) file.
 
-- [[PARAM,variablename]]
+### `[[PAGEPARAM,name]]`
+Reads a parameter from the `.page` of the main URL-invoked page.
 
-Will extract the value of the local page parameter. The local page parameter is set when calling the page by the caller as specific parameters
+### `[[LOCALPAGEPARAM,name]]`
+Reads a parameter from the `.page` of the page currently being built (template/block/subpage).
 
-- [[SYSPARAM,variablename]]
+### `[[INSTANCEPARAM,name]]`
+Reads a parameter from the `.instance` of the main URL-invoked page.
 
-Will extract the value of the system parameter <variablename>
-The parameter is into the .conf file of the CMS of the virtual host serving the site
+### `[[LOCALINSTANCEPARAM,name]]`
+Reads a parameter from the `.instance` of the page currently being built.
 
-- [[PAGEPARAM,variablename]]
+### `[[SESSIONPARAM,name]]`
+Reads a session parameter (available in context/session for execution).
 
-Will extract the value of the main page parameter <variablename>
-The parameter is into the .page file
-Scope: the instance of the page that has been called by the URL
+---
 
-- [[LOCALPAGEPARAM,variablename]]
+## 2.4 Resource inclusion
 
-Will extract the value of the local page parameter <variablename>
-The parameter is into the .page file
-Scope: the instance of the page that is beeing build in this moment
-If may be the same page as the page called by the URL, or any contruction block or template 
+### `[[JS, ... ]]`
+Includes a JavaScript file in headers only once.
 
-- [[INSTANCEPARAM,variablename]]
+### `[[CSS, ... ]]`
+Includes a CSS file in headers only once.
 
-Will extract the value of the main instance parameter <variablename>
-The parameter is into the .instance file
-Scope: the instance of the page that has been called by the URL
+---
 
-- [[LOCALINSTANCEPARAM,variablename]]
+## 2.5 Page composition
 
-Will extract the value of the local instance parameter <variablename>
-The parameter is into the .instance file
-Scope: the instance of the page that is beeing build in this moment
-If may be the same page as the page called by the URL, or any contruction block or template 
+### `[[CALL,page(:params)?]]`
+Calls a page, template, or block with optional parameters.
+Called page can read them via `[[PARAM,...]]`.
 
-- [[SESSIONPARAM,variablename]]
+### `[[BOX,/path: ... BOX]]`
+Includes a template and encapsulates the inner content.
+A box is a local mini-template applied to a snippet.
 
-Will extract the value of the session parameter <variablename>
-The parameter is set by into the .instance file
-Scope: the instance of the page that is beeing build in this moment
-If may be the same page as the page called by the URL, or any contruction block or template 
+---
 
-- [[JS,(.*?)]]
+# 3. Library page
 
-Includes a Javascript into the headers only once, no matter how much time is ot called
+## 1. Introduction
 
-- [[CSS,(.*?)]]
+A **Library Page** (`type=library`) is one of the most powerful page types in Xamboo.
 
-Includes a CSS into the headers only once, no matter how much time is ot called
+Unlike a `simple` page (meta-language + .code files), a library page is written in **Go** and compiled as a plugin.  
+It allows you to implement full business logic, dynamic routing, conditional rendering, and even internal CMS dispatching.
 
-- [[CALL,(.*?)(:(.*?)){0,1}]]
+Library pages are ideal for:
 
-Will call a page, template or block with the specified parameters
-The parameters (optional) can be read by the called page using the PARAM keyword
+- Complex business logic
+- API endpoints
+- Dynamic content generation
+- Proxy behavior
+- Conditional page delegation
+- Integration with external services
+- Advanced routing inside a single CMS page
 
-- [[BOX,(.*?):
-- BOX]]
+---
 
-Will include a template and call it with the inner data to encapsulate it.
-A Box is a mini local template applied to a piece of code only.
+## 2. Minimal Library Page Structure
 
+A minimal library page requires:
 
-# APPLICATION
+```
+/home
+  home.page
+  home.instance
+  home.go
+```
 
-An Application must meet the assets.Application interface to be used by the Xamboo.
+---
 
-An Application is a plugin (go --buildmode=plugin) loadable by the Server, called by a Host.
+### 2.1 The `.page` file
 
-A Host can load more than one Application.
-An Application can be called by more than one Host.
+```ini
+type=library
+status=published
+acceptpathparameters=true
+template=main/template   # optional
+```
 
-When the system loads the Application, it will check the existence of the exported variable Application, that must meet the assets.Application interface.
+### Parameters explained
 
-The Application is the entry point to load the XModules.
+- `type=library` → tells Xamboo to use the library engine.
+- `status=published` → page accessible via URL.
+- `acceptpathparameters=true` → allow extra URI segments.
+- `template=...` → optional template wrapping the result.
 
-The applications will need to deal with the following objects:
+---
 
-## 1. Interaction with the CMS
+### 2.2 The `.instance` file
 
-## 2. DatasourceContainer
+At minimum:
 
-## 3. Datasource
+```
+home.instance
+```
 
-## 4. ModuleContainer
+Even if empty, it must exist.
 
-## 5. Module
+Instance files may contain:
 
-## 6. Context
+- configuration flags
+- cache hints
+- feature switches
+- injected parameters
 
+Always provide at least one fallback instance file.
 
+---
 
+## 3. Minimal Working Example
 
-# XMODULES
+Below is a minimal library page implementation:
 
-The XModules are all the modules that are build within the Xamboo applications and pages.
+```go
+package main
 
-It is a normalized structure to call the methods and link the contexts with hosts and applications.
+import (
+	"github.com/webability-go/xcore/v2"
 
-See the xmodules reference to see which ones are available and how to use them.
+	"github.com/webability-go/xamboo/cms"
+	"github.com/webability-go/xamboo/cms/context"
+)
 
+func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
 
+	// Read the original URL path
+	original := ctx.Request.URL.Path
 
+	// Conditional delegation, example to call another page from this one by code
+	if original == "/home" {
+		return e.(*cms.CMS).Run("home/home", true, nil, "", "", "")
+	}
 
-# TO DO
+	// Integrate parameters to inject into the templates (including the languages entries)
+	params := &xcore.XDataset{
+		"Param1": "´value of parameter1",
+		"#": language,
+	}
 
-- Make HTTP protocol work on components, it serves only on http for now
+	// Default behavior: render template
+	return template.Execute(nil)
+}
+```
 
-- Reload config: rebuild listeners, engines, apps, etc
+---
 
-- Make stats more persistent with file write before clean every X timer.
-- Make stats=enabled/disabled, with level of stat = full, count, none
-- simple code server injector, finish all supported code.
+## 4. Understanding the Run Function
 
-- Security component: adds max rate limit x IP
-- Redirect component: set up redirect rules based on reg exp etc.
+The required exported function signature is:
 
-Extras:
-- Check implementation of brotli compress (google one) https://github.com/google/brotli/tree/master/go/cbrotli
-- page library and snippets PHP-compatible code ? (check go call PHP with pipe data interchange, fastCGI).
-- page library and snippets JS-compatible code ? (check go call NODE.JS with pipe data interchange).
+```go
+func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{}
+```
 
+### Parameters explained
 
+### ctx *context.Context
+Contains:
 
-# Version Changes Control
+- HTTP request
+- HTTP response writer
+- Session parameters
+- Instance parameters
+- Page parameters
+- Version
+- Language
+- Return code
 
-v1.8.3 - 2024-10-09
------------------------
-- Remove the hostname from the .so library name to avoid conflict of same library betwen different VHosts
+This is the main object you use to access runtime information.
 
-v1.8.2 - 2024-04-12
------------------------
-- Error corrected into config/config.go: when the config file had an error of reading/loading, the error was not reported (and system just panic sometimes after)
+---
 
-v1.8.1 - 2024-04-10
------------------------
-- go.mod and go.sum modidied for security and up-to-date libraries updates
+### template *xcore.XTemplate
 
-v1.8.0 - 2024-04-08
------------------------
-- Added GetConfig() in Datasource Interface so the xmodules can use Datasource interface as standard without casting
-- The various parts of xamboo-env, xamboo-master, xamboo-admin and xmodules have been modified to meet new normalized standard
+The resolved template (if configured in `.page`).
 
-v1.7.7 - 2023-03-16
------------------------
-- Documentation enhanced with some new entries
+You can:
 
-v1.7.6 - 2022-11-22
------------------------
-- Auth component now accept also a list of users, added to the master user/pass
+- Inject variables
+- Execute template
+- Ignore it entirely and return custom output
 
-v1.7.5 - 2022-08-31
------------------------
-- Bug corrected on Meta language [[SESSIONPARAM,*]]
+---
 
-v1.7.4 - 2022-08-31
------------------------
-- Meta language [[SESSIONPARAM,*]] added for the simple code engine of the CMS, to get the value of a session parameter.
+### language *xcore.XLanguage
 
-v1.7.3 - 2022-08-19
------------------------
-- Server logger added for listener, the server logger will receive all the default http.server messages
+The resolved language table for this page.
 
-v1.7.2 - 2022-08-01
------------------------
-- parameter %referer% added into pages logs for hosts
+Use it to fetch translations manually if needed.
 
-v1.7.1 - 2022-07-03
------------------------
-- Separation of librarypath and library for all plugins (components, engines and plugins), to have a better control of plugin prexif and version
+---
 
-v1.7.0 - 2022-06-29
------------------------
-- global pluginprefix parameter added to the configuration .json files. This parameter is needed when you run multiple instances of the xamboo based on the same directory/code, to compile and load all the .so plugins to avoid conflicts ( name as pluginpath + pluginprefix + "-" + hostame + "library.so." + serial )
-- Compiler enhanced to better log compiled code with elapsed time, library, output errors.
-
-v1.6.6 - 2021-12-02
------------------------
-- Remove for now the client disconnection channel listener that was causing problems of stability.
-
-v1.6.5 - 2021-11-26
------------------------
-- Added a hook deferred function to host component, to recover any error on the request thread and also to detect client disconnection to log them.
-
-v1.6.4 - 2021-11-24
------------------------
-- Added method RegisterModule to Datasource interface to avoid a bug when different applications are loaded with compiled modules optionally into them.
-
-v1.6.3 - 2021-07-08
------------------------
-- Bug corrected in prot component: it was reading the form variables before the CMS and invalidating the keeporiginalbody page parameter of CMS.
-- IP Blacklist added to the prot component
-
-v1.6.2 - 2021-05-18
------------------------
-- New component "prot" added, to protect the code and query variables against SQL injection.
-- In the CMS engines, the cached XTemplate is now cloned before injection into the engines to avoid racing problems between pages.
-
-v1.6.1 - 2021-04-27
------------------------
-- The device resolution can now be replaced with the version of the programmer choice to call the correct templates. Add version=newversion into the cms configuration file.
-  For instance tablet=pc (use the pc version if a tablet has been detected)
-
-v1.6.0 - 2021-03-31
------------------------
-- Added constants PROTOCOL_HTTP and PROTOCOL_HTTPS into config.
-- Internationalization of all messages, in english, french and spanish (partially translated).
-- The Run function now accept the language as optional parameter for backyard compatibility. The language is a language.Tag type. Default language is EN.
-- Loggers stream names are now into Constants STREAM_*.
-- Bug corrected, the default version is now considered into the browser sub module of CMS for unknown devices (bots mainly).
-
-v1.5.5 - 2021-03-08
------------------------
-- Change of logstat function definition, for log:stat:call:app:logstat it is now func(host.HostWriter).
-- The stat component sets the RequestStat en the HostWriter params.
-- The cms component sets the Context en the HostWriter params.
-- The HostWriter should contain the requeststat and the context object in the parameters, if needed.
-- The loggers Hook function is now an interface{} that should be a func(host.HostWriter) compatible function.
-- Reference manual (this document) modified to meet the changes.
-
-v1.5.4 - 2021-03-08
------------------------
-- deflate encoder implemented into compress component
-- Manual enhanced with engines, pages, files.
-- Error corrected in stat log assignment and set the correct Context object in the RequestStat object.
-
-v1.5.3 - 2021-02-26
------------------------
-- new debug flag into host config. When the debug flag is set,, the path of the code will be traced and written into the host sys log.
-  This is usefull when you developp your own components or you have a bug somewhere in the encapsulators.
-- All the components were modified to implement the debug mode: host, log, stat, redirect, auth, compress, minify, origin, fileserver, cms, error.
-- Main CMS server modified to verify if plugins are OK before calling them.
-- Some errors corrected on stat component.
-- Error struct created for error component on Hosts in config, and correction of component code to use the structure.
-- Manual enhanced (built-in engines and external engines creation guide)
-- Manual formatting
-
-v1.5.2 - 2021-02-24
------------------------
-- Bug corrected when overloading the new configuration
-- Manual enchanced (page types, .page files, .instance files, .code files)
-
-v1.5.1 - 2021-02-21
------------------------
-- The config system can now reload the hosts and component configuration without restarting the server.
-  Configuration changes will apply inmediatly at reload and affect all the new requests.
-- Manual enhanced with new changes
-- Added function StartHost to Component interface, called when the host is started up (only once)
-- List of components of Host is now a map[string]*ComponentDef to modify the components dynamically
-- New GetHost function added to the config
-
-v1.5.0 - 2021-02-15
------------------------
-- The components have been totally rebuilt to be 'built-in' or external plugins so the programmer can add as many as needed components.
-- Every plugin can be enabled or disabled on each host.
-- The built-in components are:
--- host: controls the dispatcher to call the correct Host as defined in the configuration (system component).
--- log: controls the loggers of pages, errors, sys, stat function call.
--- stat: controls the statistics component, from system to host.
--- redirect: controls the redirect mechanism on request headers.
--- auth: controls the browser realm authorization login.
--- compress: controls the gzip and deflate compression for response.
--- minify: controls the minification of the code (HTML, XML, CSS, JS, JSON, SVG).
--- origin: controls the cross origin headers (generally for APIs).
--- fileserver: controls the natural files server.
--- cms: controls the Xamboo CMS, wrapper to ./cms system.
---- browser: set the theme for pages calculation (is not a middleware, build in the CMS handler).
-- The external plugins components must obey the assets/Component interface.
-- All the config objects have been moved to assets (listener, engine, component, host..).
-- The CMS has been moved to ./cms . The engines have been moved to ./cms/engines .
-- The logs have now a format entry for pages log to define log format.
-- Minify and Compress engines let trace of quantity of bytes minified or compressed into HostWriter so they can be logged.
-- The plugins to load on sites are now into json config (Xamboo is the responsible to start and link plugins, not the CMS).
-- The function GetBuildID has been moved to utils.
-- The runner now link all the pieces of code based on configuration, the launch the listeners.
-- The external engines are how automatically compiled if the .so is not present.
-- The external components are how automatically compiled if the .so is not present.
-- The external applications (hosts plugins)  are how automatically compiled if the .so is not present.
-- Start() function added to the Component interface.
-- Reference manual modified to be compliant with code.
-- LICENCE file added.
-
-
-v1.4.6 - 2021-01-19
------------------------
-- The function datasource.GetTransaction now returns the transaction or nil, so it is directly usable without a possible useless error.
-
-v1.4.5 - 2021-01-17
------------------------
-- Support for database transactions added in datasource interface.
-- Added Component structure in assets (not yet operational)
-- Added status for structures, to control changes of sources, and hot config reload (not yet operational)
-
-v1.4.4 - 2020-09-28
------------------------
-- Correction of a bug on the library engine using an no existing error while verifying the called library.
-
-v1.4.3 - 2020-09-18
------------------------
-- Compiler supervisor and log removed because they are not used, creation of compiler pile dynamically when needed.
-- Manual enhanced (config -- Host, and config -- Host config file).
-
-v1.4.2 - 2020-08-22
------------------------
-- Race condition corrected on the compiler and library engine when 2 sites with different ID try to compile the same page (and finally breaks the page)
-- Manual enhanced (Page resolution)
-
-v1.4.1 - 2020-08-18
------------------------
-- Some bugs corrected to use the innerPage parameter correctly to pass the return Code.
-- Manual enchanced (APPLICATION, MANUAL ENGINE)
-
-v1.4.0 - 2020-08-12
------------------------
-- The context now have a Code attribute to pass the return code from an engine to the writer.
-- The server now synchronize the returned code with the stat module so the correct returned code is logged.
-- The engines can now return directly an error and the error will automatically be used to call error pages (available for library pages, wajafapp pages and any hand made extern engines).
-- Engines has been adjusted to be able to return the error as an error (not a string).
-- Manual enhanced (listeners config).
-
-v1.3.7 - 2020-08-10
------------------------
-- Opened to TLS 1.3 (now support TLS 1.2 and TLS 1.3)
-- Manual enhanced (engines config)
-
-v1.3.6 - 2020-08-03
------------------------
-- Replace github.com/avct/uasurfer by github.com/webability-go/uasurfer (forked to correct an important bug: the original uasurfer does not recognize mobile bots as mobile devices and gives big problem on google search console for device recognition)
-- Manual enhanced (logs)
-
-v1.3.5 - 2020-07-28
------------------------
-- library and wajafapp engines enhanced to keep track of loaded plugins and avoid 'plugin already loaded' error
-- Reference manual enhanced (config files introduction)
-
-v1.3.4 - 2020-07-07
------------------------
-- Stat module now support the call to statistic function linked from plugin application declared in host plugins.
-  The statistic function must be a func(*assets.Context) {} and publicly exported from the plugin
-
-V1.3.3 - 2020-06-29
------------------------
-- Stat module now has a mutex to protect race condition on update/clean, and to avoid using memory white serving realtime stats on admin.
-
-V1.3.2 - 2020-06-26
------------------------
-- Bug corrected on URL redirect when it ends with a /
-
-V1.3.1 - 2020-05-25
------------------------
-- Some bugs corrected on assets and Applications, Modules, Datasources interfaces.
-
-V1.3.0 - 2020-05-25
------------------------
-- Server code separated from master and environment code (project-usable code), so "xamboo" contains only the core code of server.
-- Standarization of application plugins: It now needs StartHost and StartContext exportable functions and must be compliant to the new assets.Application interface
-- Hosts definition structures are now in assets.
-
-V1.2.9 - 2020-05-18
------------------------
-- Engines and config now keep track of compiled code with last compilation error, actual version number, for pages and apps
-- Very basic redirect module implemented (check scheme and main domain)
-
-V1.2.8 - 2020-05-13
------------------------
-- IP added into error logs and stat logs.
-- Master/Index now put unique IDs for contexts/modules to avoid DOM ids conflicts while building the list of configured contexts.
-
-V1.2.7 - 2020-05-10
------------------------
-- Version adjustment
-- Master can now install compiled modules in Apps on each hosts, as databases and others. (early alpha version)
-
-V1.2.6 - 2020-05-04
------------------------
-- runner error on RequestStat corrected
-- Server funcion GetFullConfig added for Admin purposes
-- Master index build with config elements (General, Listeners, Hosts, Engines)
-- The APPs for the host must now export at least 4 standard functions for admin and control:
-  * Start called for each host startup function,
-  * GetContextConfigFile to get the path of the contexts config file,
-  * GetCompiledModules to get the list of the compiled available Modules,
-  * GetContextContainer to get the created contexts and container of contexts of the APP.
-
-V1.2.5 - 2020-05-01
------------------------
-- Added contexts editor, contexts config file, contexts menu and templates into master/index.
-- Added mutexes on code compiler to avoid pile racing.
-- master APP enhanced with Setup function to link anything with pages so the page does not have to do it itself.
-- master/js.go modified to try to preload first local javascript files, then search into resources container.
-- Added protection against corrupt writer without RequestStat (? <= have to investigate why it happens some times: wrong requests, unfinished requests... etc)
-- Enhanced master site with containers and contexts administration
-
-V1.2.4 - 2020-04-26
------------------------
-- New wajaf version, with JS embedded in code, remove JS from master public
-
-V1.2.3 - 2020-04-23
------------------------
-- Enhanced Master and Master app to work better (installation, use, index, bridged functions).
-- Improvement in loggers, all logger now logs what they are supposed to log
-- Stats are registering in stat logs correctly based on correct Host
-
-V1.2.2 - 2020-04-18
------------------------
-- Added attribute PagesDir to server and support for base directory change for engines
-
-V1.2.1 - 2020-04-18
------------------------
-- Added keyword "include": ["",""...] into config.json to merge various config files. Hosts, Listeners and Engines will be merged only with a different name of already loaded
-- Master login/logout enhanced, password is md5 encoded
-
-V1.2.0 - 2020-04-09
------------------------
-- Master site created (for tools installation, ready to use XModules and contexts, modules and dynamic libraries, security
-- Master installation (template, language, account), main template, login, main index
-- Master APP generated
-- Wajaf JS added into public master code
-- Version enhanced into config.Config object
-
-V1.1.1 - 2020-03-29
------------------------
-- Uses now xconfig v0.4.0 and xcore v2*
-
-V1.1.0 - 2020-03-25
------------------------
-- The form/body is parsed only if the parameter "keeporiginalbody" is not set. If the Xamboo is used as a proxy server, the body must not be parsed.
-- New module UASurfer added to recognize the type of connected device (know values: pc, mobile, tablet, tv, console, wearable, base).
-- config.json now support browser entries with useragent entry to activate the UASurfer module.
-- The type of device is in the context.Version parameter if the module is activated, the pages can have version like {pageid}.<Version>.instance, .code, .language, .template
-- Modules initialized (go init module)
-
-V1.0.4 - 2020-03-12
------------------------
-- The error page can now set the correct content-type and is called upon error. The http.Error has been disabled (send only text) and the internal LaunchError has been correctly implemented.
-- The server.Code has been added in the server structure. If the code is different of statusOK, then the error is managed as needed. All other headers are kept (content type, encoding, gziped, etc)
-- The error code is now correctly send to the client browser (the error page was sent with code 200)
-
-V1.0.3 - 2020-03-11
------------------------
-- Bug correction: the resolution of correct instance was broken and always selecting the last know instance
-- The server now check the template and other pagedata variables based on the context object so the library code can change values into the object and the changes will be honoured.
-- Racing for memory corrected in runner.go code (certerror added)
-
-V1.0.2 - 2020-02-25
------------------------
-- Support for language and version added into the context, so the language or version can be changed dynamically page by page, by code
-- Compiler is now thread safe (many asks, only first compile and broadcast to others it's ready to use)
-- Some minor bugs corrected
-
-V1.0.1 - 2020-02-10
------------------------
-- Bug corrected on the server that was returning a code without checking if it was string or not before processing
-
-V1.0.0 - 2020-01-31
------------------------
-- All the code has been restructured so the whole code is into "server" directory. Server is the main code body and Engines are every type of pages (as it should be)
-- All the engines has been homologated and the user can create his own engines (as plugins)
-- The 4 main engines have been rewritten to meet Engine interface
-- The Redirect engine has been added
-- All library functions now return an interface{} as variable, not anymore a string (you may have to change all your libraries Run functions)
-  This change is important since a library can return a data structure for another library, not necessarly a string.
-- Code Minifier implemented with entry in congig/Host to enable or disable it, and which part are available to minify.
-- Error management implemented (parameters errorpage and errorblock in site configuration)
-
-V0.3.0 - 2020-01-29
------------------------
-- Implementation of recursivity security (launch an error after using 3 times the same page by default).
-- Added parameter maxrecursion=<int> into .page files to change max authorized recursion of a page (for instance a template may be called many times).
-- Added self signed SSL certificate for examples.
-- Auth in config/Host replaces BasicAuth and is now a sub structure with User, Pass, Realm, and Enabled flag.
-- GZip in config/Host is now a sub structure with Mimes, Files and Enabled flag.
-- Logs in config/Host has now an Enabled flag.
-- File server (on static directory) is know served after verifying Auth (error corrected).
-- GZip correctly implemented with mime and file filter options. A library can now gzip a content and return already gzipped data to xamboo, which will only set the correct headers (context.IsGZiped new entry).
-- Minify in config/Host added with enabled flag and rules to minify
-- Minify code implemented in engine. (for test purposes, not yet fully implemented)
-
-V0.2.0 - 2020-01-23
------------------------
-> Uses XConfig 0.1.0
-
-> Uses XCore 0.2.3
-
-- Added ability to GZip content, with a new flag on Host config ("gzip": true,) to authorize compressing the host.
-- The client must support compressing too to fire this ability.
-- Added ability to gzip from the library page too (based on context boolean variables CanGZip and GZiped) and return the gzip data instead of the uncompressed data (usefull if you cache the gziped data for instance)
-
-V0.1.0 - 2019-12-06
------------------------
-> Uses XConfig 0.0.9
-
-> Uses XCore 0.2.0
-
-- Code modifications to meet new XCore build functions and Objects attributes
-- Code formated before sending to github (gofmt -s)
-
-V0.0.16 - 2019-06-19
------------------------
-> Uses XConfig 0.0.7
-
-> Uses XCore 0.0.7
-
-- Prefix added to the .so page libraries to avoid competitive problem of pages with same names between different sites. The unicity of the page is mandatory only on every site, but can be repeated between sites. The prefix is the config name of the host controller.
-- Administration console again with all the requests viewable.
-- Pause implemented (will close the websocket) and restart (will open again the websocket)
-- bug corrected, the default site page could not receive parameters like other pages if AcceptPathParameters=yes
-
-V0.0.15 - 2019-03-22
------------------------
-> Uses XConfig 0.0.7
-
-> Uses XCore 0.0.7
-
-- Administration console enhanced with served requests/second, filter of served pages, presentation, alive flag, IP/2min and requests/2min
-- listener.go modified to not serve "too much information"
-- Basic Auth implemented for simple username/pass/realm
-
-V0.0.14 - 2019-03-06
------------------------
-> Uses XConfig 0.0.7
-
-> Uses XCore 0.0.7
-
-- Admin console enhanced with cpu load, uptime, dynamic data actualized, etc
-
-
-V0.0.13 - 2019-03-01
------------------------
-> Uses XConfig 0.0.6
-
-> Uses XCore 0.0.6
-
-- Loggers implemented for xamboo, listeners, hosts
-
-
-V0.0.12 - 2019-02-25
------------------------
-> Uses XConfig 0.0.6
-
-> Uses XCore 0.0.6
-
-- Added and modified origin on multidomains ([]string of authorized domains), defaultdomain/maindomain json config entry renamed to default/maindomains
-
-V0.0.11 - 2019-02-18
------------------------
-> Uses XConfig 0.0.6
-
-> Uses XCore 0.0.6
-
-- admin javascript and presentation enhanced
-- admin listener modified to send correctly WSS and ordered last requests
-- Bug corrected on creation of SessionParams in engine context
-- Application library loading moved to the Host config loader, to be loaded and started only once by host
-
-V0.0.10 - 2019-02-15
------------------------
-> Uses XConfig 0.0.6
-
-> Uses XCore 0.0.6
-
-- Added SessionParams in engine context
-- admin javascript and presentation enhanced
-- Support for CORS - REST-API implemented from config file for host
-
-V0.0.9 - 2019-01-31
------------------------
-> Uses XConfig 0.0.5
-
-> Uses XCore 0.0.4
-
-- Stats enhanced, now count memory, goroutines, CPUs, requests and length of data, alive time, and can be cleaned regularly (every minute)
-- engine.CoreWriter enhanced and Public, so the upgrader to the WSS protocol can also count written bytes
-- Admin and Admin Listener enhanced to show more accurate realtime data
-
-V0.0.8 - 2019-01-21
------------------------
-> Uses XConfig 0.0.5
-
-> Uses XCore 0.0.4
-
-- CacheLibrary modified to have no timeout (.so are part of the code itself and cannot unload)
-- admin/listener enhanced to get read and write independant on go threads
-- admin console now receive and display last served pages and files (very basic interface)
-
-V0.0.7 - 2019-01-06
------------------------
-> Uses XConfig 0.0.5
-
-> Uses XCore 0.0.4
-
-- Code modified to use new XDataset/XConfig with capabilities for XTemplate
-- Function servers.Start added to call caches starters (file validator function added)
-- Caches modified to use last version of XCore
-
-
-V0.0.6 - 2018-12-21
------------------------
-> Uses XConfig 0.0.4
-
-> Uses XCore 0.0.2
-
-- Code modified to use xconfig.Get* with double variables return
-
-V0.0.5 - 2018-12-17
------------------------
-> Uses XConfig 0.0.3
-
-> Uses XCore 0.0.2
-
-- Moved servers/cache.go to xcore
-- Remasterization of all directories and place of code, more logical. "servers" and "context" are now into engine.
-  "core" disappears, "config" is separated, creation of "log" and "stat" as intependant code. The core as itself is renamed "runner"
-
-V0.0.4 - 2018-12-05
------------------------
-> Uses XConfig 0.0.3
-
-> Uses XCore 0.0.1
-
-- Added the pre-load for user application plugins, bridge and calls from library pages (.go compiled code)
-- .Code regexp modified so a comment may have a new line at the end that will not reflect on the final code
-- Support for static files added on each host. New config parameter "static" added in Host for filesystem path of static files
-- Admin console enhanced
-- Stat module created
-
-V0.0.3 - 2018-12-04
------------------------
-> Branch "late-night" added to github
-
-> Uses XConfig 0.0.3
-
-> Uses XCore 0.0.1
-
-- The servers auto-reload data from pages sources if there is any change into the code and invalid the cache
-- The library server can (re)compile the .go page if needed and can hot-load the plugin library on the fly (beware to the memory use !)
-- language page type implemented
-- template page type implemented
-- library page type implemented
-- [[URLPARAMS]] metalanguage parser and injector implemented
-- [[URLPARAM,id]] metalanguage parser and injector implemented
-- [[VAR,id]] metalanguage parser and injector implemented
-- [[PARAM,id]] metalanguage parser and injector implemented
-- [[SYSPARAM,id]] metalanguage parser and injector implemented
-- [[PAGEPARAM,id]] metalanguage parser and injector implemented
-- [[LOCALPAGEPARAM,id]] metalanguage parser and injector implemented
-- [[INSTANCEPARAM,id]] metalanguage parser and injector implemented
-- [[LOCALINSTANCEPARAM,id]] metalanguage parser and injector implemented
-- Nested blocks [[BOX...BOX]] metalanguage parser and injector implemented
-- Constants added for meta language orders
-
-V0.0.3 - 2018-??-??
------------------------
-> This version is working, examples are working, but the system is still incomplete
-
-> Uses XConfig 0.0.3
-- Added XCache to manage persistent memory caches
-
-
-V0.0.2 - 2018-11-27
------------------------
-> This version is working, examples are working, but the system is still incomplete
-
-> Uses XConfig 0.0.2
-- Added Context in engine and local context to calculate pages
-- Added engine wrapper to call from a server (engine callback for a sub-page)
-- Added support for memory caches in servers (page, instance, code)
-- ".code" compiler implemented for simple pages
-- Added language, template, code, library, cache servers
-- Added identity server to calculate the correct identity for each page object
-- Creation of Context object to send to every engine instance/page to build
-- Logger implemented (now directed to stdout)
-- Added VERSION constant in core/core.go
-
-V0.0.1 - 2018-11-06
------------------------
-> Uses XConfig 0.0.1
-- First commit, still not fully working
+### e interface{}
+
+The internal CMS engine reference.
+
+In most cases:
+
+```go
+e.(*cms.CMS)
+```
+
+This allows you to:
+
+- Run other pages
+- Trigger internal routing
+- Call blocks/templates programmatically
+
+---
+
+## 5. What the Example Does
+
+```
+original := ctx.Request.URL.Path
+```
+
+Reads the full requested path.
+
+---
+
+```
+if original == "/home" {
+	return e.(*cms.CMS).Run("home/home", true, nil, "", "", "")
+}
+```
+
+If the exact path is `/home`, it delegates execution to another CMS page.
+
+This demonstrates that:
+
+- A library page can act as a router
+- A library page can call another page internally
+- You can build conditional routing logic
+
+---
+
+```
+return template.Execute(nil)
+```
+
+If no special condition is met:
+
+- Execute the associated template
+- Return the rendered output
+
+---
+
+## 6. Return Values
+
+A library page may return:
+
+- string (HTML/JSON/etc.)
+- []byte
+- structured data
+- error (supported in newer versions)
+- anything supported by the engine
+
+If returning an error, the CMS will trigger error handling.
+
+---
+
+## 7. Advanced Patterns
+
+### 7.1 Acting as a Router
+
+You can route internally:
+
+```go
+return e.(*cms.CMS).Run("blog/article", true, nil, "", "", "")
+```
+
+### 7.2 Serving JSON API
+
+```go
+ctx.Writer.Header().Set("Content-Type", "application/json")
+return `{"status":"ok"}`
+```
+
+### 7.3 Using Path Parameters
+
+If `acceptpathparameters=true`:
+
+```go
+params := ctx.URLParams
+```
+
+You can parse dynamic routes like:
+
+```
+/home/123/details
+```
+
+---
+
+## 8. Best Practices
+
+- Always include a fallback `.instance`
+- Keep heavy logic in Go, not templates
+- Avoid deep recursion (respect maxrecursion)
+- Prefer internal CMS delegation instead of duplicating code
+- Keep template logic presentation-only
+- Return errors instead of silently failing
+
+---
+
+## 9. Compilation Notes
+
+Library pages are compiled as Go plugins.
+
+Xamboo automatically:
+
+- Detects changes in `.go`
+- Recompiles when needed
+- Loads the plugin
+- Caches it
+
+Make sure:
+
+- The package is `package main`
+- The function `Run` is exported
+- Dependencies are correct
+- No global state causes race conditions
+
+---
+
+## 10. Minimal Checklist
+
+To create a working library page:
+
+1. Create folder `/home`
+2. Add `home.page`
+3. Add `home.instance`
+4. Add `home.go`
+5. Ensure `type=library`
+6. Restart or reload configuration
+
+---
+
+## 11. Summary
+
+A Library Page:
+
+- Is a Go plugin .so
+- Executes dynamic business logic
+- Can delegate to other CMS pages
+- Can serve HTML, JSON, or any content
+- Integrates fully with templates and language tables
+- Is the most powerful CMS page type in Xamboo
+
+Use it when your page needs real backend intelligence, not just meta-language substitution.
+
+## 12. Example of an API page code
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/webability-go/xamboo/cms/context"
+	"github.com/webability-go/xcore/v2"
+	"github.com/webability-go/xmodules/tools"
+)
+
+const ERROR_METHODNOTSUPPORTED = "Method not supported"
+
+// Run function is MANDATORY and is the point of call from the xamboo
+//
+//	The enginecontext contains all what you need to link with the system
+func Run(ctx *context.Context, template *xcore.XTemplate, xlanguage *xcore.XLanguage, e interface{}) interface{} {
+
+	switch ctx.Request.Method {
+	case "GET":
+		return rGet(ctx, template, xlanguage, e)
+	case "POST", "PUT":
+		return rPost(ctx, template, xlanguage, e)
+	case "DELETE":
+		return rDelete(ctx, template, xlanguage, e)
+	case "OPTIONS": // Ensure pre flight will answer correct headers
+		return ""
+	default:
+	}
+	// 501 not implemented
+	http.Error(ctx.Writer, ERROR_METHODNOTSUPPORTED, http.StatusNotImplemented)
+	return ERROR_METHODNOTSUPPORTED
+}
+
+func rGet(ctx *context.Context, template *xcore.XTemplate, xlanguage *xcore.XLanguage, e interface{}) interface{} {
+
+    // Code business logic
+
+	m["status"] = "ok"
+	return tools.JSONEncode(m, true)
+}
+
+func rPost(ctx *context.Context, template *xcore.XTemplate, xlanguage *xcore.XLanguage, e interface{}) interface{} {
+
+    // Code business logic
+
+	m["status"] = "ok"
+	return tools.JSONEncode(m, true)
+}
+
+func rDelete(ctx *context.Context, template *xcore.XTemplate, xlanguage *xcore.XLanguage, e interface{}) interface{} {
+
+    // Code business logic
+
+	m["status"] = "ok"
+	return tools.JSONEncode(m, true)
+}
+
+```
+
+## 13. Example of a service worker upgrade code
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/gorilla/websocket"
+
+	"github.com/webability-go/xamboo/cms/context"
+	"github.com/webability-go/xamboo/components/host"
+	"github.com/webability-go/xamboo/components/stat"
+	xcore "github.com/webability-go/xcore/v2"
+)
+
+type listenerStream struct {
+	Id          int
+	Upgrader    websocket.Upgrader
+	Stream      *websocket.Conn
+	RequestStat *stat.RequestStat
+
+	fulldata bool
+}
+
+var counter = 1
+
+/*
+This function is MANDATORY and is the point of call from the xamboo
+The enginecontext contains all what you need to link with the system
+*/
+func Run(ctx *context.Context, template *xcore.XTemplate, language *xcore.XLanguage, e interface{}) interface{} {
+
+	fmt.Println("Entering listener")
+	// Note: the upgrader will hijack the writer, so we are responsible to actualize the stats
+	hw := ctx.Writer.(host.HostWriter)
+	par := hw.GetParams()
+	irs, _ := par.Get("requeststat")
+	rs := irs.(*stat.RequestStat)
+	ls := listenerStream{
+		Id:          counter,
+		Upgrader:    websocket.Upgrader{},
+		RequestStat: rs,
+		fulldata:    true,
+	}
+	counter++
+
+	stream, err := ls.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		fmt.Println(err)
+		return "ERROR UPGRADING STREAM: " + fmt.Sprint(err)
+	}
+	ls.Stream = stream
+	ls.RequestStat.UpdateProtocol("WSS")
+
+	fmt.Println("LISTENER START: ", ls.Id)
+
+	defer stream.Close()
+
+	cdone := make(chan bool)
+	go Read(ls, cdone)
+	go Write(ls, cdone)
+
+	<-cdone
+	<-cdone
+	fmt.Println("LISTENER CLOSED: ", ls.Id)
+	return "END STREAM CLOSED"
+}
+
+func Read(ls listenerStream, done chan bool) {
+	for {
+		_, message, err := ls.Stream.ReadMessage()
+		if err != nil {
+			fmt.Println("END STREAM IN READ: " + fmt.Sprint(err))
+			break
+		}
+
+		fmt.Println("MESSAGE: " + fmt.Sprint(message))
+		if strings.Contains(string(message), "F") {
+			ls.fulldata = true
+		}
+		// if the client asks for "data", we send it a resume
+		// err = stream.WriteMessage(websocket.TextMessage, []byte(statmsg))
+	}
+	done <- true
+}
+
+func Write(ls listenerStream, done chan bool) {
+	last := time.Now()
+	for {
+		// if no changes, do not send anything
+		// or send a pingpong
+
+		// search for all the data > last
+		newTime := time.Now()
+		last = newTime
+
+		data := make(map[string]interface{})
+		data["timestamp"] = last.Unix()
+		data["ping"] = "ping"
+
+		datajson, _ := json.Marshal(data)
+		ls.RequestStat.UpdateStat(0, len(datajson))
+		err := ls.Stream.WriteMessage(websocket.TextMessage, []byte(datajson))
+
+		if err != nil {
+			fmt.Println("END STREAM IN WRITE: " + fmt.Sprint(err))
+			break
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+	done <- true
+}
+
+
+```
+
+
+# 4. CMS Best Practices
+
+- Always include a fallback instance: `mypage.instance`.
+- Keep `version=base` unless you actively manage multiple versions.
+- Enable browser/useragent only if you need device-specific versions.
+- Avoid enabling `acceptpathparameters` on home unless you know exactly why.
+- Keep static assets in `fileserver`, not in CMS routes.
+- Do not put heavy business logic in `.code`—use `library` pages for complex logic.
+
+---
+
+# 5. Minimal Site Checklist
+
+In your CMS XConfig (`.conf`) file:
+
+- `pagesdir=...`
+- `mainpage=...`
+- `errorpage=...`
+- `errorblock=...`
+- `version=base`
+- `language=en|es|...`
+- `acceptpathparameters=yes|no` (as a routing strategy)
+
+In your pages repository:
+
+- `mainpage/` folder with valid `.page`, `.instance`, and code files.
+- `errorpage/` and `errorblock/` folders implemented as real CMS pages.
+
+---
+
+# 5. Summary
+
+Xamboo CMS is a **folder-driven CMS**:
+
+- **Routes → folders**
+- **Page definition → `.page`**
+- **Variants → `.instance`**
+- **Content → `.code`, `.template`, `.language`, `.go`**
+- **Execution strategy → engine `type`**
+
+This architecture makes Xamboo highly modular and scalable, well suited for multi-language, multi-device sites and strong business-rule integration.
+
+------------------------------------------------------------------------
+
+# Applications
+
+Applications must export:
+
+``` go
+var Application assets.Application
+```
+
+Responsibilities:
+
+-   Load XModules
+-   Manage contexts
+-   Handle datasources
+
+------------------------------------------------------------------------
+
+# XModules
+
+The xmodules are under another project into the webability-go github.
+Structured business modules:
+
+-   User management
+-   CRM
+-   ERP
+-   Ecommerce
+-   Administration
+
+------------------------------------------------------------------------
+
+# Performance
+
+-   500 req/sec production on 8 CPU server with 16 GB Memory with a simple postgres database
+-   3000 req/sec lab on same server
+-   Automatic plugin recompilation < 3 seconds with waiting queue
+-   TLS 1.2 / 1.3 supported
+
+------------------------------------------------------------------------
+
+# License
+
+MIT License

@@ -1,6 +1,7 @@
 package engines
 
 import (
+	"fmt"
 	"os"
 	"plugin"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	"github.com/webability-go/xamboo/cms/engines/wajafapp"
 	"github.com/webability-go/xamboo/compiler"
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/i18n"
 	"github.com/webability-go/xamboo/loggers"
 	"github.com/webability-go/xamboo/utils"
 )
@@ -27,7 +29,7 @@ var mutex sync.RWMutex
 
 func Link() {
 	xlogger := loggers.GetCoreLogger("sys")
-	xlogger.Println("Build Engines Containers native and external")
+	xlogger.Println(i18n.Get("engine.build"))
 	xloggererror := loggers.GetCoreLogger("errors")
 	for _, engine := range config.Config.Engines {
 		if engine.Source == "built-in" {
@@ -79,7 +81,7 @@ func Link() {
 		if !utils.FileExists(lib.SourcePath) {
 			if lib.Status != 2 {
 				lib.Status = 2
-				errortext := "Error: " + lib.SourcePath + " Source file does not exists.\n"
+				errortext := fmt.Sprintf("Error: %s Source file does not exists.\n", lib.SourcePath)
 				xloggererror.Println(errortext)
 				lib.Messages += errortext
 				EngineCache.Set(engine.Name, lib)
@@ -103,7 +105,7 @@ func Link() {
 
 			if err != nil {
 				lib.Status = 2
-				errortext := "Error: the GO code could not compile " + lib.SourcePath + "\n" + lib.Messages + "\n" + err.Error()
+				errortext := fmt.Sprintf(i18n.Get("engine.compile.error"), lib.SourcePath, lib.Messages, err.Error())
 				xloggererror.Println(errortext)
 				lib.Messages += errortext
 				EngineCache.Set(engine.Name, lib)
@@ -117,7 +119,7 @@ func Link() {
 			// if already exists in memory, set it as default, or load it
 			buildid, err := utils.GetBuildId(lib.PluginVPath)
 			if err != nil {
-				errortext := "Error: the library .so does not have a build id " + lib.SourcePath + "\n" + err.Error()
+				errortext := fmt.Sprintf(i18n.Get("engine.buildid.error"), lib.SourcePath, err.Error())
 				xloggererror.Println(errortext)
 				lib.Messages += errortext
 				EngineCache.Set(engine.Name, lib)
@@ -131,7 +133,7 @@ func Link() {
 				lib.Lib, err = plugin.Open(lib.PluginVPath)
 				if err != nil {
 					lib.Status = 2
-					errortext := "Error: the library .so could not load " + lib.SourcePath + "\n" + err.Error()
+					errortext := fmt.Sprintf(i18n.Get("engine.load.error"), lib.SourcePath, err.Error())
 					xloggererror.Println(errortext)
 					lib.Messages += errortext
 					EngineCache.Set(engine.Name, lib)
@@ -143,14 +145,14 @@ func Link() {
 
 			enginelink, err := lib.Lib.Lookup("Engine")
 			if err != nil {
-				xloggererror.Println("Error linking engine main interface Engine:", err)
+				xloggererror.Printf(i18n.Get("engine.link.error"), lib.SourcePath, err.Error())
 				lib.Mutex.Unlock()
 				continue
 			}
 
 			interf, ok := enginelink.(assets.Engine)
 			if !ok {
-				xloggererror.Println("Error linking engine main interface Engine, is not of type assets.Engine.")
+				xloggererror.Printf(i18n.Get("engine.linkinterface.error"), lib.SourcePath)
 				lib.Mutex.Unlock()
 				continue
 			}

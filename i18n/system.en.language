@@ -13,4 +13,13 @@
   <entry id="config.errorconfigcomponent"><![CDATA[Error: the external component configuration is not a map[string]interface{} in host %s]]></entry>
   <entry id="config.errorconfigenadled"><![CDATA[Error: the external component configuration does not contain a boolean 'enabled' entry in host %s]]></entry>
   <entry id="compiler.builderror"><![CDATA[Error running go build:\n%s\n]]></entry>
+  <entry id="fatal.protocol"><![CDATA[Error, protocol not known: %s]]></entry>
+  <entry id="engine.build"><![CDATA[Build Engines Containers native and external]]></entry>
+  <entry id="engine.compile.error"><![CDATA[Error: the GO code could not compile %s\n%s\n%s]]></entry>
+  <entry id="engine.buildid.error"><![CDATA[Error: the library .so does not have a build id %s\n%s]]></entry>
+  <entry id="engine.load.error"><![CDATA[Error: the library .so could not load %s\n%s]]></entry>
+  <entry id="engine.link.error"><![CDATA[Error linking engine main interface Engine: %s\n%s]]></entry>
+  <entry id="engine.linkinterface.error"><![CDATA[Error linking engine main interface Engine, is not of type assets.Engine: %s]]></entry>
+  <entry id="component.build"><![CDATA[Build Components Containers native and external]]></entry>
+  <entry id="component.notknown"><![CDATA[Built-in component not known: %s]]></entry>
 </language>
