@@ -12,7 +12,7 @@ import (
 	"github.com/webability-go/xamboo/components/auth"
 	"github.com/webability-go/xamboo/components/cms"
 	"github.com/webability-go/xamboo/components/compress"
-	"github.com/webability-go/xamboo/components/error"
+	cerror "github.com/webability-go/xamboo/components/error"
 	"github.com/webability-go/xamboo/components/fileserver"
 	"github.com/webability-go/xamboo/components/log"
 	"github.com/webability-go/xamboo/components/minify"
@@ -21,6 +21,7 @@ import (
 	"github.com/webability-go/xamboo/components/redirect"
 	"github.com/webability-go/xamboo/components/stat"
 	"github.com/webability-go/xamboo/config"
+	"github.com/webability-go/xamboo/i18n"
 	"github.com/webability-go/xamboo/loggers"
 	"github.com/webability-go/xamboo/utils"
 )
@@ -36,7 +37,7 @@ var mutex sync.RWMutex
 func Link() {
 
 	xlogger := loggers.GetCoreLogger("sys")
-	xlogger.Println("Build Components Containers native and external")
+	xlogger.Println(i18n.Get("component.build"))
 	xloggererror := loggers.GetCoreLogger("errors")
 
 	for _, component := range config.Config.Components {
@@ -73,10 +74,10 @@ func Link() {
 				Components["cms"] = cms.Component
 				cms.Component.Start()
 			case "error":
-				Components["error"] = error.Component
-				error.Component.Start()
+				Components["error"] = cerror.Component
+				cerror.Component.Start()
 			default:
-				xloggererror.Println("Built-in component not known:", component.Name)
+				xloggererror.Println(i18n.Get("component.notknown"), component.Name)
 			}
 			ComponentsOrder = append(ComponentsOrder, component.Name)
 			continue
